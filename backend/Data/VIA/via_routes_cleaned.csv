@@ -1,0 +1,97 @@
+,route_id,agency_id,route_short_name,route_long_name,route_type,route_color
+0,100,1,100,Primo Fredericksburg Road,3,CB2120
+1,102,1,102,Primo Military,3,CB2128
+2,103,1,103,Primo Zarzamora,3,CB2128
+3,14,1,14,Perrin Beitel Skip,3,CB2128
+4,17,1,17,IH-35 Express,3,2D5DA2
+5,2,1,2,Blanco Frequent,3,CB2128
+6,20,1,20,New Braunfels Frequent,3,CB2128
+7,202,1,202,Blanco Road 2 Lineup,3,609FBF
+8,204,1,204,San Pedro / McCullough 4-5 Lineup,3,609FBF
+9,209,1,209,Broadway 9 Lineup,3,609FBF
+10,21,1,21,Kirby / Converse,3,609FBF
+11,214,1,214,Austin Hwy / Randolph 14-17 Lineup,3,609FBF
+12,22,1,22,Hays,3,609FBF
+13,222,1,222,Hays / E Houston 22-24 Lineup,3,609FBF
+14,225,1,225,E Commerce / MLK 25-26 Lineup,3,609FBF
+15,230,1,230,Rigsby / Porter 30-28 Lineup,3,609FBF
+16,232,1,232,Steves / S St Marys 32-34 Lineup,3,609FBF
+17,24,1,24,East Houston,3,2D5DA2
+18,242,1,242,Roosevelt / S Presa 42-36 Lineup,3,609FBF
+19,243,1,243,S Flores / Pleasanton 43-44 Lineup,3,609FBF
+20,246,1,246,Commercial 46 Lineup,3,609FBF
+21,25,1,25,East Commerce Frequent,3,CB2128
+22,251,1,251,Nogalitos / Kirk 51-62 Lineup,3,609FBF
+23,26,1,26,Martin Luther King,3,2D5DA2
+24,268,1,268,Guadalupe / Ceralvo 68-66 Lineup,3,609FBF
+25,275,1,275,Commerce / Laredo 75-67 Lineup,3,609FBF
+26,276,1,276,Commerce / Kel-Lac TC 76-64 Lineup,3,609FBF
+27,277,1,277,Martin / Ruiz 77-79 Lineup,3,609FBF
+28,28,1,28,Porter Frequent,3,CB2128
+29,282,1,282,Culebra 82 Lineup,3,609FBF
+30,288,1,288,Bandera / Evers 88 Lineup,3,609FBF
+31,289,1,289,Poplar / Woodlawn 89-90 Lineup,3,609FBF
+32,296,1,296,Vance Jcksn / West Ave 96-97 Lineup,3,609FBF
+33,3,1,3,San Pedro Skip,3,CB2128
+34,30,1,30,Rigsby,3,609FBF
+35,32,1,32,Steves,3,609FBF
+36,34,1,34,South St Marys Frequent,3,CB2128
+37,36,1,36,South Presa,3,609FBF
+38,4,1,4,San Pedro Frequent,3,CB2128
+39,42,1,42,Roosevelt,3,609FBF
+40,43,1,43,South Flores,3,609FBF
+41,44,1,44,Pleasanton,3,609FBF
+42,46,1,46,Commercial,3,609FBF
+43,5,1,5,McCullough,3,609FBF
+44,501,1,501,UTSA / Leon Valley,3,609FBF
+45,502,1,502,Thousand Oaks,3,2D5DA2
+46,503,1,503,Huebner Crosstown,3,609FBF
+47,505,1,505,Basse,3,609FBF
+48,509,1,509,Hildebrand,3,609FBF
+49,51,1,51,Nogalitos,3,609FBF
+50,515,1,515,Southcross,3,2D5DA2
+51,522,1,522,Babcock,3,609FBF
+52,524,1,524,General McMullen Frequent,3,CB2128
+53,534,1,534,Wurzbach Frequent,3,CB2128
+54,552,1,552,Loop 410 / W. W. White Skip,3,CB2128
+55,602,1,602,North Star / Medical Center,3,2D5DA2
+56,603,1,603,Medical Center / UTSA,3,609FBF
+57,604,1,604,Medical Center / University Heights,3,609FBF
+58,607,1,607,Medical Center / Ingram,3,609FBF
+59,609,1,609,Ingram / Mainland / Medical Center,3,609FBF
+60,610,1,610,Ingram / Northwest Crossing,3,609FBF
+61,611,1,611,Valley-Hi / Kel-Lac,3,609FBF
+62,612,1,612,Kel-Lac / Westlakes,3,609FBF
+63,613,1,613,Heritage NW / Kel-Lac,3,609FBF
+64,614,1,614,Hidden Cove / Kel-Lac,3,609FBF
+65,615,1,615,Kel-Lac / Heritage Park,3,609FBF
+66,616,1,616,Sky Harbour / Kel-Lac,3,609FBF
+67,617,1,617,Kel-Lac / Rainbow Hills,3,609FBF
+68,618,1,618,Ingram / Westlakes,3,609FBF
+69,619,1,619,Kel-Lac / Indian Creek,3,609FBF
+70,62,1,62,Kirk,3,609FBF
+71,620,1,620,Northwest Vista College / Ingram,3,609FBF
+72,632,1,632,Randolph / Ventura,3,2D5DA2
+73,64,1,64,US 90 Express,3,609FBF
+74,647,1,647,North Star / Harry Wurzbach,3,609FBF
+75,648,1,648,North Star / Stone Oak,3,609FBF
+76,651,1,651,Deco District / Castle Hills,3,C0AD7A
+77,66,1,66,Ceralvo,3,609FBF
+78,67,1,67,Laredo,3,609FBF
+79,68,1,68,Guadalupe Frequent,3,CB2128
+80,7,1,7,US 281 Stone Oak / Brooks Express,3,2D5DA2
+81,75,1,75,West Commerce Frequent,3,CB2128
+82,76,1,76,West Commerce Skip,3,CB2128
+83,77,1,77,Martin,3,609FBF
+84,79,1,79,Ruiz,3,609FBF
+85,8,1,8,North St Marys,3,2D5DA2
+86,82,1,82,Culebra Frequent,3,CB2128
+87,88,1,88,Bandera Frequent,3,CB2128
+88,89,1,89,Poplar,3,609FBF
+89,9,1,9,Broadway Frequent,3,CB2128
+90,90,1,90,Woodlawn,3,609FBF
+91,93,1,93,Roadrunner Express,3,2D5DA2
+92,95,1,95,Fredericksburg Road Frequent,3,CB2128
+93,96,1,96,Vance Jackson Frequent,3,CB2128
+94,97,1,97,West Avenue,3,2D5DA2
+95,999,1,999,Encino Courtesy Van,3,00FFFF
