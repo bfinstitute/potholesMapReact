@@ -1,0 +1,61 @@
+.feedback-bubble {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-family: sans-serif;
+}
+
+.open-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bubble-popup {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    width: 260px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.bubble-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.bubble-header button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.bubble-form input,
+.bubble-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.bubble-form button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    width: 100%;
+}
