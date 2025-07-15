@@ -1,23 +1,13 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Ignore database and parquet files
+backend/app/*.db
+backend/app/*.parquet
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Ignore all data files
+backend/Data/
 
-# testing
-/coverage
+# Ignore frontend dependencies
+frontend/node_modules/
 
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Ignore Python cache
+*.pyc
+__pycache__/ 

@@ -1,0 +1,17 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "id": "77001",
+          "name": "ZIP Code 77001"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [[[ -95.4, 29.8 ], [ -95.3, 29.8 ], [ -95.3, 29.9 ], [ -95.4, 29.9 ], [ -95.4, 29.8 ]]]
+        }
+      }
+    ]
+}
+  
