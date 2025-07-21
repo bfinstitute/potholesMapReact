@@ -1,7 +1,10 @@
 // ZipMap.jsx
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Circle, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import * as turf from '@turf/turf';
+import md5 from 'md5'; // for hashing
+import L from 'leaflet'; // for divIcon
 
 const targetZips = [
   "78201", "78202", "78203", "78204", "78205", "78206", "78207", "78208",
@@ -19,8 +22,9 @@ const targetZips = [
 
 const mapCenter = [29.4252, -98.4946]; // Downtown San Antonio
 
-export default function ZipMap() {
+export default function ZipMap({ highlightData, viewMode }) {
   const [zipData, setZipData] = useState(null);
+  const [zipCounts, setZipCounts] = useState({}); // NEW
 
   useEffect(() => {
     fetch("/data/tx_zips.geojson")
@@ -36,15 +40,77 @@ export default function ZipMap() {
       });
   }, []);
 
-  const style = {
-    color: "#1E90FF",
-    weight: 1.5,
-    fillOpacity: 0.3,
+  // Aggregate highlightData points to ZIPs using turf.js
+  useEffect(() => {
+    if (viewMode === 'district' && zipData && highlightData && Array.isArray(highlightData)) {
+      const counts = {};
+      highlightData.forEach((d) => {
+        if (d.Latitude && d.Longitude) {
+          const pt = turf.point([parseFloat(d.Longitude), parseFloat(d.Latitude)]);
+          for (const feature of zipData.features) {
+            if (turf.booleanPointInPolygon(pt, feature)) {
+              const zip = feature.properties.ZCTA5CE10 || feature.properties.ZIP || feature.properties.zip;
+              if (zip) {
+                counts[zip] = (counts[zip] || 0) + (d.count || 1);
+              }
+              break;
+            }
+          }
+        }
+      });
+      setZipCounts(counts);
+    } else {
+      setZipCounts({});
+    }
+  }, [highlightData, zipData, viewMode]);
+
+  const highlightedZips = new Set(Object.keys(zipCounts));
+
+  const style = (feature) => {
+    if (viewMode !== 'district') return { color: '#1E90FF', weight: 1.5, fillOpacity: 0.3 };
+    const zip = feature.properties.ZCTA5CE10 || feature.properties.ZIP || feature.properties.zip;
+    if (highlightedZips.has(String(zip))) {
+      return {
+        color: "#FF4500",
+        weight: 3,
+        fillOpacity: 0.7,
+      };
+    }
+    return {
+      color: "#1E90FF",
+      weight: 1.5,
+      fillOpacity: 0.3,
+    };
   };
 
   const onEachFeature = (feature, layer) => {
     const zip = feature.properties.ZCTA5CE10 || feature.properties.ZIP || feature.properties.zip;
-    layer.bindPopup(`ZIP Code: ${zip}`);
+    let label = `ZIP Code: ${zip}`;
+    if (viewMode === 'district' && zipCounts[zip]) {
+      label += `<br/>Count: ${zipCounts[zip]}`;
+      // Add breakdown of streets for this ZIP
+      if (highlightData && Array.isArray(highlightData)) {
+        // Find all highlightData points in this ZIP
+        const pointsInZip = highlightData.filter((d) => {
+          if (d.Latitude && d.Longitude) {
+            const pt = turf.point([parseFloat(d.Longitude), parseFloat(d.Latitude)]);
+            return turf.booleanPointInPolygon(pt, feature);
+          }
+          return false;
+        });
+        // Aggregate by street name
+        const streetCounts = {};
+        pointsInZip.forEach((d) => {
+          const street = d.MSAG_Name || d.name || d.Sensitive || 'Unknown';
+          streetCounts[street] = (streetCounts[street] || 0) + (d.count || 1);
+        });
+        // Add breakdown to label
+        Object.entries(streetCounts).forEach(([street, count]) => {
+          label += `<br/>${street}: ${count}`;
+        });
+      }
+    }
+    layer.bindPopup(label);
     layer.on({
       mouseover: (e) => {
         e.target.setStyle({
@@ -54,10 +120,14 @@ export default function ZipMap() {
         });
       },
       mouseout: (e) => {
-        e.target.setStyle(style);
+        // Restore the correct style based on highlight data
+        e.target.setStyle(style(feature));
       },
     });
   };
+
+  // Generate a unique key for GeoJSON to force re-render on highlightData/viewMode change
+  const geoJsonKey = md5(JSON.stringify({ zipCounts, viewMode }));
 
   return (
     <MapContainer center={mapCenter} zoom={10} scrollWheelZoom={false} style={{ height: "100vh", width: "100%" }}>
@@ -65,9 +135,31 @@ export default function ZipMap() {
         attribution='&copy; OpenStreetMap contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {zipData && (
-        <GeoJSON data={zipData} style={style} onEachFeature={onEachFeature} />
+      {zipData && viewMode === 'district' && (
+        <>
+          <GeoJSON key={geoJsonKey} data={zipData} style={style} onEachFeature={onEachFeature} />
+        </>
       )}
+      {highlightData && Array.isArray(highlightData) && viewMode === 'circle' && highlightData.map((d, i) => {
+        if (d.Latitude && d.Longitude) {
+          const color = d.color || '#FF0000';
+          const radius = d.marker_radius || 12;
+          const label = d.count || d.Count || d.complaint_count || d.value || 1;
+          return (
+            <Circle
+              key={i}
+              center={[d.Latitude, d.Longitude]}
+              radius={radius * 10}
+              pathOptions={{ color, fillColor: color, fillOpacity: 0.7 }}
+            >
+              <Popup>
+                {(d.MSAG_Name || d.name || d.Sensitive || 'Highlighted Location') + ` (Count: ${label})`}
+              </Popup>
+            </Circle>
+          );
+        }
+        return null;
+      })}
     </MapContainer>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../styles/FeedbackBubble.css';
 
-export default function FeedbackBubble() {
+export default function FeedbackBubble({ setHighlightData }) {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
@@ -13,6 +13,7 @@ export default function FeedbackBubble() {
     const userMsg = { from: 'user', text: message };
     setChatHistory((prev) => [...prev, userMsg]);
     setLoading(true);
+    if (setHighlightData) setHighlightData(null); // Clear highlights immediately
     try {
       const res = await fetch('http://localhost:5005/chat', {
         method: 'POST',
@@ -21,8 +22,14 @@ export default function FeedbackBubble() {
       });
       const data = await res.json();
       setChatHistory((prev) => [...prev, { from: 'bot', text: data.response }]);
+      if (setHighlightData) {
+        setHighlightData(data.highlight_data || null);
+      }
     } catch (err) {
       setChatHistory((prev) => [...prev, { from: 'bot', text: 'Sorry, there was an error connecting to the chatbot.' }]);
+      if (setHighlightData) {
+        setHighlightData(null);
+      }
     }
     setLoading(false);
     setMessage('');

@@ -822,6 +822,12 @@ def get_groq_response(prompt):
     if re.search(r"how likely (will|could) potholes form( in san antonio)?", prompt_lower):
         return get_pothole_formation_prediction()
     # --- Optimized intent detection for all questions ---
+    # 0. Most potholes / worst pothole locations / top pothole locations
+    if re.search(r"(where (are|is) (the )?(most|worst) potholes|top (\d+ )?(worst|most) pothole|worst pothole locations|top pothole locations|most pothole complaints|most reported potholes|highest pothole count)", prompt_lower):
+        # Try to extract a number for top N, default to 10
+        top_n_match = re.search(r"top (\d+)", prompt_lower)
+        top_n = int(top_n_match.group(1)) if top_n_match else 10
+        return handle_areas_with_most_potholes(top_n=top_n)
     # 1. Are there potholes near [address]?
     match = re.search(r"potholes? near ([^?]+)", prompt_lower)
     if match:

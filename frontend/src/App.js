@@ -16,6 +16,8 @@ function App() {
   const [profiles, setProfiles] = useState({});
   const [selectedArea, setSelectedArea] = useState(null);
   const [customData, setCustomData] = useState(null);
+  const [highlightData, setHighlightData] = useState(null);
+  const [viewMode, setViewMode] = useState('district'); // NEW
 
   useEffect(() => {
     fetchGeoData().then(setGeoData);
@@ -45,12 +47,28 @@ function App() {
       <Header />
       {/* <CsvUploader onCsvLoad={handleCsvLoad} /> */}
       <div style={{ position: 'relative' }}>
+        <div style={{ margin: '10px 0', textAlign: 'center' }}>
+          <button
+            onClick={() => setViewMode(viewMode === 'district' ? 'circle' : 'district')}
+            style={{ padding: '8px 16px', borderRadius: '5px', border: '1px solid #1E90FF', background: viewMode === 'district' ? '#1E90FF' : '#fff', color: viewMode === 'district' ? '#fff' : '#1E90FF', cursor: 'pointer', marginRight: '10px' }}
+          >
+            District/ZIP View
+          </button>
+          <button
+            onClick={() => setViewMode(viewMode === 'circle' ? 'district' : 'circle')}
+            style={{ padding: '8px 16px', borderRadius: '5px', border: '1px solid #FF4500', background: viewMode === 'circle' ? '#FF4500' : '#fff', color: viewMode === 'circle' ? '#fff' : '#FF4500', cursor: 'pointer' }}
+          >
+            Circle/Label View
+          </button>
+        </div>
         <MapView
           geoData={geoData}
           params={customData || (profiles.map)}
           onAreaClick={handleAreaClick}
+          highlightData={highlightData}
+          viewMode={viewMode} // NEW
         />
-        <FeedbackBubble />
+        <FeedbackBubble setHighlightData={setHighlightData} />
       </div>
       <Footer />
       {/* <IndicatorChart data={indicators} indicatorKey="value" /> */}

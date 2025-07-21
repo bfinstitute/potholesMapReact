@@ -2,9 +2,6 @@
 backend/app/*.db
 backend/app/*.parquet
 
-# Ignore all data files
-backend/Data/
-
 # Ignore frontend dependencies
 frontend/node_modules/
 

@@ -18,9 +18,17 @@ async def chat(request: Request):
     # get_groq_response returns (response, plot_object, highlight_data_df)
     if isinstance(response_tuple, tuple):
         response = response_tuple[0]
+        highlight_data = None
+        if len(response_tuple) > 2 and response_tuple[2] is not None:
+            try:
+                # Convert DataFrame to list of dicts for JSON serialization
+                highlight_data = response_tuple[2].to_dict('records')
+            except Exception:
+                highlight_data = None
     else:
         response = response_tuple
-    return {"response": response}
+        highlight_data = None
+    return {"response": response, "highlight_data": highlight_data}
 
 if __name__ == "__main__":
     import uvicorn
