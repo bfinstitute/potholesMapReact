@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pandas
+geopandas
+folium
+requests
+matplotlib
+seaborn
+numpy
+python-dotenv
+duckdb 
