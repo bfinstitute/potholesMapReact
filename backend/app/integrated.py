@@ -780,21 +780,21 @@ def parse_rag_question(question):
         print(f"[RAG DEBUG] Matched improved pattern | street: '{street}', year: {year}")
     else:
         # Fallback to previous patterns
-    patterns = [
-        r'(?:on|reported on|for) ([\w\s]+?) in (\d{4})\??',
-        r'(?:on|for) ([\w\s]+?) (?:were )?reported in (\d{4})\??',
-        r'([\w\s]+?) potholes (?:in|for) (\d{4})\??',
-        r'potholes (?:on|for) ([\w\s]+?) (?:in|for) (\d{4})\??',
-        r'([\w\s]+?) in (\d{4})\??',
-        r'([\w\s]+?) (\d{4})\??',
-    ]
-    for pat in patterns:
-        m = re.search(pat, question, re.IGNORECASE)
-        if m:
-            street = m.group(1).strip()
-            year = int(m.group(2))
+        patterns = [
+            r'(?:on|reported on|for) ([\w\s]+?) in (\d{4})\??',
+            r'(?:on|for) ([\w\s]+?) (?:were )?reported in (\d{4})\??',
+            r'([\w\s]+?) potholes (?:in|for) (\d{4})\??',
+            r'potholes (?:on|for) ([\w\s]+?) (?:in|for) (\d{4})\??',
+            r'([\w\s]+?) in (\d{4})\??',
+            r'([\w\s]+?) (\d{4})\??',
+        ]
+        for pat in patterns:
+            m = re.search(pat, question, re.IGNORECASE)
+            if m:
+                street = m.group(1).strip()
+                year = int(m.group(2))
                 print(f"[RAG DEBUG] Matched fallback pattern: {pat} | street: '{street}', year: {year}")
-            break
+                break
     if not street or not year:
         print("[RAG DEBUG] No RAG pattern matched.")
     return street, year
@@ -926,6 +926,32 @@ def get_groq_response(prompt):
         elif 'senior' in sensitive_type or 'elder' in sensitive_type or 'center' in sensitive_type:
             sensitive_type = 'senior'
         return handle_any_complaints_near_sensitive_areas(sensitive_type=sensitive_type)
+
+    # --- New: VIA route analytics ---
+    if re.search(r'(via|transit|bus) route( analytics| risk| affected| pothole)', prompt_lower):
+        return handle_via_route_analytics()
+    # --- New: ETA/delay prediction ---
+    if re.search(r'(eta|delay|arrival time|transit delay|bus delay)', prompt_lower):
+        return handle_eta_delay_prediction()
+    # --- New: Budget/cost estimation ---
+    if re.search(r'(cost|budget|estimate).*pothole', prompt_lower):
+        return handle_budget_cost_estimation()
+    # --- New: Dashboard/documentation/cleaning Q&A ---
+    if re.search(r'(dashboard|documentation|data cleaning|cleaning process)', prompt_lower):
+        topic = None
+        if 'dashboard' in prompt_lower:
+            topic = 'dashboard'
+        elif 'documentation' in prompt_lower:
+            topic = 'documentation'
+        elif 'cleaning' in prompt_lower:
+            topic = 'cleaning'
+        return handle_dashboard_documentation(topic)
+    # --- New: Research/idea generation ---
+    if re.search(r'(research ideas|research questions|project ideas|analysis ideas)', prompt_lower):
+        return handle_research_ideas()
+    # --- New: Security/compliance Q&A ---
+    if re.search(r'(security|compliance|pii|privacy|data protection)', prompt_lower):
+        return handle_security_compliance()
 
     # --- RAG fallback: try to parse and answer with query_table ---
     street, year = parse_rag_question(prompt)
@@ -1090,4 +1116,91 @@ try:
     pavement_latlon_df = pd.read_csv(pavement_path)
     complaint_df = pd.read_csv(complaint_full_path)
 except Exception as e:
-    pass
+    print(f"Error loading data files: {e}")
+    pothole_cases_df = pd.DataFrame()
+    pavement_latlon_df = pd.DataFrame()
+    complaint_df = pd.DataFrame()
+
+# After loading DataFrames, ensure correct dtypes and column names
+if 'OpenDate' in pothole_cases_df.columns:
+    pothole_cases_df['OpenDate'] = pd.to_datetime(pothole_cases_df['OpenDate'], errors='coerce')
+if 'OPENEDDATETIME' in complaint_df.columns:
+    complaint_df['OPENEDDATETIME'] = pd.to_datetime(complaint_df['OPENEDDATETIME'], errors='coerce')
+if 'InstallDate' in complaint_df.columns:
+    complaint_df['InstallDate'] = pd.to_datetime(complaint_df['InstallDate'], errors='coerce')
+# Ensure Latitude/Longitude columns exist in pavement_latlon_df
+if 'Lat' in pavement_latlon_df.columns and 'Lon' in pavement_latlon_df.columns:
+    pavement_latlon_df = pavement_latlon_df.rename(columns={'Lat': 'Latitude', 'Lon': 'Longitude'})
+# Extract Latitude/Longitude from GoogleMapView if needed
+if 'GoogleMapView' in pavement_latlon_df.columns:
+    def extract_lat_lon(url):
+        if pd.isna(url) or url == 'Not Available':
+            return None, None
+        match = re.search(r'place/([0-9.]+)N ([0-9.]+)W', url)
+        if match:
+            lat = float(match.group(1))
+            lon = -float(match.group(2))  # West is negative
+            return lat, lon
+        return None, None
+    pavement_latlon_df[['Latitude', 'Longitude']] = pavement_latlon_df['GoogleMapView'].apply(lambda x: pd.Series(extract_lat_lon(x)))
+print("pothole_cases_df columns:", pothole_cases_df.columns)
+print("pavement_latlon_df columns:", pavement_latlon_df.columns)
+print("complaint_df columns:", complaint_df.columns)
+
+# --- Handler: VIA route analytics (most affected routes, route risk, etc.) ---
+def handle_via_route_analytics():
+    return (
+        "VIA route analytics are under development. In the future, this will show which VIA routes are most affected by potholes, risk scores, and more. Please specify a route or ask about route risk.",
+        None,
+        pd.DataFrame(),
+    )
+
+# --- Handler: ETA/delay prediction (stub) ---
+def handle_eta_delay_prediction(route=None):
+    return (
+        f"ETA and delay prediction for VIA routes is not yet implemented. In the future, this will estimate delays based on pothole and road condition data. Please specify a route for more details.",
+        None,
+        pd.DataFrame(),
+    )
+
+# --- Handler: Budget/cost estimation (stub) ---
+def handle_budget_cost_estimation(years=5):
+    return (
+        f"Estimated cost to repair potholes over {years} years is under development. This will use historical repair costs and predicted pothole formation rates.",
+        None,
+        pd.DataFrame(),
+    )
+
+# --- Handler: Dashboard/documentation/cleaning Q&A (static info) ---
+def handle_dashboard_documentation(topic=None):
+    doc_map = {
+        "dashboard": "The dashboard visualizes pothole locations, risk scores, and VIA route intersections using Streamlit or Power BI.",
+        "documentation": "Project documentation covers data sources, cleaning steps, modeling, and deployment. See the project README for details.",
+        "cleaning": "Data cleaning involved standardizing date formats, coordinates, and removing duplicates. See the cleaning notebook for more.",
+    }
+    if topic and topic.lower() in doc_map:
+        return (doc_map[topic.lower()], None, pd.DataFrame())
+    return ("Supported topics: dashboard, documentation, cleaning. Please specify one.", None, pd.DataFrame())
+
+# --- Handler: Research/idea generation (static list) ---
+def handle_research_ideas():
+    ideas = [
+        "1. Predict pothole formation hotspots using weather and traffic data.",
+        "2. Analyze repair time disparities across districts.",
+        "3. Estimate VIA route delays due to potholes.",
+        "4. Correlate pavement condition with complaint frequency.",
+        "5. Model budget needs for proactive repairs."
+    ]
+    return ("Here are 5 research ideas:\n" + "\n".join(ideas), None, pd.DataFrame())
+
+# --- Handler: Security/compliance Q&A (static info) ---
+def handle_security_compliance():
+    return (
+        "Security features include encrypted storage, SSH key authentication, and custom firewalls. PII is minimized and not stored in analytics outputs. See the security policy documentation for more.",
+        None,
+        pd.DataFrame(),
+    )
+
+    print("pothole_cases_df empty:", pothole_cases_df.empty)
+    print("pavement_latlon_df empty:", pavement_latlon_df.empty)
+    print("complaint_df empty:", complaint_df.empty)
