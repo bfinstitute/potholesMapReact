@@ -44,26 +44,57 @@ export default function FeedbackBubble({ setHighlightData }) {
       ) : (
         <div className="bubble-popup">
           <div className="bubble-header">
-            <span>Chat with us</span>
+            <span>Buffi V.01</span>
             <button onClick={() => setIsOpen(false)}>×</button>
           </div>
           <div className="bubble-history">
             {chatHistory.map((msg, idx) => (
-              <div key={idx} className={msg.from === 'user' ? 'user-msg' : 'bot-msg'}>
-                <b>{msg.from === 'user' ? 'You' : 'Bot'}:</b> {msg.text}
+              <div key={idx} className={`message-container ${msg.from === 'user' ? 'user-container' : 'bot-container'}`}>
+                {msg.from === 'bot' && (
+                  <div className="avatar bot-avatar">
+                    <span>🤖</span>
+                  </div>
+                )}
+                <div className={`message-bubble ${msg.from === 'user' ? 'user-message' : 'bot-message'}`}>
+                  {msg.text}
+                </div>
+                {msg.from === 'user' && (
+                  <div className="avatar user-avatar">
+                    <span>👤</span>
+                  </div>
+                )}
               </div>
             ))}
-            {loading && <div className="bot-msg">Bot is typing...</div>}
+            {loading && (
+              <div className="message-container bot-container">
+                <div className="avatar bot-avatar">
+                  <span>🤖</span>
+                </div>
+                <div className="message-bubble bot-message">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <form onSubmit={handleSubmit} className="bubble-form">
-            <textarea
-              placeholder="Your message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              required
-              disabled={loading}
-            />
-            <button type="submit" disabled={loading || !message.trim()}>Send</button>
+            <div className="input-container">
+              <input
+                type="text"
+                placeholder="Write message here..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+                disabled={loading}
+                className="message-input"
+              />
+              <button type="submit" disabled={loading || !message.trim()} className="send-button">
+                <span>✈️</span>
+              </button>
+            </div>
           </form>
         </div>
       )}
