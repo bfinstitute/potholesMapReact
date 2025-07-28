@@ -1042,7 +1042,7 @@ def get_groq_response(prompt):
             data = {
                 "model": "llama3-8b-8192",
                 "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 150,
+                "max_tokens": 4096,
             }
             groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
             groq_response.raise_for_status() # Raise an exception for HTTP errors
