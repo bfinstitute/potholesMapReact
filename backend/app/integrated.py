@@ -1313,10 +1313,10 @@ def handle_public_transportation_sentiment_zipcode(zipcode):
         
         if positive_responses > negative_responses:
             sentiment = "positive"
-            description = f"Most residents ({positive_responses}/{total_responses}) are satisfied with public transportation."
+            description = f"Most residents are satisfied with public transportation."
         elif negative_responses > positive_responses:
             sentiment = "negative"
-            description = f"Most residents ({negative_responses}/{total_responses}) are dissatisfied with public transportation."
+            description = f"Most residents are dissatisfied with public transportation."
         else:
             sentiment = "mixed"
             description = f"Residents have mixed feelings about public transportation."
@@ -1324,13 +1324,12 @@ def handle_public_transportation_sentiment_zipcode(zipcode):
         response = f"Public transportation sentiment in zip code {zipcode}:\n\n"
         response += f"• Overall sentiment: {sentiment.title()}\n"
         response += f"• {description}\n"
-        response += f"• Total responses: {total_responses}\n"
         
         if not satisfaction_counts.empty:
             response += "\nBreakdown:\n"
             for satisfaction, count in satisfaction_counts.items():
                 percentage = (count / total_responses) * 100
-                response += f"• {satisfaction}: {count} ({percentage:.1f}%)\n"
+                response += f"• {satisfaction}: {percentage:.1f}%\n"
         
         return response, None, pd.DataFrame()
     
@@ -1357,9 +1356,9 @@ def handle_investment_opportunities():
         yes_percentage = (yes_count / total_responses) * 100 if total_responses > 0 else 0
         
         response = f"Investment opportunities in San Antonio:\n\n"
-        response += f"• {yes_count} out of {total_responses} respondents ({yes_percentage:.1f}%) believe there are investment opportunities\n"
-        response += f"• {no_count} respondents ({no_count/total_responses*100:.1f}%) don't see opportunities\n"
-        response += f"• {unsure_count} respondents ({unsure_count/total_responses*100:.1f}%) are unsure\n"
+        response += f"• {yes_percentage:.1f}% of respondents believe there are investment opportunities\n"
+        response += f"• {(no_count/total_responses*100):.1f}% don't see opportunities\n"
+        response += f"• {(unsure_count/total_responses*100):.1f}% are unsure\n"
         
         # Look for "Other" responses with detailed comments
         other_responses = survey_df[survey_df[investment_col].str.contains('Other', na=False, case=False)]
@@ -1390,11 +1389,10 @@ def handle_transportation_mode_zipcode(zipcode):
         total_responses = len(zipcode_data)
         
         response = f"Primary transportation modes in zip code {zipcode}:\n\n"
-        response += f"• Total responses: {total_responses}\n\n"
         
         for mode, count in mode_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• {mode}: {count} ({percentage:.1f}%)\n"
+            response += f"• {mode}: {percentage:.1f}%\n"
         
         # Find most common mode
         most_common_mode = mode_counts.index[0] if not mode_counts.empty else "No data"
@@ -1422,11 +1420,10 @@ def handle_transportation_improvements():
         total_responses = len(survey_df)
         
         response = f"Transportation improvements desired in San Antonio:\n\n"
-        response += f"• Total survey responses: {total_responses}\n\n"
         
         for improvement, count in improvement_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• {improvement}: {count} mentions ({percentage:.1f}%)\n"
+            response += f"• {improvement}: {percentage:.1f}%\n"
         
         return response, None, pd.DataFrame()
     
@@ -1456,11 +1453,10 @@ def handle_missing_services_zipcode(zipcode):
         total_responses = len(zipcode_data)
         
         response = f"Missing public services/resources in zip code {zipcode}:\n\n"
-        response += f"• Total responses: {total_responses}\n\n"
         
         for service, count in service_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• {service}: {count} mentions ({percentage:.1f}%)\n"
+            response += f"• {service}: {percentage:.1f}%\n"
         
         return response, None, pd.DataFrame()
     
@@ -1482,7 +1478,7 @@ def handle_city_satisfaction():
         optimistic_count = len(optimism_responses)
         optimistic_percentage = (optimistic_count / total_responses) * 100
         
-        response += f"• {optimistic_count} out of {total_responses} respondents ({optimistic_percentage:.1f}%) mentioned positive aspects of San Antonio\n"
+        response += f"• {optimistic_percentage:.1f}% of respondents mentioned positive aspects of San Antonio\n"
         
         # Count mentions of specific positive aspects
         all_aspects = []
@@ -1494,7 +1490,8 @@ def handle_city_satisfaction():
         aspect_counts = pd.Series(all_aspects).value_counts()
         response += "\nMost mentioned positive aspects:\n"
         for aspect, count in aspect_counts.head(5).items():
-            response += f"  - {aspect}: {count} mentions\n"
+            percentage = (count / total_responses) * 100
+            response += f"  - {aspect}: {percentage:.1f}%\n"
     
     # Analyze connection to decision-making
     connection_col = 'How connected do you feel to decision-making in your neighborhood or city?'
@@ -1503,7 +1500,7 @@ def handle_city_satisfaction():
         response += f"\n• Connection to decision-making:\n"
         for connection, count in connection_counts.items():
             percentage = (count / len(survey_df)) * 100
-            response += f"  - {connection}: {count} ({percentage:.1f}%)\n"
+            response += f"  - {connection}: {percentage:.1f}%\n"
     
     return response, None, pd.DataFrame()
 
@@ -1540,9 +1537,9 @@ def handle_city_attitude():
             neutral_percentage = 100 - positive_percentage - negative_percentage
             
             response = f"San Antonio 'coolness' based on survey sentiment analysis:\n\n"
-            response += f"• Positive sentiment: {positive_count} responses ({positive_percentage:.1f}%)\n"
-            response += f"• Negative sentiment: {negative_count} responses ({negative_percentage:.1f}%)\n"
-            response += f"• Neutral sentiment: {total_responses - positive_count - negative_count} responses ({neutral_percentage:.1f}%)\n"
+            response += f"• Positive sentiment: {positive_percentage:.1f}%\n"
+            response += f"• Negative sentiment: {negative_percentage:.1f}%\n"
+            response += f"• Neutral sentiment: {neutral_percentage:.1f}%\n"
             
             if positive_percentage > negative_percentage:
                 response += f"\nOverall assessment: San Antonio residents generally have positive feelings about their city!"
@@ -1570,11 +1567,10 @@ def handle_community_spaces_accessibility_zipcode(zipcode):
         total_responses = len(zipcode_data)
         
         response = f"Community spaces accessibility in zip code {zipcode}:\n\n"
-        response += f"• Total responses: {total_responses}\n\n"
         
         for rating, count in accessibility_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• Rating {rating}/10: {count} responses ({percentage:.1f}%)\n"
+            response += f"• Rating {rating}/10: {percentage:.1f}%\n"
         
         # Calculate average rating
         numeric_ratings = pd.to_numeric(zipcode_data[accessibility_col], errors='coerce').dropna()
@@ -1604,11 +1600,10 @@ def handle_community_spaces_accessibility_city():
         total_responses = len(survey_df)
         
         response = f"Community spaces accessibility in San Antonio:\n\n"
-        response += f"• Total responses: {total_responses}\n\n"
         
         for rating, count in accessibility_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• Rating {rating}/10: {count} responses ({percentage:.1f}%)\n"
+            response += f"• Rating {rating}/10: {percentage:.1f}%\n"
         
         # Calculate average rating
         numeric_ratings = pd.to_numeric(survey_df[accessibility_col], errors='coerce').dropna()
@@ -1644,11 +1639,10 @@ def handle_housing_affordability_zipcode(zipcode):
         total_responses = len(zipcode_data)
         
         response = f"Housing affordability in zip code {zipcode}:\n\n"
-        response += f"• Total responses: {total_responses}\n\n"
         
         for rating, count in affordability_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• Rating {rating}/5: {count} responses ({percentage:.1f}%)\n"
+            response += f"• Rating {rating}/5: {percentage:.1f}%\n"
         
         # Calculate average rating
         numeric_ratings = pd.to_numeric(zipcode_data[affordability_col], errors='coerce').dropna()
@@ -1678,11 +1672,10 @@ def handle_housing_affordability_city():
         total_responses = len(survey_df)
         
         response = f"Housing affordability in San Antonio:\n\n"
-        response += f"• Total responses: {total_responses}\n\n"
         
         for rating, count in affordability_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• Rating {rating}/5: {count} responses ({percentage:.1f}%)\n"
+            response += f"• Rating {rating}/5: {percentage:.1f}%\n"
         
         # Calculate average rating
         numeric_ratings = pd.to_numeric(survey_df[affordability_col], errors='coerce').dropna()
@@ -1719,11 +1712,10 @@ def handle_housing_types():
         total_responses = len(survey_df)
         
         response = f"Housing types in San Antonio:\n\n"
-        response += f"• Total survey responses: {total_responses}\n\n"
         
         for dwelling, count in dwelling_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• {dwelling}: {count} mentions ({percentage:.1f}%)\n"
+            response += f"• {dwelling}: {percentage:.1f}%\n"
         
         return response, None, pd.DataFrame()
     
@@ -1747,11 +1739,10 @@ def handle_living_arrangements():
         total_responses = len(survey_df)
         
         response = f"Living arrangements in San Antonio:\n\n"
-        response += f"• Total survey responses: {total_responses}\n\n"
         
         for situation, count in situation_counts.items():
             percentage = (count / total_responses) * 100
-            response += f"• {situation}: {count} mentions ({percentage:.1f}%)\n"
+            response += f"• {situation}: {percentage:.1f}%\n"
         
         # Categorize as living alone vs with others
         alone_keywords = ['living alone', 'by myself', 'single']
@@ -1768,8 +1759,10 @@ def handle_living_arrangements():
                 with_others_count += 1
         
         response += f"\nSummary:\n"
-        response += f"• Living with others: {with_others_count} mentions\n"
-        response += f"• Living alone: {alone_count} mentions\n"
+        with_others_percentage = (with_others_count / len(all_situations)) * 100 if all_situations else 0
+        alone_percentage = (alone_count / len(all_situations)) * 100 if all_situations else 0
+        response += f"• Living with others: {with_others_percentage:.1f}%\n"
+        response += f"• Living alone: {alone_percentage:.1f}%\n"
         
         if with_others_count > alone_count:
             response += f"\nMost people in San Antonio live with others (family, friends, roommates, etc.)."
