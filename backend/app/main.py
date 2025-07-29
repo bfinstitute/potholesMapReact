@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from integrated import get_groq_response
+from .integrated import get_groq_response
 
 app = FastAPI()
 app.add_middleware(

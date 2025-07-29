@@ -50,19 +50,19 @@ senior_centers_df = pd.DataFrame(columns=['name', 'lat', 'lon'])  # TODO: Replac
 injuries_df = pd.DataFrame(columns=['intersection', 'lat', 'lon', 'injury_count'])  # TODO: Replace with real injury data
 
 # --- Load VIA stops and routes ---
-if os.path.exists('../Data/VIA/stops_cleaned.csv'):
-    via_stops_df = pd.read_csv('../Data/VIA/stops_cleaned.csv')
+if os.path.exists('Data/VIA/stops_cleaned.csv'):
+    via_stops_df = pd.read_csv('Data/VIA/stops_cleaned.csv')
 else:
     via_stops_df = pd.DataFrame()
-if os.path.exists('../Data/VIA/via_routes_cleaned.csv'):
-    via_routes_df = pd.read_csv('../Data/VIA/via_routes_cleaned.csv')
+if os.path.exists('Data/VIA/via_routes_cleaned.csv'):
+    via_routes_df = pd.read_csv('Data/VIA/via_routes_cleaned.csv')
 else:
     via_routes_df = pd.DataFrame()
 
 # --- Load sensitive locations from extracted CSV ---
 import re
 try:
-    sensitive_locations_df = pd.read_csv('../Data/possible_sensitive_locations.csv')
+    sensitive_locations_df = pd.read_csv('Data/possible_sensitive_locations.csv')
     # Extract lat/lon from GoogleMapView column
     def extract_lat_lon(url):
         if pd.isna(url) or url == 'Not Available':
@@ -764,7 +764,7 @@ def handle_any_complaints_near_sensitive_areas(radius_m=300, sensitive_type='sch
     return response, None, highlight_df
 
 # --- RAG Query Integration ---
-from rag_tool import query_table
+from .rag_tool import query_table
 
 # Simple parser for street and year from user question
 def parse_rag_question(question):
@@ -779,14 +779,16 @@ def parse_rag_question(question):
         year = int(m.group(2))
         print(f"[RAG DEBUG] Matched improved pattern | street: '{street}', year: {year}")
     else:
-        # Fallback to previous patterns
+        # Fallback to previous patterns - more specific to avoid survey questions
         patterns = [
             r'(?:on|reported on|for) ([\w\s]+?) in (\d{4})\??',
             r'(?:on|for) ([\w\s]+?) (?:were )?reported in (\d{4})\??',
             r'([\w\s]+?) potholes (?:in|for) (\d{4})\??',
             r'potholes (?:on|for) ([\w\s]+?) (?:in|for) (\d{4})\??',
-            r'([\w\s]+?) in (\d{4})\??',
-            r'([\w\s]+?) (\d{4})\??',
+            # More specific patterns that avoid survey questions
+            r'potholes? (?:on|for|in) ([\w\s]+?) (?:in|for) (\d{4})\??',
+            r'street ([\w\s]+?) (?:in|for) (\d{4})\??',
+            r'road ([\w\s]+?) (?:in|for) (\d{4})\??',
         ]
         for pat in patterns:
             m = re.search(pat, question, re.IGNORECASE)
@@ -973,6 +975,71 @@ def get_groq_response(prompt):
     if re.search(r'(security|compliance|pii|privacy|data protection)', prompt_lower):
         return handle_security_compliance()
 
+    # --- Survey-based questions ---
+    # Public transportation questions
+    match = re.search(r'do people in (?:zip code )?(\d+) like public transportation', prompt_lower)
+    if match:
+        zipcode = match.group(1)
+        return handle_public_transportation_sentiment_zipcode(zipcode)
+    
+    match = re.search(r'are people in (?:zip code )?(\d+) satisfied with their public transit', prompt_lower)
+    if match:
+        zipcode = match.group(1)
+        return handle_public_transit_satisfaction_zipcode(zipcode)
+    
+    # Investment opportunities
+    if re.search(r'are there opportunities for investment in san antonio', prompt_lower):
+        return handle_investment_opportunities()
+    
+    # Transportation mode questions
+    match = re.search(r'what do most citizens in (?:zip code )?(\d+) use for their mode of transportation', prompt_lower)
+    if match:
+        zipcode = match.group(1)
+        return handle_transportation_mode_zipcode(zipcode)
+    
+    # Transportation improvements
+    if re.search(r'what do most people in san antonio want to see improved for transportation', prompt_lower):
+        return handle_transportation_improvements()
+    
+    # Public services/resources questions
+    match = re.search(r'what public services or resources do people in (?:zip code )?(\d+) lack', prompt_lower)
+    if match:
+        zipcode = match.group(1)
+        return handle_missing_services_zipcode(zipcode)
+    
+    # City satisfaction questions
+    if re.search(r'do san antonians like the city', prompt_lower):
+        return handle_city_satisfaction()
+    
+    if re.search(r'is san antonio cool', prompt_lower):
+        return handle_city_attitude()
+    
+    # Community spaces accessibility
+    match = re.search(r'how accessible are public community spaces in (?:zip code )?(\d+)', prompt_lower)
+    if match:
+        zipcode = match.group(1)
+        return handle_community_spaces_accessibility_zipcode(zipcode)
+    
+    if re.search(r'how accessible are public community spaces in san antonio', prompt_lower):
+        return handle_community_spaces_accessibility_city()
+    
+    # Housing affordability
+    match = re.search(r'how affordable is housing in (?:zip code )?(\d+)', prompt_lower)
+    if match:
+        zipcode = match.group(1)
+        return handle_housing_affordability_zipcode(zipcode)
+    
+    if re.search(r'how affordable is housing in san antonio', prompt_lower):
+        return handle_housing_affordability_city()
+    
+    # Housing type questions
+    if re.search(r'what type of housing do san antonio', prompt_lower):
+        return handle_housing_types()
+    
+    # Living arrangements
+    if re.search(r'do most people live by themselves or with others', prompt_lower):
+        return handle_living_arrangements()
+
     # --- RAG fallback: try to parse and answer with query_table ---
     street, year = parse_rag_question(prompt)
     if street and year:
@@ -1124,8 +1191,8 @@ def add_pothole_markers(df, folium_map, feature_group, color_column='color', mar
 
 # --- Load additional datasets for chatbot analysis ---
 # Define paths relative to the integrated.py file
-# PATCH: use '../Data' instead of 'Data'
-data_folder_path = '../Data'
+# PATCH: use 'Data' instead of '../Data' since we're in the backend directory
+data_folder_path = 'Data'
 
 pothole_cases_path = os.path.join(data_folder_path, '311_Pothole_Cases_18_24.csv')
 pavement_path = os.path.join(data_folder_path, 'COSA_Pavement.csv')
@@ -1221,6 +1288,498 @@ def handle_security_compliance():
         pd.DataFrame(),
     )
 
+# --- Survey-based handlers ---
+def handle_public_transportation_sentiment_zipcode(zipcode):
+    """Handle questions about public transportation sentiment in a specific zip code."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    zipcode_str = str(zipcode)
+    zipcode_data = survey_df[survey_df['What ZIP code do you live in?'].astype(str) == zipcode_str]
+    
+    if zipcode_data.empty:
+        return f"No survey responses found for zip code {zipcode}.", None, pd.DataFrame()
+    
+    # Analyze satisfaction with public transportation
+    satisfaction_col = 'How satisfied are you with public transportation in San Antonio?'
+    if satisfaction_col in zipcode_data.columns:
+        satisfaction_counts = zipcode_data[satisfaction_col].value_counts()
+        total_responses = len(zipcode_data)
+        
+        # Calculate sentiment
+        positive_responses = satisfaction_counts.get('Very satisfied', 0) + satisfaction_counts.get('Somewhat satisfied', 0)
+        negative_responses = satisfaction_counts.get('Very dissatisfied', 0) + satisfaction_counts.get('Somewhat dissatisfied', 0)
+        neutral_responses = satisfaction_counts.get('Neutral', 0)
+        
+        if positive_responses > negative_responses:
+            sentiment = "positive"
+            description = f"Most residents ({positive_responses}/{total_responses}) are satisfied with public transportation."
+        elif negative_responses > positive_responses:
+            sentiment = "negative"
+            description = f"Most residents ({negative_responses}/{total_responses}) are dissatisfied with public transportation."
+        else:
+            sentiment = "mixed"
+            description = f"Residents have mixed feelings about public transportation."
+        
+        response = f"Public transportation sentiment in zip code {zipcode}:\n\n"
+        response += f"• Overall sentiment: {sentiment.title()}\n"
+        response += f"• {description}\n"
+        response += f"• Total responses: {total_responses}\n"
+        
+        if not satisfaction_counts.empty:
+            response += "\nBreakdown:\n"
+            for satisfaction, count in satisfaction_counts.items():
+                percentage = (count / total_responses) * 100
+                response += f"• {satisfaction}: {count} ({percentage:.1f}%)\n"
+        
+        return response, None, pd.DataFrame()
+    
+    return f"Public transportation satisfaction data not available for zip code {zipcode}.", None, pd.DataFrame()
+
+def handle_public_transit_satisfaction_zipcode(zipcode):
+    """Handle questions about public transit satisfaction in a specific zip code."""
+    return handle_public_transportation_sentiment_zipcode(zipcode)
+
+def handle_investment_opportunities():
+    """Handle questions about investment opportunities in San Antonio."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    investment_col = 'Are there opportunities for investment, career growth, and job opportunities in your district? (If possible, please expand on your answer choice in "Other")'
+    if investment_col in survey_df.columns:
+        investment_counts = survey_df[investment_col].value_counts()
+        total_responses = len(survey_df)
+        
+        yes_count = investment_counts.get('Yes', 0)
+        no_count = investment_counts.get('No', 0)
+        unsure_count = investment_counts.get('Unsure', 0)
+        
+        yes_percentage = (yes_count / total_responses) * 100 if total_responses > 0 else 0
+        
+        response = f"Investment opportunities in San Antonio:\n\n"
+        response += f"• {yes_count} out of {total_responses} respondents ({yes_percentage:.1f}%) believe there are investment opportunities\n"
+        response += f"• {no_count} respondents ({no_count/total_responses*100:.1f}%) don't see opportunities\n"
+        response += f"• {unsure_count} respondents ({unsure_count/total_responses*100:.1f}%) are unsure\n"
+        
+        # Look for "Other" responses with detailed comments
+        other_responses = survey_df[survey_df[investment_col].str.contains('Other', na=False, case=False)]
+        if not other_responses.empty:
+            response += "\nDetailed comments from respondents:\n"
+            for _, row in other_responses.head(3).iterrows():
+                if pd.notna(row[investment_col]) and 'Other' in str(row[investment_col]):
+                    response += f"• {str(row[investment_col]).replace('Other', '').strip()}\n"
+        
+        return response, None, pd.DataFrame()
+    
+    return "Investment opportunity data not available.", None, pd.DataFrame()
+
+def handle_transportation_mode_zipcode(zipcode):
+    """Handle questions about transportation modes in a specific zip code."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    zipcode_str = str(zipcode)
+    zipcode_data = survey_df[survey_df['What ZIP code do you live in?'].astype(str) == zipcode_str]
+    
+    if zipcode_data.empty:
+        return f"No survey responses found for zip code {zipcode}.", None, pd.DataFrame()
+    
+    mode_col = 'What is your primary mode of transportation?'
+    if mode_col in zipcode_data.columns:
+        mode_counts = zipcode_data[mode_col].value_counts()
+        total_responses = len(zipcode_data)
+        
+        response = f"Primary transportation modes in zip code {zipcode}:\n\n"
+        response += f"• Total responses: {total_responses}\n\n"
+        
+        for mode, count in mode_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• {mode}: {count} ({percentage:.1f}%)\n"
+        
+        # Find most common mode
+        most_common_mode = mode_counts.index[0] if not mode_counts.empty else "No data"
+        response += f"\nMost common mode: {most_common_mode}"
+        
+        return response, None, pd.DataFrame()
+    
+    return f"Transportation mode data not available for zip code {zipcode}.", None, pd.DataFrame()
+
+def handle_transportation_improvements():
+    """Handle questions about transportation improvements desired in San Antonio."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    improvements_col = 'Which transportation improvements would most benefit your daily life?  (select all that apply)'
+    if improvements_col in survey_df.columns:
+        # Split multiple selections and count each improvement
+        all_improvements = []
+        for response in survey_df[improvements_col].dropna():
+            if isinstance(response, str):
+                improvements = [imp.strip() for imp in response.split(',')]
+                all_improvements.extend(improvements)
+        
+        improvement_counts = pd.Series(all_improvements).value_counts()
+        total_responses = len(survey_df)
+        
+        response = f"Transportation improvements desired in San Antonio:\n\n"
+        response += f"• Total survey responses: {total_responses}\n\n"
+        
+        for improvement, count in improvement_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• {improvement}: {count} mentions ({percentage:.1f}%)\n"
+        
+        return response, None, pd.DataFrame()
+    
+    return "Transportation improvement data not available.", None, pd.DataFrame()
+
+def handle_missing_services_zipcode(zipcode):
+    """Handle questions about missing public services in a specific zip code."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    zipcode_str = str(zipcode)
+    zipcode_data = survey_df[survey_df['What ZIP code do you live in?'].astype(str) == zipcode_str]
+    
+    if zipcode_data.empty:
+        return f"No survey responses found for zip code {zipcode}.", None, pd.DataFrame()
+    
+    services_col = 'What\'s a public service or resource your neighborhood is currently lacking? (select all that apply)'
+    if services_col in zipcode_data.columns:
+        # Split multiple selections and count each service
+        all_services = []
+        for response in zipcode_data[services_col].dropna():
+            if isinstance(response, str):
+                services = [service.strip() for service in response.split(',')]
+                all_services.extend(services)
+        
+        service_counts = pd.Series(all_services).value_counts()
+        total_responses = len(zipcode_data)
+        
+        response = f"Missing public services/resources in zip code {zipcode}:\n\n"
+        response += f"• Total responses: {total_responses}\n\n"
+        
+        for service, count in service_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• {service}: {count} mentions ({percentage:.1f}%)\n"
+        
+        return response, None, pd.DataFrame()
+    
+    return f"Missing services data not available for zip code {zipcode}.", None, pd.DataFrame()
+
+def handle_city_satisfaction():
+    """Handle questions about overall city satisfaction."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    # Analyze multiple indicators of city satisfaction
+    response = "San Antonio city satisfaction based on survey responses:\n\n"
+    
+    # Analyze optimism about San Antonio
+    optimism_col = 'What aspects of San Antonio make you optimistic?'
+    if optimism_col in survey_df.columns:
+        optimism_responses = survey_df[optimism_col].dropna()
+        total_responses = len(survey_df)
+        optimistic_count = len(optimism_responses)
+        optimistic_percentage = (optimistic_count / total_responses) * 100
+        
+        response += f"• {optimistic_count} out of {total_responses} respondents ({optimistic_percentage:.1f}%) mentioned positive aspects of San Antonio\n"
+        
+        # Count mentions of specific positive aspects
+        all_aspects = []
+        for resp in optimism_responses:
+            if isinstance(resp, str):
+                aspects = [aspect.strip() for aspect in resp.split(',')]
+                all_aspects.extend(aspects)
+        
+        aspect_counts = pd.Series(all_aspects).value_counts()
+        response += "\nMost mentioned positive aspects:\n"
+        for aspect, count in aspect_counts.head(5).items():
+            response += f"  - {aspect}: {count} mentions\n"
+    
+    # Analyze connection to decision-making
+    connection_col = 'How connected do you feel to decision-making in your neighborhood or city?'
+    if connection_col in survey_df.columns:
+        connection_counts = survey_df[connection_col].value_counts()
+        response += f"\n• Connection to decision-making:\n"
+        for connection, count in connection_counts.items():
+            percentage = (count / len(survey_df)) * 100
+            response += f"  - {connection}: {count} ({percentage:.1f}%)\n"
+    
+    return response, None, pd.DataFrame()
+
+def handle_city_attitude():
+    """Handle questions about whether San Antonio is 'cool'."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    # Analyze free response comments for sentiment
+    free_response_col = 'Feel free to share any other experiences or opinions as a citizen of your district and San Antonio: (Free Response)'
+    if free_response_col in survey_df.columns:
+        positive_keywords = ['love', 'great', 'good', 'positive', 'enjoy', 'happy', 'proud', 'excellent', 'wonderful']
+        negative_keywords = ['hate', 'bad', 'negative', 'dislike', 'terrible', 'awful', 'disappointed', 'frustrated']
+        
+        positive_count = 0
+        negative_count = 0
+        total_responses = 0
+        
+        for response in survey_df[free_response_col].dropna():
+            if isinstance(response, str):
+                response_lower = response.lower()
+                positive_matches = sum(1 for keyword in positive_keywords if keyword in response_lower)
+                negative_matches = sum(1 for keyword in negative_keywords if keyword in response_lower)
+                
+                if positive_matches > negative_matches:
+                    positive_count += 1
+                elif negative_matches > positive_matches:
+                    negative_count += 1
+                total_responses += 1
+        
+        if total_responses > 0:
+            positive_percentage = (positive_count / total_responses) * 100
+            negative_percentage = (negative_count / total_responses) * 100
+            neutral_percentage = 100 - positive_percentage - negative_percentage
+            
+            response = f"San Antonio 'coolness' based on survey sentiment analysis:\n\n"
+            response += f"• Positive sentiment: {positive_count} responses ({positive_percentage:.1f}%)\n"
+            response += f"• Negative sentiment: {negative_count} responses ({negative_percentage:.1f}%)\n"
+            response += f"• Neutral sentiment: {total_responses - positive_count - negative_count} responses ({neutral_percentage:.1f}%)\n"
+            
+            if positive_percentage > negative_percentage:
+                response += f"\nOverall assessment: San Antonio residents generally have positive feelings about their city!"
+            else:
+                response += f"\nOverall assessment: Mixed feelings about San Antonio among residents."
+            
+            return response, None, pd.DataFrame()
+    
+    return "Sentiment data not available for this question.", None, pd.DataFrame()
+
+def handle_community_spaces_accessibility_zipcode(zipcode):
+    """Handle questions about community spaces accessibility in a specific zip code."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    zipcode_str = str(zipcode)
+    zipcode_data = survey_df[survey_df['What ZIP code do you live in?'].astype(str) == zipcode_str]
+    
+    if zipcode_data.empty:
+        return f"No survey responses found for zip code {zipcode}.", None, pd.DataFrame()
+    
+    accessibility_col = 'How accessible are public community spaces in your district? (ex. Parks, Libraries, Community Centers, etc.)'
+    if accessibility_col in zipcode_data.columns:
+        accessibility_counts = zipcode_data[accessibility_col].value_counts()
+        total_responses = len(zipcode_data)
+        
+        response = f"Community spaces accessibility in zip code {zipcode}:\n\n"
+        response += f"• Total responses: {total_responses}\n\n"
+        
+        for rating, count in accessibility_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• Rating {rating}/10: {count} responses ({percentage:.1f}%)\n"
+        
+        # Calculate average rating
+        numeric_ratings = pd.to_numeric(zipcode_data[accessibility_col], errors='coerce').dropna()
+        if not numeric_ratings.empty:
+            avg_rating = numeric_ratings.mean()
+            response += f"\n• Average accessibility rating: {avg_rating:.1f}/10\n"
+            
+            if avg_rating >= 7:
+                response += "• Assessment: Community spaces are generally accessible"
+            elif avg_rating >= 4:
+                response += "• Assessment: Community spaces have moderate accessibility"
+            else:
+                response += "• Assessment: Community spaces have limited accessibility"
+        
+        return response, None, pd.DataFrame()
+    
+    return f"Community spaces accessibility data not available for zip code {zipcode}.", None, pd.DataFrame()
+
+def handle_community_spaces_accessibility_city():
+    """Handle questions about community spaces accessibility city-wide."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    accessibility_col = 'How accessible are public community spaces in your district? (ex. Parks, Libraries, Community Centers, etc.)'
+    if accessibility_col in survey_df.columns:
+        accessibility_counts = survey_df[accessibility_col].value_counts()
+        total_responses = len(survey_df)
+        
+        response = f"Community spaces accessibility in San Antonio:\n\n"
+        response += f"• Total responses: {total_responses}\n\n"
+        
+        for rating, count in accessibility_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• Rating {rating}/10: {count} responses ({percentage:.1f}%)\n"
+        
+        # Calculate average rating
+        numeric_ratings = pd.to_numeric(survey_df[accessibility_col], errors='coerce').dropna()
+        if not numeric_ratings.empty:
+            avg_rating = numeric_ratings.mean()
+            response += f"\n• Average accessibility rating: {avg_rating:.1f}/10\n"
+            
+            if avg_rating >= 7:
+                response += "• Assessment: Community spaces are generally accessible across the city"
+            elif avg_rating >= 4:
+                response += "• Assessment: Community spaces have moderate accessibility across the city"
+            else:
+                response += "• Assessment: Community spaces have limited accessibility across the city"
+        
+        return response, None, pd.DataFrame()
+    
+    return "Community spaces accessibility data not available.", None, pd.DataFrame()
+
+def handle_housing_affordability_zipcode(zipcode):
+    """Handle questions about housing affordability in a specific zip code."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    zipcode_str = str(zipcode)
+    zipcode_data = survey_df[survey_df['What ZIP code do you live in?'].astype(str) == zipcode_str]
+    
+    if zipcode_data.empty:
+        return f"No survey responses found for zip code {zipcode}.", None, pd.DataFrame()
+    
+    affordability_col = 'How would you rate the affordability of housing in your area?'
+    if affordability_col in zipcode_data.columns:
+        affordability_counts = zipcode_data[affordability_col].value_counts()
+        total_responses = len(zipcode_data)
+        
+        response = f"Housing affordability in zip code {zipcode}:\n\n"
+        response += f"• Total responses: {total_responses}\n\n"
+        
+        for rating, count in affordability_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• Rating {rating}/5: {count} responses ({percentage:.1f}%)\n"
+        
+        # Calculate average rating
+        numeric_ratings = pd.to_numeric(zipcode_data[affordability_col], errors='coerce').dropna()
+        if not numeric_ratings.empty:
+            avg_rating = numeric_ratings.mean()
+            response += f"\n• Average affordability rating: {avg_rating:.1f}/5\n"
+            
+            if avg_rating >= 4:
+                response += "• Assessment: Housing is generally affordable"
+            elif avg_rating >= 2.5:
+                response += "• Assessment: Housing affordability is moderate"
+            else:
+                response += "• Assessment: Housing is generally unaffordable"
+        
+        return response, None, pd.DataFrame()
+    
+    return f"Housing affordability data not available for zip code {zipcode}.", None, pd.DataFrame()
+
+def handle_housing_affordability_city():
+    """Handle questions about housing affordability city-wide."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    affordability_col = 'How would you rate the affordability of housing in your area?'
+    if affordability_col in survey_df.columns:
+        affordability_counts = survey_df[affordability_col].value_counts()
+        total_responses = len(survey_df)
+        
+        response = f"Housing affordability in San Antonio:\n\n"
+        response += f"• Total responses: {total_responses}\n\n"
+        
+        for rating, count in affordability_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• Rating {rating}/5: {count} responses ({percentage:.1f}%)\n"
+        
+        # Calculate average rating
+        numeric_ratings = pd.to_numeric(survey_df[affordability_col], errors='coerce').dropna()
+        if not numeric_ratings.empty:
+            avg_rating = numeric_ratings.mean()
+            response += f"\n• Average affordability rating: {avg_rating:.1f}/5\n"
+            
+            if avg_rating >= 4:
+                response += "• Assessment: Housing is generally affordable across the city"
+            elif avg_rating >= 2.5:
+                response += "• Assessment: Housing affordability is moderate across the city"
+            else:
+                response += "• Assessment: Housing is generally unaffordable across the city"
+        
+        return response, None, pd.DataFrame()
+    
+    return "Housing affordability data not available.", None, pd.DataFrame()
+
+def handle_housing_types():
+    """Handle questions about housing types in San Antonio."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    dwelling_col = 'What type of dwelling do you currently live in? (select all that apply)'
+    if dwelling_col in survey_df.columns:
+        # Split multiple selections and count each dwelling type
+        all_dwellings = []
+        for response in survey_df[dwelling_col].dropna():
+            if isinstance(response, str):
+                dwellings = [dwelling.strip() for dwelling in response.split(',')]
+                all_dwellings.extend(dwellings)
+        
+        dwelling_counts = pd.Series(all_dwellings).value_counts()
+        total_responses = len(survey_df)
+        
+        response = f"Housing types in San Antonio:\n\n"
+        response += f"• Total survey responses: {total_responses}\n\n"
+        
+        for dwelling, count in dwelling_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• {dwelling}: {count} mentions ({percentage:.1f}%)\n"
+        
+        return response, None, pd.DataFrame()
+    
+    return "Housing type data not available.", None, pd.DataFrame()
+
+def handle_living_arrangements():
+    """Handle questions about living arrangements (alone vs with others)."""
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    
+    housing_col = 'What is your current housing situation? (select all that apply)'
+    if housing_col in survey_df.columns:
+        # Split multiple selections and count each housing situation
+        all_situations = []
+        for response in survey_df[housing_col].dropna():
+            if isinstance(response, str):
+                situations = [situation.strip() for situation in response.split(',')]
+                all_situations.extend(situations)
+        
+        situation_counts = pd.Series(all_situations).value_counts()
+        total_responses = len(survey_df)
+        
+        response = f"Living arrangements in San Antonio:\n\n"
+        response += f"• Total survey responses: {total_responses}\n\n"
+        
+        for situation, count in situation_counts.items():
+            percentage = (count / total_responses) * 100
+            response += f"• {situation}: {count} mentions ({percentage:.1f}%)\n"
+        
+        # Categorize as living alone vs with others
+        alone_keywords = ['living alone', 'by myself', 'single']
+        with_others_keywords = ['family', 'friends', 'roommates', 'partner', 'spouse']
+        
+        alone_count = 0
+        with_others_count = 0
+        
+        for situation in all_situations:
+            situation_lower = situation.lower()
+            if any(keyword in situation_lower for keyword in alone_keywords):
+                alone_count += 1
+            elif any(keyword in situation_lower for keyword in with_others_keywords):
+                with_others_count += 1
+        
+        response += f"\nSummary:\n"
+        response += f"• Living with others: {with_others_count} mentions\n"
+        response += f"• Living alone: {alone_count} mentions\n"
+        
+        if with_others_count > alone_count:
+            response += f"\nMost people in San Antonio live with others (family, friends, roommates, etc.)."
+        else:
+            response += f"\nMost people in San Antonio live alone or independently."
+        
+        return response, None, pd.DataFrame()
+    
+    return "Living arrangement data not available.", None, pd.DataFrame()
+
     print("pothole_cases_df empty:", pothole_cases_df.empty)
     print("pavement_latlon_df empty:", pavement_latlon_df.empty)
     print("complaint_df empty:", complaint_df.empty)
@@ -1303,3 +1862,17 @@ def handle_pci_in_zipcode(zipcode):
     return response, None, highlight_df
 
 # --- Update get_groq_response to use RAG as fallback ---
+
+@lru_cache(maxsize=1) # Cache the loaded data
+def load_survey_data(path):
+    """Load survey data from CSV file."""
+    try:
+        survey_df = pd.read_csv(path)
+        print(f"Loaded survey data with {len(survey_df)} responses")
+        return survey_df
+    except Exception as e:
+        print(f"Error loading survey data: {e}")
+        return pd.DataFrame()
+
+# Load survey data
+survey_df = load_survey_data("Data/Survey Data.csv")
