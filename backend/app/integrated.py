@@ -807,6 +807,26 @@ def get_groq_response(prompt):
 
     print(f"[DEBUG] Received prompt: {prompt}")
 
+    # --- PCI in zip code ---
+    match = re.search(r"what'?s? the pci in zip code (\d+)", prompt_lower)
+    if match:
+        print("[DEBUG] Matched PCI in zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+    
+    # Alternative patterns for PCI zip code queries
+    match = re.search(r"pci.*zip code (\d+)", prompt_lower)
+    if match:
+        print("[DEBUG] Matched alternative PCI zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+    
+    match = re.search(r"zip code (\d+).*pci", prompt_lower)
+    if match:
+        print("[DEBUG] Matched reverse PCI zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+
     # --- Area-specific pothole formation prediction ---
     match = re.search(r"how likely (will|could) potholes form (on|in|along|at) ([^?]+)", prompt_lower)
     if match:
@@ -1204,3 +1224,82 @@ def handle_security_compliance():
     print("pothole_cases_df empty:", pothole_cases_df.empty)
     print("pavement_latlon_df empty:", pavement_latlon_df.empty)
     print("complaint_df empty:", complaint_df.empty)
+
+# --- Handler: PCI in zip code ---
+def handle_pci_in_zipcode(zipcode):
+    """Handle queries about PCI (Pavement Condition Index) in a specific zip code."""
+    if pavement_latlon_df.empty:
+        return "I don't have pavement condition data to answer that question. Please ensure the 'COSA_Pavement.csv' file is loaded correctly.", None, pd.DataFrame()
+    
+    # Check if zipcode column exists
+    if 'zipcode' not in pavement_latlon_df.columns and 'ZipCode' not in pavement_latlon_df.columns:
+        # Try to use geocoding to get zip code boundaries and find nearby pavement data
+        try:
+            # Get a representative point for the zip code (center of zip code area)
+            zipcode_center = geocode_address(f"{zipcode}, San Antonio, TX")
+            if zipcode_center[0] is None:
+                return f"I couldn't find location information for zip code {zipcode}. Please check if this is a valid San Antonio zip code.", None, pd.DataFrame()
+            
+            lat, lon = zipcode_center
+            
+            # Find pavement data within a reasonable radius of the zip code center
+            # Use a larger radius since zip codes can be quite large
+            radius_m = 2000  # 2km radius
+            gdf = get_pavement_gdf()
+            if gdf.empty:
+                return "No pavement location data available.", None, pd.DataFrame()
+            
+            gdf_proj = gdf.to_crs(epsg=3857)
+            point = gpd.GeoSeries([gpd.points_from_xy([lon], [lat])[0]], crs="EPSG:4326").to_crs(epsg=3857)
+            buffer = point.buffer(radius_m)
+            nearby_data = gdf_proj[gdf_proj.geometry.within(buffer.iloc[0])]
+            
+            if nearby_data.empty:
+                return f"No pavement data found near zip code {zipcode}. This area may not have pavement condition records.", None, pd.DataFrame()
+            
+            # Use the nearby data as if it were for the zip code
+            zipcode_data = nearby_data.to_crs(epsg=4326)
+            
+        except Exception as e:
+            return f"I don't have zip code information in the pavement data and couldn't find nearby data for zip code {zipcode}. Error: {str(e)}", None, pd.DataFrame()
+    else:
+        # Use direct zip code column if available
+        zip_col = 'zipcode' if 'zipcode' in pavement_latlon_df.columns else 'ZipCode'
+        zipcode_str = str(zipcode)
+        zipcode_data = pavement_latlon_df[pavement_latlon_df[zip_col].astype(str) == zipcode_str]
+        
+        if zipcode_data.empty:
+            return f"No pavement data found for zip code {zipcode}. This zip code may not be in our dataset or may not have pavement condition records.", None, pd.DataFrame()
+    
+    # Calculate PCI statistics
+    avg_pci = zipcode_data['PCI'].mean()
+    min_pci = zipcode_data['PCI'].min()
+    max_pci = zipcode_data['PCI'].max()
+    count_segments = len(zipcode_data)
+    
+    # Determine overall condition
+    if avg_pci >= 70:
+        condition = "Good"
+        description = "Generally good pavement conditions with minimal pothole risk."
+    elif avg_pci >= 50:
+        condition = "Fair"
+        description = "Moderate pavement conditions with some pothole risk."
+    else:
+        condition = "Poor"
+        description = "Poor pavement conditions with high pothole risk."
+    
+    response = f"Pavement Condition Index (PCI) for zip code {zipcode}:\n\n"
+    response += f"• Average PCI: {avg_pci:.1f}\n"
+    response += f"• Range: {min_pci:.1f} - {max_pci:.1f}\n"
+    response += f"• Number of road segments: {count_segments}\n"
+    response += f"• Overall condition: {condition}\n"
+    response += f"• Assessment: {description}"
+    
+    # Prepare highlight data for map
+    highlight_df = zipcode_data[['MSAG_Name', 'Latitude', 'Longitude', 'PCI']].copy()
+    highlight_df['color'] = 'green' if avg_pci >= 70 else 'orange' if avg_pci >= 50 else 'red'
+    highlight_df['marker_radius'] = 8
+    
+    return response, None, highlight_df
+
+# --- Update get_groq_response to use RAG as fallback ---
