@@ -1,35 +1,24 @@
-.feedback-bubble {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.open-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 16px;
-    border-radius: 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.bubble-popup {
-    background: white;
-    border-radius: 12px;
-    width: 320px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+/* Sidebar Layout Styles */
+.feedback-sidebar {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    /* Set a reasonable max-height for scrolling while allowing expansion */
-    max-height: 80vh;
-    overflow: hidden;
+    background: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    width: 380px;
+    min-width: 380px;
+    opacity: 1;
+    border-radius: 20px; /* Spacing 500 equivalent */
+    border: 1px solid #E4E4E7; /* var(--Grey-200) */
+    box-shadow: 
+        0px 83.41px 111.22px 0px rgba(0, 0, 0, 0.03), /* #00000008 */
+        0px 3.2px 6.4px 0px rgba(81, 82, 86, 0.14), /* #51525624 */
+        0px 22.4px 22.4px 0px rgba(97, 97, 97, 0.05), /* #6161610D */
+        0px 13.81px 9.21px 0px rgba(255, 255, 255, 0.36) inset; /* #FFFFFF5C */
+    backdrop-filter: blur(55.23px);
 }
 
-.bubble-header {
+.sidebar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -38,35 +27,34 @@
     background: #f8f9fa;
     border-bottom: 1px solid #e9ecef;
     font-size: 14px;
+    flex-shrink: 0;
 }
 
-.bubble-header button {
-    background: none;
-    border: none;
-    font-size: 18px;
+.download-icon {
+    font-size: 16px;
     cursor: pointer;
     color: #6c757d;
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.bubble-history {
+.sidebar-history {
     flex: 1;
     padding: 15px;
     background: #f8f9fa;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    /* RESTORE SCROLLING - allow scrolling for long content */
     overflow-y: auto;
-    /* Set a minimum height so it doesn't get too small */
-    min-height: 200px;
+    min-height: 0; /* Allow flex shrinking */
 }
 
+.sidebar-form {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
+}
+
+/* Keep existing message styles */
 .message-container {
     display: flex;
     align-items: flex-start;
@@ -94,13 +82,19 @@
 }
 
 .bot-avatar {
-    background: #e9ecef;
+    background: #000000;
     color: #495057;
 }
 
+.bot-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .user-avatar {
-    background: #007bff;
-    color: white;
+  background: #007bff;
+  color: white;
 }
 
 .message-bubble {
@@ -161,12 +155,6 @@
     }
 }
 
-.bubble-form {
-    padding: 15px;
-    background: white;
-    border-top: 1px solid #e9ecef;
-}
-
 .input-container {
     display: flex;
     gap: 8px;
@@ -215,4 +203,77 @@
 .send-button:disabled {
     background: #6c757d;
     cursor: not-allowed;
+}
+
+/* Legacy bubble styles - keeping for reference but not used */
+.feedback-bubble {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.open-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bubble-popup {
+    background: white;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow: hidden;
+}
+
+.bubble-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+}
+
+.bubble-header button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bubble-history {
+    flex: 1;
+    padding: 15px;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    min-height: 200px;
+}
+
+.bubble-form {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #e9ecef;
 }

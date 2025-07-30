@@ -1,0 +1,79 @@
+/* App-level styles for the new layout */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure the main container takes full height */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Flexbox layout container */
+.layout-container {
+  display: flex !important;
+  height: calc(100vh - 85px) !important; /* Adjusted for the new header height (65px + 20px margin) */
+  margin: 10px;
+  gap: 10px;
+}
+
+.map-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px; /* Minimum height for map */
+}
+
+.sidebar-section {
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Map container styles */
+.map-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+/* Ensure the map takes full height of its container */
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  min-height: 500px;
+}
+
+/* Sidebar container styles */
+.sidebar-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  /* On smaller screens, stack vertically */
+  .layout-container {
+    flex-direction: column !important;
+    min-height: auto !important;
+  }
+  
+  .map-section {
+    min-height: 400px !important;
+  }
+  
+  .sidebar-section {
+    min-height: 400px !important;
+  }
+}

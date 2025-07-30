@@ -1,20 +1,39 @@
+import { useState } from 'react';
 import '../styles/Header.css';
 
 export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <header className="site-header">
       <div className="container">
         <div className="branding">
-          {/* <img src="/logo.png" alt="Houston Data" className="logo" /> */}
-          <h1>San Antonio Potholes</h1>
+          <div className="logo">
+            <img src="/Logo Container.png" alt="Better Futures Institute Logo" className="logo-image" />
+          </div>
         </div>
-        <nav className="nav-links">
-          <a href="/">Home</a>
-          {/* <a href="#indicators">Indicators</a>
-          <a href="#map">Map</a>
-          <a href="#upload">Upload CSV</a> */}
-          <a href="#about">About</a>
-        </nav>
+        <div className="header-actions">
+          <div className="chat-icon">
+            <img src="/Chat Message Icon.png" alt="Chat Message" className="chat-icon-image" />
+          </div>
+          <button className="hamburger-menu" onClick={toggleMenu}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+        
+        {/* Navigation Menu */}
+        {isMenuOpen && (
+          <div className="nav-menu">
+            <a href="/" className="nav-link">Home</a>
+            <a href="/about" className="nav-link">About</a>
+          </div>
+        )}
       </div>
     </header>
   );
