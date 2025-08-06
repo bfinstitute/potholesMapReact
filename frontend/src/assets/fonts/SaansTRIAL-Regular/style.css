@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Saans TRIAL';
+    src: local('Saans TRIAL Regular'), local('Saans-TRIAL-Regular'),
+        url('SaansTRIAL-Regular.woff2') format('woff2'),
+        url('SaansTRIAL-Regular.woff') format('woff'),
+        url('SaansTRIAL-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
