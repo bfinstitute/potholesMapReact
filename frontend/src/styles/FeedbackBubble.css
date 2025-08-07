@@ -1,15 +1,16 @@
 /* Sidebar Layout Styles */
 .feedback-sidebar {
-    height: 100%;
+    height: 100vh;
+    width: 100vh;
+    /* height: 100%; */
     display: flex;
     flex-direction: column;
     background: white;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    width: 380px;
+    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; */
+    font-family: "Saans TRIAL";;
     min-width: 380px;
     opacity: 1;
     border-radius: 20px; /* Spacing 500 equivalent */
-    border: 1px solid #E4E4E7; /* var(--Grey-200) */
     box-shadow: 
         0px 83.41px 111.22px 0px rgba(0, 0, 0, 0.03), /* #00000008 */
         0px 3.2px 6.4px 0px rgba(81, 82, 86, 0.14), /* #51525624 */
@@ -23,42 +24,44 @@
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
-    padding: 15px 20px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 14px;
+    padding: var(--spacing-400) var(--spacing-450);
+    border-bottom: 1px solid var(--Grey-200);
+    background: var(--Grey-50);
+    font-size: 18px;
     flex-shrink: 0;
 }
 
 .download-icon {
     font-size: 16px;
+    padding: 12px;
     cursor: pointer;
-    color: #6c757d;
+    color: var(--Grey-1000);
+    border-radius: var(--spacing-400);
+    background: var(--Grey-100);
 }
 
 .sidebar-history {
     flex: 1;
-    padding: 15px;
-    background: #f8f9fa;
+    background: var(--Grey-50);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    padding: var(--spacing-400);
+    gap: 10px;
     overflow-y: auto;
     min-height: 0; /* Allow flex shrinking */
 }
 
 .sidebar-form {
-    padding: 15px;
-    background: white;
-    border-top: 1px solid #e9ecef;
-    flex-shrink: 0;
+    padding: var(--spacing-400);
+    background: var(--Grey-50);
+    gap: 10px;
 }
 
 /* Keep existing message styles */
 .message-container {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
     max-width: 100%;
 }
 
@@ -87,8 +90,9 @@
 }
 
 .bot-icon {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--spacing-450);
   object-fit: contain;
 }
 
@@ -101,8 +105,12 @@
     max-width: 80%;
     padding: 10px 14px;
     border-radius: 18px;
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 16px;
+    font-family: "Saans TRIAL";
+    font-style: normal;
+    line-height: 19px;
+    letter-spacing: 0.48px;
+    color: var(--Grey-50);
     word-wrap: break-word;
     white-space: pre-wrap;
     overflow-wrap: break-word;
@@ -110,16 +118,19 @@
 }
 
 .bot-message {
-    background: white;
-    color: #212529;
-    border: 1px solid #e9ecef;
-    border-bottom-left-radius: 6px;
+    border-radius: var(--spacing-450) var(--spacing-200) var(--spacing-450) var(--spacing-450);
+    background: var(--Grey-50);
+    color: var(--Grey-1000);
+    padding: 8px;
+    gap: 10px;
 }
 
 .user-message {
-    background: #007bff;
-    color: white;
-    border-bottom-right-radius: 6px;
+    border-radius: var(--spacing-450) var(--spacing-200) var(--spacing-450) var(--spacing-450);
+    background: var(--Primary-500);
+    color: var(--Grey-50);
+    padding: 16px;
+    gap: 10px;
 }
 
 .typing-indicator {
@@ -155,54 +166,74 @@
     }
 }
 
+/* -- Full Message Container -- */
 .input-container {
     display: flex;
     gap: 8px;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .message-input {
     flex: 1;
-    padding: 10px 14px;
-    border: 1px solid #e9ecef;
-    border-radius: 20px;
-    font-size: 14px;
-    outline: none;
-    background: #f8f9fa;
+    padding: var(--spacing-300) var(--spacing-400);
+    border-radius: var(--spacing-450);
+    border: 1px solid var(--Grey-300);
+    font-family: "Saans TRIAL";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 380;
+    line-height: 19px;
+    letter-spacing: 0.48px;
+    background: var(--Grey-50);
+
+    resize: none;               /* Prevent manual resize by user */
+    overflow-y: auto;           /* Scroll only when needed */
+    max-height: 80px;          /* Prevent infinite growth */
+    min-height: 40px;           /* Optional: keep default height */
+    box-sizing: border-box;     /* Include padding in height calc */
 }
 
-.message-input:focus {
-    border-color: #007bff;
-    background: white;
+
+/* .message-input:focus {
+    border-radius: var(--spacing-450);
+    border: 3px solid var(--Primary-500);
+    background: var(--Primary-600);
 }
 
 .message-input:disabled {
     background: #e9ecef;
     color: #6c757d;
-}
+} */
 
 .send-button {
-    background: #007bff;
-    color: white;
+    border-radius: var(--spacing-450);
+    background: var(--Primary-600);
+    color: var(--Grey-50);
     border: none;
     width: 36px;
     height: 36px;
-    border-radius: 50%;
+    padding: 5px;
+    gap: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
     transition: background-color 0.2s;
 }
 
 .send-button:hover:not(:disabled) {
-    background: #0056b3;
+    background: var(--Primary-950);
 }
 
 .send-button:disabled {
-    background: #6c757d;
+    background: var(--Primary-300);
     cursor: not-allowed;
+}
+
+.send-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
 }
 
 /* Legacy bubble styles - keeping for reference but not used */

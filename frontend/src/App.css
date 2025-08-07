@@ -1,79 +1,133 @@
-/* App-level styles for the new layout */
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+:root {
+  /* Primary */
+  --Primary-50: #FFF;
+  --Primary-100: #E9EFFF;
+  --Primary-200: #D6DDFF;
+  --Primary-300: #8C94CE;
+  --Primary-400: #748DFF;
+  --Primary-500: #2644FF;
+  --Primary-600: #000B84;
+  --Primary-700: #000A75;
+  --Primary-800: #000865;
+  --Primary-900: #050A49;
+  --Primary-950: #090C2D;
+  --Primary-1000: #0E0E11;
+  
+  /* Color */
+  --Grey-50: #FFF;
+  --Grey-100: #F4F4F5;
+  --Grey-200: #E4E4E7;
+  --Grey-300: #CCCCCF;
+  --Grey-400: #B4B4B7;
+  --Grey-500: #9D9DA0;
+  --Grey-600: #858588;
+  --Grey-700: #6D6D70;
+  --Grey-800: #555558;
+  --Grey-900: #3E3E41;
+  --Grey-950: #262629;
+  --Grey-1000: #0E0E11;
+
+  /* Spacing */
+  --spacing-100: 2px;
+  --spacing-200: 4px;
+  --spacing-300: 8px;
+  --spacing-400: 16px;
+  --spacing-450: 24px;
+  --spacing-500: 32px;
+  --spacing-550: 48px;
+  --spacing-600: 64px;
 }
 
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+@font-face {
+  font-family: "Saans TRIAL";
+  src: local("SaansTRIAL-Regular"),
+      url("../src/assets/fonts/SaansTRIAL-Regular/SaansTRIAL-Regular.ttf"), format("ttf"),
+      url("../src/assets/fonts/SaansTRIAL-Regular/SaansTRIAL-Regular.woff"), format("woff"),
+      url("../src/assets/fonts/SaansTRIAL-Regular/SaansTRIAL-Regular.woff2"), format("woff2");
 }
 
-/* Ensure the main container takes full height */
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Flexbox layout container */
 .layout-container {
-  display: flex !important;
-  height: calc(100vh - 85px) !important; /* Adjusted for the new header height (65px + 20px margin) */
-  margin: 10px;
-  gap: 10px;
+  display: flex;
+  font-family: 'Saans TRIAL';
+  /* width: 100vh; */
+  box-sizing: border-box;
+  padding: var(--spacing-500) var(--spacing-550);
+  /* height: 100vh; */
+  background: var(--Grey-50);
+  /* justify-content: space-between;
+  align-items: flex-start; */
+  /* height: 'calc(100vh - 85px)';
+  margin: '10px';
+  gap: '10px'; */
 }
 
+/* -- Left Side -- */
 .map-section {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 600px; /* Minimum height for map */
-}
-
-.sidebar-section {
-  flex-shrink: 0; /* Prevent shrinking */
-}
-
-/* Map container styles */
-.map-container {
   flex: 1;
-  position: relative;
+  height: 100vh;
+  border: 1px solid var(--Grey-200);
+  border-radius: var(--spacing-500);
+  margin: 0px var(--spacing-500) 0px 0px;
   overflow: hidden;
-  min-height: 500px;
 }
 
-/* Ensure the map takes full height of its container */
-.leaflet-container {
-  height: 100% !important;
-  width: 100% !important;
-  min-height: 500px;
+/* Butttons Toggle */
+.toggle-container {
+  margin: var(--spacing-400);
+  text-align: center;
 }
 
-/* Sidebar container styles */
-.sidebar-container {
-  height: 100%;
+.toggle-buttons {
+  display: inline-flex;
+  border-radius: var(--spacing-450);
+  border: 1px solid var(--Grey-200);
+  overflow: hidden;
+}
+
+.toggle-button {
+  padding: 0.5rem 1rem;
+  background: var(--Grey-100);
+  color: var(--Grey-1000);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.toggle-button:hover {
+  background: var(--Grey-200);
+}
+
+.active-district,
+.active-circle {
+  background-color: var(--Primary-600);
+  color: var(--Grey-50);
+}
+
+.active-district:hover,
+.active-circle:hover {
+  background-color: var(--Primary-950);
+}
+
+/* Map Container */
+.map-container {
+  border-radius: var(--spacing-500);
+  overflow: hidden;
+}
+
+
+/* -- Right Side -- */
+.sidebar-section {
   display: flex;
-  flex-direction: column;
-}
+  /* height: 100vh; */
+  width: 380px;
+  max-width: 380px;
+  overflow: hidden;
+  border-radius: var(--spacing-500);
+  border: 1px solid var(--Grey-200);
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  /* On smaller screens, stack vertically */
-  .layout-container {
-    flex-direction: column !important;
-    min-height: auto !important;
-  }
-  
-  .map-section {
-    min-height: 400px !important;
-  }
-  
-  .sidebar-section {
-    min-height: 400px !important;
-  }
+  /* Drop Shadow */
+  box-shadow: 0 13.808px 9.205px 0 rgba(255, 255, 255, 0.36) inset, 0 22.405px 22.405px 0 rgba(97, 97, 97, 0.05), 0 3.201px 6.401px 0 rgba(81, 82, 86, 0.14), 0 83.414px 111.218px 0 rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(27.61508560180664px);
 }

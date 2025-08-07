@@ -1,12 +1,38 @@
-.map-wrapper {
-    width: 100%;
-    height: 600px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    overflow: hidden;
+.custom-popup {
+    max-height: 220px;
+    max-width: 300px;
+    overflow-y: auto;
+    font-family: 'Saans TRIAL';
+    font-size: 12px;
+    /* border-radius: var(--Spacing-500, 32px);
+    border: 1px solid var(--Grey-200, #E4E4E7);
+    color: #1a1a1a;
+    line-height: 1.4; */
 }
 
-.map-container {
-    width: 100%;
-    height: 100%;
+.popup-zip {
+    margin-bottom: 8px;
+}
+
+.popup-count {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.popup-streets ul {
+    padding-left: 18px;
+    margin: 0;
+}
+
+.popup-streets li {
+    margin-bottom: 4px;
+    list-style: disc;
+}
+
+.my-custom-popup .leaflet-popup-content-wrapper {
+    border: 1px solid var(--Grey-200);
+}
+
+.my-custom-popup .leaflet-popup-tip {
+    border: 1px solid var(--Grey-200);
 }
