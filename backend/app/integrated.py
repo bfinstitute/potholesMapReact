@@ -17,12 +17,20 @@ global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
 
 # Helper function to convert numeric types in DataFrame to native Python types
 def _convert_dataframe_numerics_to_native_types(df):
-    for col in df.columns:
-        if pd.api.types.is_integer_dtype(df[col]):
-            df[col] = df[col].apply(lambda x: int(x) if pd.notna(x) else None)
-        elif pd.api.types.is_float_dtype(df[col]):
-            df[col] = df[col].apply(lambda x: float(x) if pd.notna(x) else None)
-    return df
+    """Convert DataFrame numeric types to native Python types and handle NaN values for JSON serialization."""
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if pd.api.types.is_integer_dtype(df_copy[col]):
+            df_copy[col] = df_copy[col].apply(lambda x: int(x) if pd.notna(x) else None)
+        elif pd.api.types.is_float_dtype(df_copy[col]):
+            df_copy[col] = df_copy[col].apply(lambda x: float(x) if pd.notna(x) else None)
+        elif pd.api.types.is_object_dtype(df_copy[col]):
+            # Handle object columns that might contain NaN
+            df_copy[col] = df_copy[col].apply(lambda x: str(x) if pd.notna(x) else None)
+    
+    # Final safety check: replace any remaining NaN with None
+    df_copy = df_copy.where(pd.notna(df_copy), None)
+    return df_copy
 
 # Initialize the base map globally in session state, only once
 # if "m" not in st.session_state:
@@ -50,19 +58,19 @@ senior_centers_df = pd.DataFrame(columns=['name', 'lat', 'lon'])  # TODO: Replac
 injuries_df = pd.DataFrame(columns=['intersection', 'lat', 'lon', 'injury_count'])  # TODO: Replace with real injury data
 
 # --- Load VIA stops and routes ---
-if os.path.exists('Data/VIA/stops_cleaned.csv'):
-    via_stops_df = pd.read_csv('Data/VIA/stops_cleaned.csv')
+if os.path.exists('../Data/VIA/stops_cleaned.csv'):
+    via_stops_df = pd.read_csv('../Data/VIA/stops_cleaned.csv')
 else:
     via_stops_df = pd.DataFrame()
-if os.path.exists('Data/VIA/via_routes_cleaned.csv'):
-    via_routes_df = pd.read_csv('Data/VIA/via_routes_cleaned.csv')
+if os.path.exists('../Data/VIA/via_routes_cleaned.csv'):
+    via_routes_df = pd.read_csv('../Data/VIA/via_routes_cleaned.csv')
 else:
     via_routes_df = pd.DataFrame()
 
 # --- Load sensitive locations from extracted CSV ---
 import re
 try:
-    sensitive_locations_df = pd.read_csv('Data/possible_sensitive_locations.csv')
+    sensitive_locations_df = pd.read_csv('../Data/possible_sensitive_locations.csv')
     # Extract lat/lon from GoogleMapView column
     def extract_lat_lon(url):
         if pd.isna(url) or url == 'Not Available':
@@ -764,7 +772,7 @@ def handle_any_complaints_near_sensitive_areas(radius_m=300, sensitive_type='sch
     return response, None, highlight_df
 
 # --- RAG Query Integration ---
-from .rag_tool import query_table
+from rag_tool import query_table
 
 # Simple parser for street and year from user question
 def parse_rag_question(question):
@@ -952,6 +960,17 @@ def get_groq_response(prompt):
     # --- New: VIA route analytics ---
     if re.search(r'(via|transit|bus) route( analytics| risk| affected| pothole)', prompt_lower):
         return handle_via_route_analytics()
+    
+    # --- New: VIA buses on pothole-prone streets ---
+    if re.search(r'which via buses? travel most often on pothole[- ]?prone streets?', prompt_lower):
+        return handle_via_buses_on_pothole_prone_streets()
+    
+    # Alternative patterns for VIA bus analysis
+    if re.search(r'via buses?.*pothole[- ]?prone', prompt_lower):
+        return handle_via_buses_on_pothole_prone_streets()
+    
+    if re.search(r'bus routes?.*poor pavement', prompt_lower):
+        return handle_via_buses_on_pothole_prone_streets()
     # --- New: ETA/delay prediction ---
     if re.search(r'(eta|delay|arrival time|transit delay|bus delay)', prompt_lower):
         return handle_eta_delay_prediction()
@@ -1191,8 +1210,8 @@ def add_pothole_markers(df, folium_map, feature_group, color_column='color', mar
 
 # --- Load additional datasets for chatbot analysis ---
 # Define paths relative to the integrated.py file
-# PATCH: use 'Data' instead of '../Data' since we're in the backend directory
-data_folder_path = 'Data'
+# PATCH: use '../Data' since we're in the backend/app directory
+data_folder_path = '../Data'
 
 pothole_cases_path = os.path.join(data_folder_path, '311_Pothole_Cases_18_24.csv')
 pavement_path = os.path.join(data_folder_path, 'COSA_Pavement.csv')
@@ -1241,6 +1260,208 @@ def handle_via_route_analytics():
         None,
         pd.DataFrame(),
     )
+
+# --- Handler: Which VIA buses travel most often on pothole-prone streets? ---
+def handle_via_buses_on_pothole_prone_streets():
+    """Analyze which VIA bus routes travel most often on streets with poor pavement conditions."""
+    print(f"DEBUG: via_routes_df empty: {via_routes_df.empty}")
+    print(f"DEBUG: pavement_latlon_df empty: {pavement_latlon_df.empty}")
+    print(f"DEBUG: via_routes_df shape: {via_routes_df.shape if not via_routes_df.empty else 'N/A'}")
+    print(f"DEBUG: pavement_latlon_df shape: {pavement_latlon_df.shape if not pavement_latlon_df.empty else 'N/A'}")
+    
+    if via_routes_df.empty or pavement_latlon_df.empty:
+        return "VIA route data and pavement condition data are required for this analysis.", None, pd.DataFrame()
+    
+    try:
+        # Load VIA routes data
+        via_routes = via_routes_df.copy()
+        
+        # Get pavement data with poor conditions (PCI < 50 indicates poor condition)
+        poor_pavement = pavement_latlon_df[pavement_latlon_df['PCI'] < 50].copy()
+        
+        if poor_pavement.empty:
+            return "No streets with poor pavement conditions (PCI < 50) found in the data.", None, pd.DataFrame()
+        
+        # Create a mapping of route names to their characteristics
+        route_analysis = []
+        
+        # Define common street name variations and route name mappings
+        street_variations = {
+            'fredericksburg': ['fredericksburg', 'fredericksburg road'],
+            'military': ['military', 'military drive'],
+            'zarzamora': ['zarzamora', 'zarzamora street'],
+            'perrin': ['perrin', 'perrin beitel'],
+            'blanco': ['blanco', 'blanco road'],
+            'new braunfels': ['new braunfels', 'new braunfels avenue'],
+            'san pedro': ['san pedro', 'san pedro avenue'],
+            'mccullough': ['mccullough', 'mccullough avenue'],
+            'broadway': ['broadway', 'broadway street'],
+            'east houston': ['east houston', 'e houston', 'houston street'],
+            'east commerce': ['east commerce', 'e commerce', 'commerce street'],
+            'martin luther king': ['martin luther king', 'mlk', 'mlk drive'],
+            'porter': ['porter', 'porter road'],
+            'rigsby': ['rigsby', 'rigsby road'],
+            'steves': ['steves', 'steves avenue'],
+            'south st marys': ['south st marys', 's st marys', 'st marys'],
+            'south presa': ['south presa', 's presa', 'presa street'],
+            'roosevelt': ['roosevelt', 'roosevelt avenue'],
+            'south flores': ['south flores', 's flores', 'flores street'],
+            'pleasanton': ['pleasanton', 'pleasanton road'],
+            'commercial': ['commercial', 'commercial avenue'],
+            'nogalitos': ['nogalitos', 'nogalitos street'],
+            'kirk': ['kirk', 'kirk road'],
+            'us 90': ['us 90', 'us-90', 'highway 90'],
+            'us 281': ['us 281', 'us-281', 'highway 281'],
+            'bandera': ['bandera', 'bandera road'],
+            'poplar': ['poplar', 'poplar street'],
+            'woodlawn': ['woodlawn', 'woodlawn avenue'],
+            'vance jackson': ['vance jackson', 'vance jackson road'],
+            'west avenue': ['west avenue', 'west ave']
+        }
+        
+        # Analyze each route based on its name and likely street coverage
+        for _, route in via_routes.iterrows():
+            route_name = route['route_long_name'].lower()
+            route_short = route['route_short_name']
+            
+            # Count how many poor pavement segments might be on this route
+            matching_streets = 0
+            total_pci = 0
+            street_matches = []
+            
+            for _, pavement in poor_pavement.iterrows():
+                street_name = str(pavement.get('MSAG_Name', '')).lower()
+                
+                # Enhanced matching logic
+                matched = False
+                
+                # Direct name matching
+                if (any(word in route_name for word in street_name.split()) or 
+                    any(word in street_name for word in route_name.split())):
+                    matched = True
+                
+                # Check against street variations
+                for key, variations in street_variations.items():
+                    if key in route_name:
+                        for variation in variations:
+                            if variation in street_name:
+                                matched = True
+                                break
+                    if matched:
+                        break
+                
+                # Check for common abbreviations
+                if 'st ' in route_name and 'street' in street_name:
+                    matched = True
+                elif 'ave ' in route_name and 'avenue' in street_name:
+                    matched = True
+                elif 'rd ' in route_name and 'road' in street_name:
+                    matched = True
+                
+                if matched:
+                    matching_streets += 1
+                    total_pci += pavement['PCI']
+                    street_matches.append(pavement['MSAG_Name'])
+            
+            if matching_streets > 0:
+                avg_pci = total_pci / matching_streets
+                route_analysis.append({
+                    'route_id': route_short,
+                    'route_name': route['route_long_name'],
+                    'poor_streets_count': matching_streets,
+                    'avg_pci': avg_pci,
+                    'route_type': route['route_type'],
+                    'matching_streets': ', '.join(street_matches[:5])  # Show first 5 matches
+                })
+        
+        if not route_analysis:
+            return "No VIA routes found that travel on streets with poor pavement conditions.", None, pd.DataFrame()
+        
+        # Sort by number of poor streets (descending)
+        route_analysis.sort(key=lambda x: x['poor_streets_count'], reverse=True)
+        
+        # Create short response
+        response = "Top VIA Routes on Pothole-Prone Streets:\n\n"
+        
+        for i, route in enumerate(route_analysis[:5], 1):  # Top 5 routes only
+            response += f"{i}. Route {route['route_id']} - {route['poor_streets_count']} poor streets\n"
+        
+        response += f"\nTotal: {len(route_analysis)} routes affected"
+        
+        # Create highlight data for map visualization
+        highlight_data = []
+        for route in route_analysis[:5]:  # Top 5 for visualization
+            # Get coordinates for the matching streets
+            for _, pavement in poor_pavement.iterrows():
+                street_name = str(pavement.get('MSAG_Name', '')).lower()
+                route_name = route['route_name'].lower()
+                
+                # Use the same matching logic as above
+                matched = False
+                if (any(word in route_name for word in street_name.split()) or 
+                    any(word in street_name for word in route_name.split())):
+                    matched = True
+                
+                for key, variations in street_variations.items():
+                    if key in route_name:
+                        for variation in variations:
+                            if variation in street_name:
+                                matched = True
+                                break
+                    if matched:
+                        break
+                
+                if matched:
+                    # Get coordinates and handle NaN values
+                    lat = pavement.get('Latitude')
+                    lon = pavement.get('Longitude')
+                    pci = pavement.get('PCI')
+                    
+                    # Skip if coordinates are NaN or None
+                    if pd.isna(lat) or pd.isna(lon) or lat is None or lon is None:
+                        continue
+                    
+                    highlight_data.append({
+                        'Latitude': float(lat),
+                        'Longitude': float(lon),
+                        'MSAG_Name': pavement.get('MSAG_Name') if not pd.isna(pavement.get('MSAG_Name')) else 'Unknown Street',
+                        'PCI': float(pci) if not pd.isna(pci) else 0.0,
+                        'Route': f"Route {route['route_id']}",
+                        'color': 'red' if (not pd.isna(pci) and pci < 30) else 'orange',
+                        'marker_radius': 8
+                    })
+        
+        highlight_df = pd.DataFrame(highlight_data)
+        
+        # Debug: Check for NaN values before conversion
+        if not highlight_df.empty:
+            print(f"DEBUG: highlight_df shape before conversion: {highlight_df.shape}")
+            print(f"DEBUG: highlight_df columns: {highlight_df.columns.tolist()}")
+            print(f"DEBUG: highlight_df dtypes: {highlight_df.dtypes}")
+            
+            # Check for NaN values in each column
+            for col in highlight_df.columns:
+                nan_count = highlight_df[col].isna().sum()
+                if nan_count > 0:
+                    print(f"DEBUG: Column '{col}' has {nan_count} NaN values")
+            
+            # Apply NaN handling to ensure JSON serialization
+            highlight_df = _convert_dataframe_numerics_to_native_types(highlight_df)
+            
+            # Debug: Check for NaN values after conversion
+            print(f"DEBUG: highlight_df shape after conversion: {highlight_df.shape}")
+            for col in highlight_df.columns:
+                nan_count = highlight_df[col].isna().sum()
+                if nan_count > 0:
+                    print(f"DEBUG: Column '{col}' still has {nan_count} NaN values after conversion")
+            
+            # Additional safety check: replace any remaining NaN with None
+            highlight_df = highlight_df.where(pd.notna(highlight_df), None)
+        
+        return response, None, highlight_df
+        
+    except Exception as e:
+        return f"Error analyzing VIA routes and pavement conditions: {str(e)}", None, pd.DataFrame()
 
 # --- Handler: ETA/delay prediction (stub) ---
 def handle_eta_delay_prediction(route=None):
