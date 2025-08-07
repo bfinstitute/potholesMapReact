@@ -3,7 +3,7 @@ import MapView from './components/MapView';
 import FeedbackBubble from './components/FeedbackBubble';
 import IndicatorChart from './components/IndicatorChart';
 import Profiles from './components/Profiles';
-import Header from './components/Header';
+import Header from './components/header';
 import logo from './logo.svg';
 import './App.css';
 import { fetchGeoData, fetchIndicators, fetchProfile } from './services/dataService';
