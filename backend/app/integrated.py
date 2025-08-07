@@ -12,6 +12,7 @@ import numpy as np
 import hashlib
 from functools import lru_cache
 import inspect
+import calendar
 
 global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
 
@@ -196,7 +197,23 @@ def handle_repeated_complaints_on_road(road):
     if road_complaints.empty:
         return f"No complaints found for road '{road}'.", None, pd.DataFrame()
     trend = road_complaints.groupby(road_complaints['OPENEDDATETIME'].dt.to_period('M')).size()
-    response = f"Complaint history for {road}:\n" + '\n'.join([f"{str(idx)}: {val}" for idx, val in trend.items()])
+
+    # Build grouped-by-year markdown-friendly output
+    groups = {}
+    for period, count in trend.items():
+        year = int(str(period)[:4])
+        month = int(str(period)[5:7])
+        groups.setdefault(year, []).append((month, count))
+
+    lines = [f"📍 **Complaint History for {road.title()}**\n"]
+    for year in sorted(groups.keys()):
+        lines.append(f"🗓️ **{year}**")
+        # Sort by month and format one month per line
+        for m, c in sorted(groups[year]):
+            lines.append(f"• {calendar.month_abbr[m]}: {c}")
+        lines.append("")
+
+    response = "\n".join(lines).strip()
     return response, None, pd.DataFrame()
 
 # --- Handler: Bus stops near high-risk pavement ---
@@ -667,9 +684,9 @@ def handle_areas_with_most_potholes(top_n=5):
     if pothole_cases_df.empty or 'MSAG_Name' not in pothole_cases_df.columns:
         return "No area data available.", None, pd.DataFrame()
     area_counts = pothole_cases_df['MSAG_Name'].value_counts().head(top_n)
-    response = "Areas with the highest number of potholes:\n"
+    response = "🔍 **Areas with the Highest Number of Potholes**\n\n"
     for i, (area, count) in enumerate(area_counts.items(), 1):
-        response += f"{i}. {area}: {count} potholes\n"
+        response += f"**{i}.** {area}: **{count}** potholes\n"
     highlight_df = pavement_latlon_df[pavement_latlon_df['MSAG_Name'].isin(area_counts.index)][['MSAG_Name', 'Latitude', 'Longitude']].copy()
     highlight_df['color'] = 'red'
     highlight_df['marker_radius'] = 12
@@ -682,7 +699,7 @@ def handle_potholes_this_month():
     now = pd.Timestamp.now()
     this_month = pothole_cases_df[pothole_cases_df['OpenDate'].dt.month == now.month]
     count = len(this_month)
-    return f"There have been {count} potholes reported so far this month.", None, pd.DataFrame()
+    return f"📅 **This Month's Pothole Report:**\n\n**{count}** potholes have been reported so far this month.", None, pd.DataFrame()
 
 # --- Handler: Should I avoid [area] because of the potholes? ---
 def handle_should_avoid_area(area, threshold=10):
@@ -690,11 +707,11 @@ def handle_should_avoid_area(area, threshold=10):
     match = re.search(r"(\d+)", msg)
     count = int(match.group(1)) if match else 0
     if count > threshold:
-        advice = f"There are {count} potholes in '{area}'. It is advisable to avoid this area if possible."
+        advice = f"⚠️ **Travel Advisory for '{area}'**\n\nThere are **{count}** potholes in this area. It is advisable to avoid this area if possible."
     elif count > 0:
-        advice = f"There are {count} potholes in '{area}', but it may still be passable. Exercise caution."
+        advice = f"⚠️ **Travel Advisory for '{area}'**\n\nThere are **{count}** potholes in this area, but it may still be passable. Exercise caution."
     else:
-        advice = f"No significant pothole issues detected in '{area}'. It should be safe to travel."
+        advice = f"✅ **Travel Advisory for '{area}'**\n\nNo significant pothole issues detected. It should be safe to travel."
     return advice, None, highlight_df
 
 # --- Handler: How many potholes are in the [area]? ---
@@ -863,8 +880,21 @@ def get_groq_response(prompt):
             })
             total = len(df)
             breakdown = df['MSAG_Name'].value_counts().to_dict()
-            breakdown_str = "; ".join([f"{k}: {v}" for k, v in breakdown.items()])
-            response = f"Found {total} pothole records for streets containing '{street}' in {year}.\nBreakdown: {breakdown_str}"
+            
+            # Create a more readable breakdown with better formatting
+            breakdown_items = []
+            for street_name, count in breakdown.items():
+                # Use ampersand for intersections and format counts with singular/plural
+                display_name = re.sub(r"\sand\s", " & ", str(street_name), flags=re.IGNORECASE)
+                report_word = "report" if count == 1 else "reports"
+                breakdown_items.append(f"• {display_name}: **{count} {report_word}**")
+            breakdown_str = "\n".join(breakdown_items)
+            
+            total_word = "report" if total == 1 else "reports"
+            response = (
+                f"🚧 Found **{total}** pothole {total_word} for streets containing '**{street}**' in **{year}**.\n\n"
+                f"Breakdown:\n{breakdown_str}"
+            )
             print(f"[DEBUG] Data-driven response: {response}")
             return response, None, df
         else:
@@ -1380,13 +1410,13 @@ def handle_via_buses_on_pothole_prone_streets():
         # Sort by number of poor streets (descending)
         route_analysis.sort(key=lambda x: x['poor_streets_count'], reverse=True)
         
-        # Create short response
-        response = "Top VIA Routes on Pothole-Prone Streets:\n\n"
+        # Create short response with better formatting
+        response = "🚌 **Top VIA Routes on Pothole-Prone Streets**\n\n"
         
         for i, route in enumerate(route_analysis[:5], 1):  # Top 5 routes only
-            response += f"{i}. Route {route['route_id']} - {route['poor_streets_count']} poor streets\n"
+            response += f"**{i}.** Route {route['route_id']} - {route['poor_streets_count']} poor streets\n"
         
-        response += f"\nTotal: {len(route_analysis)} routes affected"
+        response += f"\n📊 **Summary:** {len(route_analysis)} total routes affected"
         
         # Create highlight data for map visualization
         highlight_data = []

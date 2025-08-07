@@ -3,6 +3,7 @@ import '../styles/FeedbackBubble.css';
 import downloadIcon from '../assets/images/iconoir_download.svg';
 import sendIcon from '../assets/images/iconoir_send-solid.svg';
 import botIcon from '../assets/images/BFI_LogoIcon.svg';
+import Markdown from 'markdown-to-jsx';
 
 export default function FeedbackBubble({ setHighlightData }) {
   const [message, setMessage] = useState('');
@@ -55,6 +56,17 @@ export default function FeedbackBubble({ setHighlightData }) {
     URL.revokeObjectURL(url); // Clean up
   };
 
+  const renderMessageText = (text, from) => {
+    if (from === 'bot') {
+      // Convert single newlines to Markdown line breaks so spacing is preserved
+      const withMdLineBreaks = String(text).replace(/\n/g, '  \n');
+      return (
+        <Markdown options={{ forceBlock: true }}>{withMdLineBreaks}</Markdown>
+      );
+    }
+    return text;
+  };
+
   return (
     <div className="feedback-sidebar">
       <div className="sidebar-header">
@@ -72,7 +84,7 @@ export default function FeedbackBubble({ setHighlightData }) {
               </div>
             )}
             <div className={`message-bubble ${msg.from === 'user' ? 'user-message' : 'bot-message'}`}>
-              {msg.text}
+              {renderMessageText(msg.text, msg.from)}
             </div>
           </div>
         ))}
