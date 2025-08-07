@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import '../styles/FeedbackBubble.css';
+import downloadIcon from '../assets/images/iconoir_download.svg';
+import sendIcon from '../assets/images/iconoir_send-solid.svg';
+import botIcon from '../assets/images/BFI_LogoIcon.svg';
 
 export default function FeedbackBubble({ setHighlightData }) {
   const [message, setMessage] = useState('');
@@ -12,7 +15,7 @@ export default function FeedbackBubble({ setHighlightData }) {
     const userMsg = { from: 'user', text: message };
     setChatHistory((prev) => [...prev, userMsg]);
     setLoading(true);
-    if (setHighlightData) setHighlightData(null); // Clear highlights immediately
+    if (setHighlightData) setHighlightData(null);
     try {
       const res = await fetch('http://localhost:5005/chat', {
         method: 'POST',
@@ -34,34 +37,49 @@ export default function FeedbackBubble({ setHighlightData }) {
     setMessage('');
   };
 
+  const handleDownload = () => {
+    if (chatHistory.length === 0) return;
+
+    const formattedText = chatHistory
+      .map((msg, index) => `${msg.from.toUpperCase()}: ${msg.text}`)
+      .join('\n\n');
+
+    const blob = new Blob([formattedText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chat_history.txt';
+    a.click();
+
+    URL.revokeObjectURL(url); // Clean up
+  };
+
   return (
     <div className="feedback-sidebar">
       <div className="sidebar-header">
         <span>Buffi V.01</span>
-        <div className="download-icon">⬇️</div>
+        <div className="download-icon-container" onClick={handleDownload} title="Download chat history">
+          <img className="download-icon" src={downloadIcon} alt="⬇️" style={{ cursor: 'pointer' }} />
+        </div>
       </div>
       <div className="sidebar-history">
         {chatHistory.map((msg, idx) => (
           <div key={idx} className={`message-container ${msg.from === 'user' ? 'user-container' : 'bot-container'}`}>
             {msg.from === 'bot' && (
               <div className="avatar bot-avatar">
-                <img src="/Chat Message Icon.png" alt="Chat Bot" className="bot-icon" />
+                <img src={botIcon} alt="Chat Bot" className="bot-icon" />
               </div>
             )}
             <div className={`message-bubble ${msg.from === 'user' ? 'user-message' : 'bot-message'}`}>
               {msg.text}
             </div>
-            {msg.from === 'user' && (
-              <div className="avatar user-avatar">
-                <span>👤</span>
-              </div>
-            )}
           </div>
         ))}
         {loading && (
           <div className="message-container bot-container">
             <div className="avatar bot-avatar">
-              <img src="/Chat Message Icon.png" alt="Chat Bot" className="bot-icon" />
+              <img src={botIcon} alt="Chat Bot" className="bot-icon" />
             </div>
             <div className="message-bubble bot-message">
               <div className="typing-indicator">
@@ -75,17 +93,29 @@ export default function FeedbackBubble({ setHighlightData }) {
       </div>
       <form onSubmit={handleSubmit} className="sidebar-form">
         <div className="input-container">
-          <input
-            type="text"
+          <textarea
             placeholder="Write message here..."
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => {
+              setMessage(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = e.target.scrollHeight + 'px';
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Prevent newline
+                if (!loading && message.trim()) {
+                  handleSubmit(e);  // Submit the message
+                }
+              }
+            }}
             required
             disabled={loading}
             className="message-input"
+            rows={1}
           />
           <button type="submit" disabled={loading || !message.trim()} className="send-button">
-            <span>✈️</span>
+            <img src={sendIcon} alt="Send" className="send-icon" />
           </button>
         </div>
       </form>

@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import * as turf from '@turf/turf';
 import md5 from 'md5'; // for hashing
 import L from 'leaflet'; // for divIcon
+import "../styles/MapView.css"
 
 const targetZips = [
   "78201", "78202", "78203", "78204", "78205", "78206", "78207", "78208",
@@ -85,12 +86,15 @@ export default function ZipMap({ highlightData, viewMode }) {
 
   const onEachFeature = (feature, layer) => {
     const zip = feature.properties.ZCTA5CE10 || feature.properties.ZIP || feature.properties.zip;
-    let label = `ZIP Code: ${zip}`;
+  
+    let zipHTML = `<div class="popup-zip">ZIP Code: <strong>${zip}</strong></div>`;
+    let countHTML = '';
+    let streetsHTML = '';
+  
     if (viewMode === 'district' && zipCounts[zip]) {
-      label += `<br/>Count: ${zipCounts[zip]}`;
-      // Add breakdown of streets for this ZIP
+      countHTML = `<div class="popup-count">Total Count: <strong>${zipCounts[zip]}</strong></div>`;
+  
       if (highlightData && Array.isArray(highlightData)) {
-        // Find all highlightData points in this ZIP
         const pointsInZip = highlightData.filter((d) => {
           if (d.Latitude && d.Longitude) {
             const pt = turf.point([parseFloat(d.Longitude), parseFloat(d.Latitude)]);
@@ -98,19 +102,30 @@ export default function ZipMap({ highlightData, viewMode }) {
           }
           return false;
         });
-        // Aggregate by street name
+  
         const streetCounts = {};
         pointsInZip.forEach((d) => {
           const street = d.MSAG_Name || d.name || d.Sensitive || 'Unknown';
           streetCounts[street] = (streetCounts[street] || 0) + (d.count || 1);
         });
-        // Add breakdown to label
+  
+        streetsHTML = `<div class="popup-streets"><strong>Street Breakdown:</strong><ul>`;
         Object.entries(streetCounts).forEach(([street, count]) => {
-          label += `<br/>${street}: ${count}`;
+          streetsHTML += `<li>${street}: ${count}</li>`;
         });
+        streetsHTML += `</ul></div>`;
       }
     }
-    layer.bindPopup(label);
+  
+    layer.bindPopup(`
+      <div class="custom-popup">
+        ${zipHTML}
+        ${countHTML}
+        ${streetsHTML}
+      </div>
+    `, {className:"my-custom-popup"
+    });
+  
     layer.on({
       mouseover: (e) => {
         e.target.setStyle({
@@ -120,11 +135,11 @@ export default function ZipMap({ highlightData, viewMode }) {
         });
       },
       mouseout: (e) => {
-        // Restore the correct style based on highlight data
         e.target.setStyle(style(feature));
       },
     });
   };
+  
 
   // Generate a unique key for GeoJSON to force re-render on highlightData/viewMode change
   const geoJsonKey = md5(JSON.stringify({ zipCounts, viewMode }));
@@ -152,8 +167,11 @@ export default function ZipMap({ highlightData, viewMode }) {
               radius={radius * 10}
               pathOptions={{ color, fillColor: color, fillOpacity: 0.7 }}
             >
-              <Popup>
-                {(d.MSAG_Name || d.name || d.Sensitive || 'Highlighted Location') + ` (Count: ${label})`}
+              <Popup className="my-custom-popup">
+                <div>
+                  <div><strong>{d.MSAG_Name || d.name || d.Sensitive || 'Highlighted Location'}</strong></div>
+                  <div>Count: <strong>{label}</strong></div>
+                </div>
               </Popup>
             </Circle>
           );

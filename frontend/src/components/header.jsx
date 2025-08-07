@@ -1,39 +1,26 @@
-import { useState } from 'react';
 import '../styles/Header.css';
+import mainLogo from '../assets/images/BFI_Logo.svg'
+import menuLogo from '../assets/images/iconoir_menu.svg'
+import mainLogoIcon from '../assets/images/BFI_LogoIcon.svg'
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   return (
     <header className="site-header">
       <div className="container">
         <div className="branding">
-          <div className="logo">
-            <img src="/Logo Container.png" alt="Better Futures Institute Logo" className="logo-image" />
-          </div>
+          <a href="/">
+            <img src={mainLogo} alt="Better Futures Institute"/>
+          </a>
         </div>
-        <div className="header-actions">
-          <div className="chat-icon">
-            <img src="/Chat Message Icon.png" alt="Chat Message" className="chat-icon-image" />
-          </div>
-          <button className="hamburger-menu" onClick={toggleMenu}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </div>
-        
-        {/* Navigation Menu */}
-        {isMenuOpen && (
-          <div className="nav-menu">
-            <a href="/" className="nav-link">Home</a>
-            <a href="/about" className="nav-link">About</a>
-          </div>
-        )}
+        <nav className="nav-links">
+          {/* <a href="/">Home</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#upload">Upload CSV</a> */}
+          {/* <a href="/">
+            <img src={mainLogoIcon} alt="Better Futures Institute" className='header-base-btn header-img'/>
+          </a>
+          <button className='header-base-btn header-menu-btn'><img src={menuLogo} alt="="/></button> */}
+        </nav>
       </div>
     </header>
   );

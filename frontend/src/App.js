@@ -3,8 +3,7 @@ import MapView from './components/MapView';
 import FeedbackBubble from './components/FeedbackBubble';
 import IndicatorChart from './components/IndicatorChart';
 import Profiles from './components/Profiles';
-import CsvUploader from './components/CsvUploader';
-import Header from './components/header';
+import Header from './components/Header';
 import logo from './logo.svg';
 import './App.css';
 import { fetchGeoData, fetchIndicators, fetchProfile } from './services/dataService';
@@ -45,60 +44,27 @@ function App() {
   return (
     <div>
       <Header />
-      {/* <CsvUploader onCsvLoad={handleCsvLoad} /> */}
       
       {/* New Layout Container with Fixed Width Chatbot */}
-      <div className="layout-container" style={{ 
-        display: 'flex', 
-        height: 'calc(100vh - 85px)', // Adjusted for the new header height
-        margin: '10px',
-        gap: '10px'
-      }}>
-        
+      <div className="layout-container">
         {/* Left Side - Map (takes remaining space) */}
-        <div className="map-section" style={{ 
-          flex: 1,
-          display: 'flex', 
-          flexDirection: 'column',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-        }}>
+        <div className="map-section">
           {/* View Mode Buttons */}
-          <div style={{ 
-            margin: '10px 0', 
-            textAlign: 'center',
-            padding: '10px',
-            backgroundColor: '#f8f9fa',
-            borderBottom: '1px solid #e9ecef'
-          }}>
-            <button
-              onClick={() => setViewMode(viewMode === 'district' ? 'circle' : 'district')}
-              style={{ 
-                padding: '8px 16px', 
-                borderRadius: '5px', 
-                border: '1px solid #1E90FF', 
-                background: viewMode === 'district' ? '#1E90FF' : '#fff', 
-                color: viewMode === 'district' ? '#fff' : '#1E90FF', 
-                cursor: 'pointer', 
-                marginRight: '10px' 
-              }}
-            >
-              District/ZIP View
-            </button>
-            <button
-              onClick={() => setViewMode(viewMode === 'circle' ? 'district' : 'circle')}
-              style={{ 
-                padding: '8px 16px', 
-                borderRadius: '5px', 
-                border: '1px solid #FF4500', 
-                background: viewMode === 'circle' ? '#FF4500' : '#fff', 
-                color: viewMode === 'circle' ? '#fff' : '#FF4500', 
-                cursor: 'pointer' 
-              }}
-            >
-              Circle/Label View
-            </button>
+          <div className="toggle-container">
+            <div className="toggle-buttons">
+              <button
+                className={`toggle-button ${viewMode === 'district' ? 'active-district' : ''}`}
+                onClick={() => setViewMode('district')}
+              >
+                District/ZIP View
+              </button>
+              <button
+                className={`toggle-button ${viewMode === 'circle' ? 'active-circle' : ''}`}
+                onClick={() => setViewMode('circle')}
+              >
+                Circle/Label View
+              </button>
+            </div>
           </div>
           
           {/* Map Component */}
@@ -114,11 +80,7 @@ function App() {
         </div>
         
         {/* Right Side - Chatbot (20%) */}
-        <div className="sidebar-section" style={{ 
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-        }}>
+        <div className="sidebar-section">
           <FeedbackBubble setHighlightData={setHighlightData} />
         </div>
       </div>
