@@ -13,6 +13,11 @@ import hashlib
 from functools import lru_cache
 import inspect
 import calendar
+from pathlib import Path
+
+# Define base directory for data files
+BASE_DIR = Path(__file__).resolve().parent.parent  # backend/ directory
+DATA_DIR = BASE_DIR / "Data"
 
 global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
 
@@ -59,19 +64,23 @@ senior_centers_df = pd.DataFrame(columns=['name', 'lat', 'lon'])  # TODO: Replac
 injuries_df = pd.DataFrame(columns=['intersection', 'lat', 'lon', 'injury_count'])  # TODO: Replace with real injury data
 
 # --- Load VIA stops and routes ---
-if os.path.exists('../Data/VIA/stops_cleaned.csv'):
-    via_stops_df = pd.read_csv('../Data/VIA/stops_cleaned.csv')
+via_stops_path = DATA_DIR / "VIA" / "stops_cleaned.csv"
+if via_stops_path.exists():
+    via_stops_df = pd.read_csv(via_stops_path)
 else:
     via_stops_df = pd.DataFrame()
-if os.path.exists('../Data/VIA/via_routes_cleaned.csv'):
-    via_routes_df = pd.read_csv('../Data/VIA/via_routes_cleaned.csv')
+
+via_routes_path = DATA_DIR / "VIA" / "via_routes_cleaned.csv"
+if via_routes_path.exists():
+    via_routes_df = pd.read_csv(via_routes_path)
 else:
     via_routes_df = pd.DataFrame()
 
 # --- Load sensitive locations from extracted CSV ---
 import re
+sensitive_locations_path = DATA_DIR / "possible_sensitive_locations.csv"
 try:
-    sensitive_locations_df = pd.read_csv('../Data/possible_sensitive_locations.csv')
+    sensitive_locations_df = pd.read_csv(sensitive_locations_path)
     # Extract lat/lon from GoogleMapView column
     def extract_lat_lon(url):
         if pd.isna(url) or url == 'Not Available':
@@ -1170,25 +1179,28 @@ def get_groq_response(prompt):
             break
 
     if response_text is None:
-        try:
-            headers = {
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json",
-            }
-            data = {
-                "model": "llama-3.1-8b-instant",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 4096,
-            }
-            groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
-            groq_response.raise_for_status() # Raise an exception for HTTP errors
-            response_data = groq_response.json()
-            response_text = response_data["choices"][0]["message"]["content"]
-        except requests.exceptions.RequestException as e:
-            print(f"Error communicating with Groq API: {e}")
-            response_text = "I am currently unable to connect to the Groq AI. Please try again later."
-        except KeyError:
-            response_text = "I received an unexpected response from the Groq AI. Please try rephrasing your question."
+        if GROQ_API_KEY:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                    "Content-Type": "application/json",
+                }
+                data = {
+                    "model": "llama-3.1-8b-instant",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 4096,
+                }
+                groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
+                groq_response.raise_for_status() # Raise an exception for HTTP errors
+                response_data = groq_response.json()
+                response_text = response_data["choices"][0]["message"]["content"]
+            except requests.exceptions.RequestException as e:
+                print(f"Error communicating with Groq API: {e}")
+                response_text = "I am currently unable to connect to the Groq AI. Please try again later."
+            except KeyError:
+                response_text = "I received an unexpected response from the Groq AI. Please try rephrasing your question."
+        else:
+            response_text = "I can only answer data-driven questions about potholes, streets, and San Antonio. Please ask a specific question about pothole locations, conditions, or citizen survey data."
 
     # Convert numeric types in highlight_data_df to native Python types for JSON serialization
     if not highlight_data_df.empty:
@@ -1239,13 +1251,9 @@ def add_pothole_markers(df, folium_map, feature_group, color_column='color', mar
     return feature_group # Return the feature group
 
 # --- Load additional datasets for chatbot analysis ---
-# Define paths relative to the integrated.py file
-# PATCH: use '../Data' since we're in the backend/app directory
-data_folder_path = '../Data'
-
-pothole_cases_path = os.path.join(data_folder_path, '311_Pothole_Cases_18_24.csv')
-pavement_path = os.path.join(data_folder_path, 'COSA_Pavement.csv')
-complaint_full_path = os.path.join(data_folder_path, 'COSA_pavement_311.csv')
+pothole_cases_path = DATA_DIR / '311_Pothole_Cases_18_24.csv'
+pavement_path = DATA_DIR / 'COSA_Pavement.csv'
+complaint_full_path = DATA_DIR / 'COSA_pavement_311.csv'
 
 try:
     pothole_cases_df = pd.read_csv(pothole_cases_path)

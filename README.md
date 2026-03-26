@@ -14,6 +14,10 @@ This project is a full-stack application for visualizing pothole data and intera
 ```bash
 cd backend/app
 pip install -r requirements.txt
+
+# Optional: Set up environment variables
+cp .env.example .env
+# Edit .env and add your GROQ_API_KEY if you have one
 ```
 
 ### **Running the Backend (Data-Only Mode, No Groq LLM)**
@@ -27,11 +31,19 @@ uvicorn main:app --reload --host 127.0.0.1 --port 5005
 - The bot will answer only data-driven questions. LLM/generic questions will return a fallback message.
 
 ### **Running the Backend (With Groq LLM)**
-If you want LLM fallback for generic questions:
-```powershell
-$env:GROQ_API_KEY="your_actual_groq_api_key"
+If you want LLM fallback for generic questions, add your API key to `.env`:
+```bash
+# In backend/app/.env
+GROQ_API_KEY=your_actual_groq_api_key
+```
+
+Then run:
+```bash
+cd backend/app
 uvicorn main:app --reload --host 127.0.0.1 --port 5005
 ```
+
+Get your Groq API key from: https://console.groq.com/keys
 
 ---
 
