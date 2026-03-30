@@ -1,0 +1,51 @@
+metric,percentage
+Hispanic_Latino_Percent,88
+Foreign_Born_Percent,19.2
+Hispanic or Latino,0.88
+White (non Hispanic),0.244
+Black or African American,0.026
+American Indian,0.009
+Asian,0.004
+Two or More Races / Other,0.162
+Foreign Born (total),0.192
+Not a U.S. Citizen,0.143
+Male,51.6%)
+Female,48.4%)
+Moved in prior year,0.238
+Veterans,0.038
+Labor Force Participation,0.516
+Not in Labor Force,0.4854
+Employment Rate,0.4451
+Largest Occupation Service,0.309
+YoY change in FV calls,0.05
+YoY change in FV incident reports,0.2
+SAPD mental health 911 calls (citywide),32000
+Renter Occupied,0.5708
+Owner Occupied (with mortgage),28.58% of owners
+Owner Occupied (free & clear),71.42% of owners
+Vacancy Rate,0.1091
+Less_Than_HS,36.4
+Bachelors_or_Higher,6.3
+Less than High School,36.4
+HS Grad or Higher,63.6
+Some College / Associate's,20
+Bachelor's Degree or Higher,6.3
+Frequent Mental Distress (â‰¥14 days/month),~20–25% (MHLTH_CrudePrev)
+Depression Prevalence,~24–28% (DEPRESSION_CrudePrev)
+Diabetes Prevalence,~17–22% (DIABETES_CrudePrev)
+Obesity Prevalence,~38–44% (OBESITY_CrudePrev)
+Uninsured Rate (adults),~25–30% (ACCESS2_CrudePrev)
+Physical Inactivity,~35–42% (LPA_CrudePrev)
+Current Smoking,~16–20% (CSMOKING_CrudePrev)
+High Blood Pressure,~35–40% (BPHIGH_CrudePrev)
+Fair or Poor Self-Rated Health,~35–42% (GHLTH_CrudePrev)
+No Routine Checkup in Past Year,~30–38% (CHECKUP_CrudePrev)
+No Dental Visit in Past Year,~45–55% (DENTAL_CrudePrev)
+Coronary Heart Disease,~6–9% (CHD_CrudePrev)
+Stroke,~3–5% (STROKE_CrudePrev)
+COPD,~7–10% (COPD_CrudePrev)
+Chronic Kidney Disease,~3–5% (KIDNEY_CrudePrev)
+Asthma (current),~10–14% (CASTHMA_CrudePrev)
+Disability (any),~28–35% (DISABILITY_CrudePrev)
+Sleep < 7 Hours,~36–42% (SLEEP_CrudePrev)
+Binge Drinking,~12–17%

@@ -1,0 +1,33 @@
+2023,78207,BRFSS,Prevention,Current lack of health insurance among adults aged 18-64 years,%,Crude prevalence,43.0,,,39.4,46.5,37932,51705,POINT (-98.5259784 29.422124),78207,PREVENT,ACCESS2,CrdPrv,Health Insurance
+2023,78207,BRFSS,Health Outcomes,Arthritis among adults,%,Crude prevalence,26.3,,,23.9,28.9,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,ARTHRITIS,CrdPrv,Arthritis
+2023,78207,BRFSS,Health Risk Behaviors,Binge drinking among adults,%,Crude prevalence,13.5,,,11.4,15.7,37932,51705,POINT (-98.5259784 29.422124),78207,RISKBEH,BINGE,CrdPrv,Binge Drinking
+2023,78207,BRFSS,Health Outcomes,High blood pressure among adults,%,Crude prevalence,41.9,,,38.8,45.0,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,BPHIGH,CrdPrv,High Blood Pressure
+2023,78207,BRFSS,Prevention,Taking medicine to control high blood pressure among adults with high blood pressure,%,Crude prevalence,74.0,,,71.3,76.5,37932,51705,POINT (-98.5259784 29.422124),78207,PREVENT,BPMED,CrdPrv,High Blood Pressure Medication
+2023,78207,BRFSS,Health Outcomes,Cancer (non-skin) or melanoma among adults,%,Crude prevalence,4.6,,,4.2,5.1,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,CANCER,CrdPrv,Cancer (non-skin) or Melanoma
+2023,78207,BRFSS,Health Outcomes,Current asthma among adults,%,Crude prevalence,9.5,,,8.5,10.7,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,CASTHMA,CrdPrv,Current Asthma
+2023,78207,BRFSS,Health Outcomes,Coronary heart disease among adults,%,Crude prevalence,9.2,,,8.4,10.1,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,CHD,CrdPrv,Coronary Heart Disease
+2023,78207,BRFSS,Prevention,Visits to doctor for routine checkup within the past year among adults,%,Crude prevalence,70.1,,,66.7,73.4,37932,51705,POINT (-98.5259784 29.422124),78207,PREVENT,CHECKUP,CrdPrv,Annual Checkup
+2023,78207,BRFSS,Prevention,Cholesterol screening among adults,%,Crude prevalence,76.7,,,74.4,79.0,37932,51705,POINT (-98.5259784 29.422124),78207,PREVENT,CHOLSCREEN,CrdPrv,Cholesterol Screening
+2023,78207,BRFSS,Disability,Cognitive disability among adults,%,Crude prevalence,24.9,,,22.7,27.2,37932,51705,POINT (-98.5259784 29.422124),78207,DISABLT,COGNITION,CrdPrv,Cognitive Disability
+2022,78207,BRFSS,Prevention,Colorectal cancer screening among adults aged 45–75 years,%,Crude prevalence,49.3,,,45.1,53.6,37932,51705,POINT (-98.5259784 29.422124),78207,PREVENT,COLON_SCREEN,CrdPrv,Colorectal Cancer Screening
+2023,78207,BRFSS,Health Outcomes,Chronic obstructive pulmonary disease among adults,%,Crude prevalence,9.3,,,8.4,10.3,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,COPD,CrdPrv,COPD
+2023,78207,BRFSS,Health Risk Behaviors,Current cigarette smoking among adults,%,Crude prevalence,20.9,,,18.6,23.2,37932,51705,POINT (-98.5259784 29.422124),78207,RISKBEH,CSMOKING,CrdPrv,Current Cigarette Smoking
+2022,78207,BRFSS,Prevention,Visited dentist or dental clinic in the past year among adults,%,Crude prevalence,34.1,,,31.5,36.9,37932,51705,POINT (-98.5259784 29.422124),78207,PREVENT,DENTAL,CrdPrv,Dental Visit
+2023,78207,BRFSS,Health Outcomes,Depression among adults,%,Crude prevalence,23.1,,,20.4,26.1,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,DEPRESSION,CrdPrv,Depression
+2023,78207,BRFSS,Health Outcomes,Diagnosed diabetes among adults,%,Crude prevalence,23.5,,,21.3,25.8,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,DIABETES,CrdPrv,Diabetes
+2023,78207,BRFSS,Disability,Any disability among adults,%,Crude prevalence,49.0,,,45.4,52.6,37932,51705,POINT (-98.5259784 29.422124),78207,DISABLT,DISABILITY,CrdPrv,Any Disability
+2023,78207,BRFSS,Health Status,Fair or poor self-rated health status among adults,%,Crude prevalence,43.2,,,40.1,46.4,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHSTAT,GHLTH,CrdPrv,General Health
+2023,78207,BRFSS,Disability,Hearing disability among adults,%,Crude prevalence,10.2,,,9.2,11.3,37932,51705,POINT (-98.5259784 29.422124),78207,DISABLT,HEARING,CrdPrv,Hearing Disability
+2023,78207,BRFSS,Health Outcomes,High cholesterol among adults who have ever been screened,%,Crude prevalence,37.3,,,34.3,40.5,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,HIGHCHOL,CrdPrv,High Cholesterol
+2023,78207,BRFSS,Disability,Independent living disability among adults,%,Crude prevalence,15.8,,,14.4,17.3,37932,51705,POINT (-98.5259784 29.422124),78207,DISABLT,INDEPLIVE,CrdPrv,Independent Living Disability
+2023,78207,BRFSS,Health Risk Behaviors,No leisure-time physical activity among adults,%,Crude prevalence,50.8,,,46.8,54.6,37932,51705,POINT (-98.5259784 29.422124),78207,RISKBEH,LPA,CrdPrv,Physical Inactivity
+2022,78207,BRFSS,Prevention,Mammography use among women aged 50-74 years,%,Crude prevalence,63.9,,,57.2,70.6,37932,51705,POINT (-98.5259784 29.422124),78207,PREVENT,MAMMOUSE,CrdPrv,Mammography
+2023,78207,BRFSS,Health Status,Frequent mental distress among adults,%,Crude prevalence,20.3,,,18.4,22.5,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHSTAT,MHLTH,CrdPrv,Frequent Mental Distress
+2023,78207,BRFSS,Disability,Mobility disability among adults,%,Crude prevalence,27.1,,,24.9,29.5,37932,51705,POINT (-98.5259784 29.422124),78207,DISABLT,MOBILITY,CrdPrv,Mobility Disability
+2023,78207,BRFSS,Health Outcomes,Obesity among adults,%,Crude prevalence,43.0,,,38.3,47.8,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,OBESITY,CrdPrv,Obesity
+2023,78207,BRFSS,Health Status,Frequent physical distress among adults,%,Crude prevalence,22.5,,,20.4,24.6,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHSTAT,PHLTH,CrdPrv,Frequent Physical Distress
+2023,78207,BRFSS,Disability,Self-care disability among adults,%,Crude prevalence,10.0,,,9.3,10.8,37932,51705,POINT (-98.5259784 29.422124),78207,DISABLT,SELFCARE,CrdPrv,Self-care Disability
+2022,78207,BRFSS,Health Risk Behaviors,Short sleep duration among adults,%,Crude prevalence,45.8,,,42.1,49.7,37932,51705,POINT (-98.5259784 29.422124),78207,RISKBEH,SLEEP,CrdPrv,Short Sleep Duration
+2023,78207,BRFSS,Health Outcomes,Stroke among adults,%,Crude prevalence,5.3,,,4.9,5.7,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,STROKE,CrdPrv,Stroke
+2022,78207,BRFSS,Health Outcomes,All teeth lost among adults aged >=65 years,%,Crude prevalence,29.9,,,25.8,34.5,37932,51705,POINT (-98.5259784 29.422124),78207,HLTHOUT,TEETHLOST,CrdPrv,All Teeth Lost
+2023,78207,BRFSS,Disability,Vision disability among adults,%,Crude prevalence,16.5,,,15.3,17.7,37932,51705,POINT (-98.5259784 29.422124),78207,DISABLT,VISION,CrdPrv,Vision Disability
