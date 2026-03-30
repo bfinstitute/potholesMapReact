@@ -1,0 +1,99 @@
+metric,value,percentage
+Population,55474,
+Hispanic_Latino_Percent,,88
+Median_Age,32.8,
+Foreign_Born_Percent,,19.2
+Hispanic or Latino,"~48,817",0.88
+White (non Hispanic),20063,0.244
+Black or African American,2113,0.026
+American Indian,768,0.009
+Asian,302,0.004
+Two or More Races / Other,13330,0.162
+Foreign Born (total),10628,0.192
+Not a U.S. Citizen,7934,0.143
+Male,26660,51.6%)
+Median age,33.3,
+Female,25045,48.4%)
+Median age,34.6,
+Total Households,"16,574 2.9 persons/HH avg",
+Average Family Size,4.09 vs 3.28 national,
+Moved in prior year,13013,0.238
+Veterans,1516,0.038
+Median_Household_Income,32472,
+Per_Capita_Income,15875,
+Poverty_Rate,42.2,
+Unemployment_Rate,13.5,
+Labor Force Participation,,0.516
+Not in Labor Force,,0.4854
+Employment Rate,18341,0.4451
+Total Businesses,631,
+Est. Total Employees,14917,
+Annual Payroll (est.),$686M,
+Mean Commute Time 26 min,,
+Largest Occupation Service,,0.309
+Median Male Income,36925,
+Median Female Income,32443,
+Median Family Income,36394,
+Median NonFamily Income,22263,
+Uninsured_Rate,25.48,
+Public_Coverage,52,
+Private_Coverage,28.4,
+SAPD family violence calls (citywide),"71,000+ calls",
+SAPD family violence incident reports filed,"20,000+",
+YoY change in FV calls,,0.05
+YoY change in FV incident reports,,0.2
+SAPD mental health 911 calls (citywide),,32000
+SAPD mental health 911 calls (citywide),28800,
+SA CORE answers ~14% of MH 911 calls,"~4,480–4,700/yr",
+Bexar County suicide rate_ male,"19.4 per 100,000",
+Bexar County suicide rate — female,"4.9 per 100,000",
+Texas statewide suicide rate,"13.4 per 100,000",
+Bexar Co. IPV murder rate (women),"2.8 per 100,000",
+Texas statewide IPV murder rate (women),"1.6 per 100,000",
+Bexar County DV homicides,32  / 33,
+Renter_Occupied,57.1,
+Median_Home_Value,106700,
+Median_Rent,857,
+Vacancy_Rate,10.91,
+Total Housing Units,18637,
+Total Households,15979,
+Renter Occupied,,
+Renter Occupied,,0.5708
+Owner Occupied (with mortgage),,28.58% of owners
+Owner Occupied (free & clear),,71.42% of owners
+Median Home Value (ACS 2024),106700,
+Median Home Value (ACS 2023),93200,
+Median Gross Rent,$857/month,
+Typical 2BR Rent Range,$750 to $999/month incl. utilities,
+Vacancy Rate,,0.1091
+Persons Per Household,2.9,
+Less_Than_HS,,36.4
+Bachelors_or_Higher,,6.3
+Public Schools with Address in 78207,21,
+Less than High School,,36.4
+HS Grad or Higher,,63.6
+Some College / Associate's,,20
+Bachelor's Degree or Higher,,6.3
+Walk_Score,81,
+Distressed_Index,98,
+Life_Expectancy,72,
+Life Expectancy Gap,20 years,
+Frequent Mental Distress (≥14 days/month),,~20–25% (MHLTH_CrudePrev)
+Depression Prevalence,,~24–28% (DEPRESSION_CrudePrev)
+Diabetes Prevalence,,~17–22% (DIABETES_CrudePrev)
+Obesity Prevalence,,~38–44% (OBESITY_CrudePrev)
+Uninsured Rate (adults),,~25–30% (ACCESS2_CrudePrev)
+Physical Inactivity,,~35–42% (LPA_CrudePrev)
+Current Smoking,,~16–20% (CSMOKING_CrudePrev)
+High Blood Pressure,,~35–40% (BPHIGH_CrudePrev)
+Fair or Poor Self-Rated Health,,~35–42% (GHLTH_CrudePrev)
+No Routine Checkup in Past Year,,~30–38% (CHECKUP_CrudePrev)
+No Dental Visit in Past Year,,~45–55% (DENTAL_CrudePrev)
+Coronary Heart Disease,,~6–9% (CHD_CrudePrev)
+Stroke,,~3–5% (STROKE_CrudePrev)
+COPD,,~7–10% (COPD_CrudePrev)
+Chronic Kidney Disease,,~3–5% (KIDNEY_CrudePrev)
+Asthma (current),,~10–14% (CASTHMA_CrudePrev)
+Disability (any),,~28–35% (DISABILITY_CrudePrev)
+Sleep < 7 Hours,,~36–42% (SLEEP_CrudePrev)
+Binge Drinking,,~12–17%

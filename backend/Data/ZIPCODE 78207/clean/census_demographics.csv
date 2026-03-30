@@ -1,0 +1,686 @@
+metric_code,metric_label,category,estimate,margin_of_error
+S0501_C01_001E,Estimate!!Total!!Total population,Total population,55474,3535
+S0501_C01_002E,Estimate!!Total!!Total population!!SEX AND AGE!!Male,SEX AND AGE,53.7,1.9
+S0501_C01_003E,Estimate!!Total!!Total population!!SEX AND AGE!!Female,SEX AND AGE,46.3,1.9
+S0501_C01_004E,Estimate!!Total!!Total population!!SEX AND AGE!!Under 5 years,SEX AND AGE,8.0,1.1
+S0501_C01_005E,Estimate!!Total!!Total population!!SEX AND AGE!!5 to 17 years,SEX AND AGE,20.1,1.6
+S0501_C01_006E,Estimate!!Total!!Total population!!SEX AND AGE!!18 to 24 years,SEX AND AGE,9.6,1.1
+S0501_C01_007E,Estimate!!Total!!Total population!!SEX AND AGE!!25 to 44 years,SEX AND AGE,28.8,1.3
+S0501_C01_008E,Estimate!!Total!!Total population!!SEX AND AGE!!45 to 54 years,SEX AND AGE,10.9,1.4
+S0501_C01_009E,Estimate!!Total!!Total population!!SEX AND AGE!!55 to 64 years,SEX AND AGE,11.4,1.4
+S0501_C01_010E,Estimate!!Total!!Total population!!SEX AND AGE!!65 to 74 years,SEX AND AGE,6.3,0.9
+S0501_C01_011E,Estimate!!Total!!Total population!!SEX AND AGE!!75 to 84 years,SEX AND AGE,3.3,0.5
+S0501_C01_012E,Estimate!!Total!!Total population!!SEX AND AGE!!85 years and over,SEX AND AGE,1.6,0.7
+S0501_C01_013E,Estimate!!Total!!Total population!!SEX AND AGE!!Median age (years),SEX AND AGE,32.8,1.1
+S0501_C01_014E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race,RACE AND HISPANIC OR LATINO ORIGIN,48.7,3.4
+S0501_C01_015E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!White,RACE AND HISPANIC OR LATINO ORIGIN,28.1,2.5
+S0501_C01_016E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Black or African American,RACE AND HISPANIC OR LATINO ORIGIN,5.6,1.5
+S0501_C01_017E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!American Indian and Alaska Native,RACE AND HISPANIC OR LATINO ORIGIN,3.3,1.1
+S0501_C01_018E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Asian,RACE AND HISPANIC OR LATINO ORIGIN,0.8,0.5
+S0501_C01_019E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Native Hawaiian and Other Pacific Islander,RACE AND HISPANIC OR LATINO ORIGIN,0.1,0.1
+S0501_C01_020E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Some other race,RACE AND HISPANIC OR LATINO ORIGIN,10.8,1.8
+S0501_C01_021E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Two or more races,RACE AND HISPANIC OR LATINO ORIGIN,51.3,3.4
+S0501_C01_022E,Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Hispanic or Latino origin (of any race),RACE AND HISPANIC OR LATINO ORIGIN,87.0,2.2
+S0501_C01_023E,"Estimate!!Total!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!White alone, not Hispanic or Latino",RACE AND HISPANIC OR LATINO ORIGIN,6.3,1.5
+S0501_C01_024E,Estimate!!Total!!Total population!!HOUSEHOLD TYPE!!In married-couple family,HOUSEHOLD TYPE,33.7,4.0
+S0501_C01_025E,Estimate!!Total!!Total population!!HOUSEHOLD TYPE!!In other households,HOUSEHOLD TYPE,54.1,3.9
+S0501_C01_026E,Estimate!!Total!!Total population!!Average  household size,Average  household size,2.94,0.18
+S0501_C01_027E,Estimate!!Total!!Total population!!Average family size,Average family size,3.78,0.17
+S0501_C01_028E,Estimate!!Total!!MARITAL STATUS!!Population 15  years and over,Population 15  years and over,41882,2303
+S0501_C01_029E,Estimate!!Total!!MARITAL STATUS!!Population 15  years and over!!Never married,Population 15  years and over,48.6,2.1
+S0501_C01_030E,"Estimate!!Total!!MARITAL STATUS!!Population 15  years and over!!Now married, except separated",Population 15  years and over,26.6,2.3
+S0501_C01_031E,Estimate!!Total!!MARITAL STATUS!!Population 15  years and over!!Divorced or separated,Population 15  years and over,19.0,1.7
+S0501_C01_032E,Estimate!!Total!!MARITAL STATUS!!Population 15  years and over!!Widowed,Population 15  years and over,5.8,1.2
+S0501_C01_033E,Estimate!!Total!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school,Population 3 years and over enrolled in school,14286,1674
+S0501_C01_034E,"Estimate!!Total!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Nursery school, preschool",Population 3 years and over enrolled in school,7.0,2.0
+S0501_C01_035E,Estimate!!Total!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Elementary school (grades K-8),Population 3 years and over enrolled in school,59.5,3.2
+S0501_C01_036E,Estimate!!Total!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!High school (grades 9-12),Population 3 years and over enrolled in school,19.3,3.0
+S0501_C01_037E,Estimate!!Total!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!College or graduate school,Population 3 years and over enrolled in school,14.1,2.5
+S0501_C01_038E,Estimate!!Total!!EDUCATIONAL ATTAINMENT!!Population 25 years and over,Population 25 years and over,34583,1808
+S0501_C01_039E,Estimate!!Total!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Less than high school graduate,Population 25 years and over,36.4,2.4
+S0501_C01_040E,Estimate!!Total!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!High school graduate (includes equivalency),Population 25 years and over,34.3,2.4
+S0501_C01_041E,Estimate!!Total!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Some college or associate's degree,Population 25 years and over,23.0,2.2
+S0501_C01_042E,Estimate!!Total!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Bachelor's degree,Population 25 years and over,4.3,1.3
+S0501_C01_043E,Estimate!!Total!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Graduate or professional degree,Population 25 years and over,1.9,0.6
+S0501_C01_044E,Estimate!!Total!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over,Population 5 years and over,51060,3161
+S0501_C01_045E,Estimate!!Total!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!English only,Population 5 years and over,39.7,2.2
+S0501_C01_046E,Estimate!!Total!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English,Population 5 years and over,60.3,2.2
+S0501_C01_047E,"Estimate!!Total!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English!!Speak English less than very well""""",Population 5 years and over,23.9,2.1
+S0501_C01_048E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over,Population 16 years and over,41256,2255
+S0501_C01_049E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force,Population 16 years and over,51.5,2.4
+S0501_C01_050E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force,Population 16 years and over,51.4,2.4
+S0501_C01_051E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Employed,Population 16 years and over,44.5,2.5
+S0501_C01_052E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed,Population 16 years and over,6.9,1.3
+S0501_C01_053E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed!!Percent of civilian labor force,Population 16 years and over,13.5,2.6
+S0501_C01_054E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Armed Forces,Population 16 years and over,0.1,0.1
+S0501_C01_055E,Estimate!!Total!!EMPLOYMENT STATUS!!Population 16 years and over!!Not in labor force,Population 16 years and over,48.5,2.4
+S0501_C01_056E,Estimate!!Total!!Civilian employed population 16 years and over,Civilian employed population 16 years and over,18341,1616
+S0501_C01_057E,Estimate!!Total!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Private wage and salary workers,CLASS OF WORKER,82.4,2.9
+S0501_C01_058E,Estimate!!Total!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Government workers,CLASS OF WORKER,10.3,2.4
+S0501_C01_059E,Estimate!!Total!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Self-employed workers in own not incorporated business,CLASS OF WORKER,7.3,1.9
+S0501_C01_060E,Estimate!!Total!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Unpaid family workers,CLASS OF WORKER,0.1,0.1
+S0501_C01_061E,"Estimate!!Total!!Civilian employed population 16 years and over!!OCCUPATION!!Management, business, science, and arts occupations",OCCUPATION,15.1,2.7
+S0501_C01_062E,Estimate!!Total!!Civilian employed population 16 years and over!!OCCUPATION!!Service occupations,OCCUPATION,30.9,3.2
+S0501_C01_063E,Estimate!!Total!!Civilian employed population 16 years and over!!OCCUPATION!!Sales and office occupations,OCCUPATION,17.2,2.4
+S0501_C01_064E,"Estimate!!Total!!Civilian employed population 16 years and over!!OCCUPATION!!Natural resources, construction, and maintenance occupations",OCCUPATION,18.7,2.6
+S0501_C01_065E,"Estimate!!Total!!Civilian employed population 16 years and over!!OCCUPATION!!Production, transportation, and material moving occupations",OCCUPATION,18.1,3.0
+S0501_C01_066E,"Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Agriculture, forestry, fishing and hunting, and mining",INDUSTRY,0.1,0.1
+S0501_C01_067E,Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Construction,INDUSTRY,16.0,2.5
+S0501_C01_068E,Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Manufacturing,INDUSTRY,6.3,1.6
+S0501_C01_069E,Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Wholesale trade,INDUSTRY,2.7,0.9
+S0501_C01_070E,Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Retail trade,INDUSTRY,10.0,2.4
+S0501_C01_071E,"Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Transportation and warehousing, and utilities",INDUSTRY,5.5,1.2
+S0501_C01_072E,Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Information,INDUSTRY,0.9,0.6
+S0501_C01_073E,"Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Finance and insurance, and real estate and rental and leasing",INDUSTRY,5.0,1.4
+S0501_C01_074E,"Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Professional, scientific, and management, and administrative and waste management services",INDUSTRY,10.0,1.9
+S0501_C01_075E,"Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Educational services, and health care and social assistance",INDUSTRY,18.3,2.5
+S0501_C01_076E,"Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Arts, entertainment, and recreation, and accommodation and food services",INDUSTRY,16.6,3.6
+S0501_C01_077E,Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Other services (except public administration),INDUSTRY,5.4,1.4
+S0501_C01_078E,Estimate!!Total!!Civilian employed population 16 years and over!!INDUSTRY!!Public administration,INDUSTRY,3.1,1.4
+S0501_C01_079E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings",Population 16 years and over with earnings,11479,1114
+S0501_C01_080E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$1 to $9,999 or loss",Population 16 years and over with earnings,2.9,1.2
+S0501_C01_081E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$10,000 to $14,999",Population 16 years and over with earnings,3.2,1.3
+S0501_C01_082E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$15,000 to $24,999",Population 16 years and over with earnings,14.8,2.5
+S0501_C01_083E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$25,000 to $34,999",Population 16 years and over with earnings,27.6,4.1
+S0501_C01_084E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$35,000 to $49,999",Population 16 years and over with earnings,28.7,3.6
+S0501_C01_085E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$50,000 to $74,999",Population 16 years and over with earnings,14.5,2.8
+S0501_C01_086E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$75,000 or more",Population 16 years and over with earnings,8.2,2.2
+S0501_C01_087E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Male",Population 16 years and over with earnings,36925,2100
+S0501_C01_088E,"Estimate!!Total!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Female",Population 16 years and over with earnings,32443,2473
+S0501_C01_089E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households,Households,16574,698
+S0501_C01_090E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings,Households,73.7,3.1
+S0501_C01_091E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings!!Mean earnings (dollars),Households,47762,3789
+S0501_C01_092E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income,Households,31.4,2.6
+S0501_C01_093E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income!!Mean Social Security income (dollars),Households,15164,952
+S0501_C01_094E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income,Households,14.0,2.2
+S0501_C01_095E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income!!Mean Supplemental Security Income (dollars),Households,10431,1059
+S0501_C01_096E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income,Households,2.6,0.8
+S0501_C01_097E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income!!Mean cash public assistance income (dollars),Households,2224,626
+S0501_C01_098E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income,Households,12.1,1.9
+S0501_C01_099E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income!!Mean retirement income (dollars),Households,18180,3883
+S0501_C01_100E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Food Stamp/SNAP benefits,Households,45.2,3.2
+S0501_C01_101E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Median Household income (dollars),Households,32472,2194
+S0501_C01_102E,Estimate!!Total!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Average number of workers per household,Households,1.04,0.08
+S0501_C01_103E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined,Population for whom poverty status is determined,49961,3325
+S0501_C01_104E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!Below 100 percent of the poverty level,Population for whom poverty status is determined,42.2,3.2
+S0501_C01_105E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!100 to 199 percent of the poverty level,Population for whom poverty status is determined,27.7,3.1
+S0501_C01_106E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!At or above 200 percent of the poverty level,Population for whom poverty status is determined,30.1,2.8
+S0501_C01_107E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,36.5,3.2
+S0501_C01_108E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,49.8,6.0
+S0501_C01_109E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,33.2,14.2
+S0501_C01_110E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,23.5,4.7
+S0501_C01_111E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,31.5,8.0
+S0501_C01_112E,Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,32.6,33.4
+S0501_C01_113E,"Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,52.7,5.8
+S0501_C01_114E,"Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 18 years",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,64.4,7.8
+S0501_C01_115E,"Estimate!!Total!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 5 years only",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,38.0,17.8
+S0501_C01_116E,Estimate!!Total!!Occupied housing units,Occupied housing units,16574,698
+S0501_C01_117E,Estimate!!Total!!Occupied housing units!!HOUSING TENURE!!Owner-occupied housing units,HOUSING TENURE,40.3,2.7
+S0501_C01_118E,Estimate!!Total!!Occupied housing units!!HOUSING TENURE!!Renter-occupied housing units,HOUSING TENURE,59.7,2.7
+S0501_C01_119E,Estimate!!Total!!Occupied housing units!!HOUSING TENURE!!Average household size of owner-occupied unit,HOUSING TENURE,3.38,0.25
+S0501_C01_120E,Estimate!!Total!!Occupied housing units!!HOUSING TENURE!!Average household size of renter-occupied unit,HOUSING TENURE,2.64,0.19
+S0501_C01_121E,Estimate!!Total!!Occupied housing units!!ROOMS!!1 room,ROOMS,4.2,1.4
+S0501_C01_122E,Estimate!!Total!!Occupied housing units!!ROOMS!!2 or 3 rooms,ROOMS,20.6,2.8
+S0501_C01_123E,Estimate!!Total!!Occupied housing units!!ROOMS!!4 or 5 rooms,ROOMS,50.0,2.8
+S0501_C01_124E,Estimate!!Total!!Occupied housing units!!ROOMS!!6 or 7 rooms,ROOMS,20.5,2.3
+S0501_C01_125E,Estimate!!Total!!Occupied housing units!!ROOMS!!8 or more rooms,ROOMS,4.7,1.4
+S0501_C01_126E,Estimate!!Total!!Occupied housing units!!Median number of rooms,Median number of rooms,4.4,0.1
+S0501_C01_127E,Estimate!!Total!!Occupied housing units!!1.01 or more occupants per room,1.01 or more occupants per room,11.5,2.5
+S0501_C01_128E,Estimate!!Total!!Occupied housing units!!VEHICLES AVAILABLE!!None,VEHICLES AVAILABLE,19.0,2.7
+S0501_C01_129E,Estimate!!Total!!Occupied housing units!!VEHICLES AVAILABLE!!1 or more,VEHICLES AVAILABLE,81.0,2.7
+S0501_C01_130E,Estimate!!Total!!Occupied housing units!!SELECTED CHARACTERISTICS!!No telephone service available,SELECTED CHARACTERISTICS,1.9,0.9
+S0501_C01_131E,Estimate!!Total!!Occupied housing units!!SELECTED CHARACTERISTICS!!Limited English Speaking Households,SELECTED CHARACTERISTICS,20.5,2.6
+S0501_C01_132E,Estimate!!Total!!Owner-occupied housing units,Owner-occupied housing units,6686,480
+S0501_C01_133E,Estimate!!Total!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,76.1,3.5
+S0501_C01_134E,Estimate!!Total!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,23.9,3.5
+S0501_C01_135E,Estimate!!Total!!Renter-occupied housing units,Renter-occupied housing units,9888,678
+S0501_C01_136E,Estimate!!Total!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,45.2,4.6
+S0501_C01_137E,Estimate!!Total!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,54.8,4.6
+S0501_C02_001E,Estimate!!Native!!Total population,Total population,44846,3065
+S0501_C02_002E,Estimate!!Native!!Total population!!SEX AND AGE!!Male,SEX AND AGE,53.3,2.0
+S0501_C02_003E,Estimate!!Native!!Total population!!SEX AND AGE!!Female,SEX AND AGE,46.7,2.0
+S0501_C02_004E,Estimate!!Native!!Total population!!SEX AND AGE!!Under 5 years,SEX AND AGE,9.7,1.3
+S0501_C02_005E,Estimate!!Native!!Total population!!SEX AND AGE!!5 to 17 years,SEX AND AGE,23.4,1.8
+S0501_C02_006E,Estimate!!Native!!Total population!!SEX AND AGE!!18 to 24 years,SEX AND AGE,10.2,1.4
+S0501_C02_007E,Estimate!!Native!!Total population!!SEX AND AGE!!25 to 44 years,SEX AND AGE,28.4,1.6
+S0501_C02_008E,Estimate!!Native!!Total population!!SEX AND AGE!!45 to 54 years,SEX AND AGE,9.9,1.4
+S0501_C02_009E,Estimate!!Native!!Total population!!SEX AND AGE!!55 to 64 years,SEX AND AGE,10.0,1.5
+S0501_C02_010E,Estimate!!Native!!Total population!!SEX AND AGE!!65 to 74 years,SEX AND AGE,4.8,0.7
+S0501_C02_011E,Estimate!!Native!!Total population!!SEX AND AGE!!75 to 84 years,SEX AND AGE,2.7,0.5
+S0501_C02_012E,Estimate!!Native!!Total population!!SEX AND AGE!!85 years and over,SEX AND AGE,1.0,0.4
+S0501_C02_013E,Estimate!!Native!!Total population!!SEX AND AGE!!Median age (years),SEX AND AGE,29.3,1.4
+S0501_C02_014E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race,RACE AND HISPANIC OR LATINO ORIGIN,51.8,3.7
+S0501_C02_015E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!White,RACE AND HISPANIC OR LATINO ORIGIN,32.3,3.0
+S0501_C02_016E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Black or African American,RACE AND HISPANIC OR LATINO ORIGIN,6.4,1.6
+S0501_C02_017E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!American Indian and Alaska Native,RACE AND HISPANIC OR LATINO ORIGIN,2.4,0.9
+S0501_C02_018E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Asian,RACE AND HISPANIC OR LATINO ORIGIN,0.3,0.2
+S0501_C02_019E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Native Hawaiian and Other Pacific Islander,RACE AND HISPANIC OR LATINO ORIGIN,0.1,0.1
+S0501_C02_020E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Some other race,RACE AND HISPANIC OR LATINO ORIGIN,10.4,1.9
+S0501_C02_021E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Two or more races,RACE AND HISPANIC OR LATINO ORIGIN,48.2,3.7
+S0501_C02_022E,Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Hispanic or Latino origin (of any race),RACE AND HISPANIC OR LATINO ORIGIN,85.5,2.6
+S0501_C02_023E,"Estimate!!Native!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!White alone, not Hispanic or Latino",RACE AND HISPANIC OR LATINO ORIGIN,7.2,1.7
+S0501_C02_024E,Estimate!!Native!!Total population!!HOUSEHOLD TYPE!!In married-couple family,HOUSEHOLD TYPE,31.0,4.0
+S0501_C02_025E,Estimate!!Native!!Total population!!HOUSEHOLD TYPE!!In other households,HOUSEHOLD TYPE,55.0,3.9
+S0501_C02_026E,Estimate!!Native!!Total population!!Average  household size,Average  household size,2.84,0.17
+S0501_C02_027E,Estimate!!Native!!Total population!!Average family size,Average family size,3.67,0.20
+S0501_C02_028E,Estimate!!Native!!MARITAL STATUS!!Population 15  years and over,Population 15  years and over,31812,1943
+S0501_C02_029E,Estimate!!Native!!MARITAL STATUS!!Population 15  years and over!!Never married,Population 15  years and over,55.2,2.2
+S0501_C02_030E,"Estimate!!Native!!MARITAL STATUS!!Population 15  years and over!!Now married, except separated",Population 15  years and over,21.5,2.4
+S0501_C02_031E,Estimate!!Native!!MARITAL STATUS!!Population 15  years and over!!Divorced or separated,Population 15  years and over,18.7,1.8
+S0501_C02_032E,Estimate!!Native!!MARITAL STATUS!!Population 15  years and over!!Widowed,Population 15  years and over,4.7,0.9
+S0501_C02_033E,Estimate!!Native!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school,Population 3 years and over enrolled in school,13197,1532
+S0501_C02_034E,"Estimate!!Native!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Nursery school, preschool",Population 3 years and over enrolled in school,7.3,2.1
+S0501_C02_035E,Estimate!!Native!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Elementary school (grades K-8),Population 3 years and over enrolled in school,60.9,3.4
+S0501_C02_036E,Estimate!!Native!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!High school (grades 9-12),Population 3 years and over enrolled in school,18.6,3.2
+S0501_C02_037E,Estimate!!Native!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!College or graduate school,Population 3 years and over enrolled in school,13.3,2.7
+S0501_C02_038E,Estimate!!Native!!EDUCATIONAL ATTAINMENT!!Population 25 years and over,Population 25 years and over,25435,1523
+S0501_C02_039E,Estimate!!Native!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Less than high school graduate,Population 25 years and over,27.6,2.8
+S0501_C02_040E,Estimate!!Native!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!High school graduate (includes equivalency),Population 25 years and over,38.9,2.9
+S0501_C02_041E,Estimate!!Native!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Some college or associate's degree,Population 25 years and over,27.0,2.8
+S0501_C02_042E,Estimate!!Native!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Bachelor's degree,Population 25 years and over,4.2,1.2
+S0501_C02_043E,Estimate!!Native!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Graduate or professional degree,Population 25 years and over,2.3,0.8
+S0501_C02_044E,Estimate!!Native!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over,Population 5 years and over,40502,2678
+S0501_C02_045E,Estimate!!Native!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!English only,Population 5 years and over,49.3,2.4
+S0501_C02_046E,Estimate!!Native!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English,Population 5 years and over,50.7,2.4
+S0501_C02_047E,"Estimate!!Native!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English!!Speak English less than very well""""",Population 5 years and over,9.9,1.7
+S0501_C02_048E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over,Population 16 years and over,31285,1930
+S0501_C02_049E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force,Population 16 years and over,50.1,2.6
+S0501_C02_050E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force,Population 16 years and over,49.9,2.6
+S0501_C02_051E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Employed,Population 16 years and over,42.5,2.8
+S0501_C02_052E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed,Population 16 years and over,7.5,1.6
+S0501_C02_053E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed!!Percent of civilian labor force,Population 16 years and over,14.9,3.2
+S0501_C02_054E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Armed Forces,Population 16 years and over,0.2,0.1
+S0501_C02_055E,Estimate!!Native!!EMPLOYMENT STATUS!!Population 16 years and over!!Not in labor force,Population 16 years and over,49.9,2.6
+S0501_C02_056E,Estimate!!Native!!Civilian employed population 16 years and over,Civilian employed population 16 years and over,13290,1316
+S0501_C02_057E,Estimate!!Native!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Private wage and salary workers,CLASS OF WORKER,81.8,3.5
+S0501_C02_058E,Estimate!!Native!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Government workers,CLASS OF WORKER,13.4,3.0
+S0501_C02_059E,Estimate!!Native!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Self-employed workers in own not incorporated business,CLASS OF WORKER,4.8,1.8
+S0501_C02_060E,Estimate!!Native!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Unpaid family workers,CLASS OF WORKER,0.1,0.1
+S0501_C02_061E,"Estimate!!Native!!Civilian employed population 16 years and over!!OCCUPATION!!Management, business, science, and arts occupations",OCCUPATION,18.9,3.5
+S0501_C02_062E,Estimate!!Native!!Civilian employed population 16 years and over!!OCCUPATION!!Service occupations,OCCUPATION,29.3,3.5
+S0501_C02_063E,Estimate!!Native!!Civilian employed population 16 years and over!!OCCUPATION!!Sales and office occupations,OCCUPATION,21.1,3.0
+S0501_C02_064E,"Estimate!!Native!!Civilian employed population 16 years and over!!OCCUPATION!!Natural resources, construction, and maintenance occupations",OCCUPATION,10.5,2.3
+S0501_C02_065E,"Estimate!!Native!!Civilian employed population 16 years and over!!OCCUPATION!!Production, transportation, and material moving occupations",OCCUPATION,20.2,3.5
+S0501_C02_066E,"Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Agriculture, forestry, fishing and hunting, and mining",INDUSTRY,0.1,0.2
+S0501_C02_067E,Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Construction,INDUSTRY,7.5,2.0
+S0501_C02_068E,Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Manufacturing,INDUSTRY,6.5,2.0
+S0501_C02_069E,Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Wholesale trade,INDUSTRY,3.3,1.3
+S0501_C02_070E,Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Retail trade,INDUSTRY,11.6,3.0
+S0501_C02_071E,"Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Transportation and warehousing, and utilities",INDUSTRY,6.8,1.7
+S0501_C02_072E,Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Information,INDUSTRY,0.9,0.7
+S0501_C02_073E,"Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Finance and insurance, and real estate and rental and leasing",INDUSTRY,6.1,1.7
+S0501_C02_074E,"Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Professional, scientific, and management, and administrative and waste management services",INDUSTRY,9.9,2.1
+S0501_C02_075E,"Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Educational services, and health care and social assistance",INDUSTRY,23.3,3.0
+S0501_C02_076E,"Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Arts, entertainment, and recreation, and accommodation and food services",INDUSTRY,14.5,2.7
+S0501_C02_077E,Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Other services (except public administration),INDUSTRY,5.4,1.7
+S0501_C02_078E,Estimate!!Native!!Civilian employed population 16 years and over!!INDUSTRY!!Public administration,INDUSTRY,4.1,1.9
+S0501_C02_079E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings",Population 16 years and over with earnings,8866,976
+S0501_C02_080E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$1 to $9,999 or loss",Population 16 years and over with earnings,3.4,1.5
+S0501_C02_081E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$10,000 to $14,999",Population 16 years and over with earnings,3.3,1.5
+S0501_C02_082E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$15,000 to $24,999",Population 16 years and over with earnings,13.3,2.4
+S0501_C02_083E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$25,000 to $34,999",Population 16 years and over with earnings,28.6,4.8
+S0501_C02_084E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$35,000 to $49,999",Population 16 years and over with earnings,26.0,3.6
+S0501_C02_085E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$50,000 to $74,999",Population 16 years and over with earnings,15.9,3.4
+S0501_C02_086E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$75,000 or more",Population 16 years and over with earnings,9.6,2.7
+S0501_C02_087E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Male",Population 16 years and over with earnings,36960,2738
+S0501_C02_088E,"Estimate!!Native!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Female",Population 16 years and over with earnings,33029,2774
+S0501_C02_089E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households,Households,11838,611
+S0501_C02_090E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings,Households,72.9,3.6
+S0501_C02_091E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings!!Mean earnings (dollars),Households,46510,3293
+S0501_C02_092E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income,Households,29.5,3.2
+S0501_C02_093E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income!!Mean Social Security income (dollars),Households,15779,1105
+S0501_C02_094E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income,Households,13.2,2.7
+S0501_C02_095E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income!!Mean Supplemental Security Income (dollars),Households,10655,1417
+S0501_C02_096E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income,Households,2.5,0.7
+S0501_C02_097E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income!!Mean cash public assistance income (dollars),Households,2050,829
+S0501_C02_098E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income,Households,13.2,2.1
+S0501_C02_099E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income!!Mean retirement income (dollars),Households,19580,4713
+S0501_C02_100E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Food Stamp/SNAP benefits,Households,45.5,3.4
+S0501_C02_101E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Median Household income (dollars),Households,33162,2021
+S0501_C02_102E,Estimate!!Native!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Average number of workers per household,Households,0.96,0.08
+S0501_C02_103E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined,Population for whom poverty status is determined,39767,2810
+S0501_C02_104E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!Below 100 percent of the poverty level,Population for whom poverty status is determined,43.0,3.5
+S0501_C02_105E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!100 to 199 percent of the poverty level,Population for whom poverty status is determined,26.5,3.3
+S0501_C02_106E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!At or above 200 percent of the poverty level,Population for whom poverty status is determined,30.5,3.1
+S0501_C02_107E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,38.0,3.8
+S0501_C02_108E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,50.9,6.9
+S0501_C02_109E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,39.8,16.7
+S0501_C02_110E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,19.7,5.5
+S0501_C02_111E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,26.4,9.6
+S0501_C02_112E,Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,51.5,41.3
+S0501_C02_113E,"Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,56.2,6.3
+S0501_C02_114E,"Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 18 years",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,67.8,8.4
+S0501_C02_115E,"Estimate!!Native!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 5 years only",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,42.5,20.7
+S0501_C02_116E,Estimate!!Native!!Occupied housing units,Occupied housing units,11838,611
+S0501_C02_117E,Estimate!!Native!!Occupied housing units!!HOUSING TENURE!!Owner-occupied housing units,HOUSING TENURE,38.2,2.8
+S0501_C02_118E,Estimate!!Native!!Occupied housing units!!HOUSING TENURE!!Renter-occupied housing units,HOUSING TENURE,61.8,2.8
+S0501_C02_119E,Estimate!!Native!!Occupied housing units!!HOUSING TENURE!!Average household size of owner-occupied unit,HOUSING TENURE,3.26,0.29
+S0501_C02_120E,Estimate!!Native!!Occupied housing units!!HOUSING TENURE!!Average household size of renter-occupied unit,HOUSING TENURE,2.58,0.19
+S0501_C02_121E,Estimate!!Native!!Occupied housing units!!ROOMS!!1 room,ROOMS,4.7,1.7
+S0501_C02_122E,Estimate!!Native!!Occupied housing units!!ROOMS!!2 or 3 rooms,ROOMS,19.7,3.2
+S0501_C02_123E,Estimate!!Native!!Occupied housing units!!ROOMS!!4 or 5 rooms,ROOMS,49.0,3.5
+S0501_C02_124E,Estimate!!Native!!Occupied housing units!!ROOMS!!6 or 7 rooms,ROOMS,21.7,2.5
+S0501_C02_125E,Estimate!!Native!!Occupied housing units!!ROOMS!!8 or more rooms,ROOMS,4.9,1.5
+S0501_C02_126E,Estimate!!Native!!Occupied housing units!!Median number of rooms,Median number of rooms,4.5,0.2
+S0501_C02_127E,Estimate!!Native!!Occupied housing units!!1.01 or more occupants per room,1.01 or more occupants per room,9.9,2.2
+S0501_C02_128E,Estimate!!Native!!Occupied housing units!!VEHICLES AVAILABLE!!None,VEHICLES AVAILABLE,19.7,3.1
+S0501_C02_129E,Estimate!!Native!!Occupied housing units!!VEHICLES AVAILABLE!!1 or more,VEHICLES AVAILABLE,80.3,3.1
+S0501_C02_130E,Estimate!!Native!!Occupied housing units!!SELECTED CHARACTERISTICS!!No telephone service available,SELECTED CHARACTERISTICS,1.7,1.0
+S0501_C02_131E,Estimate!!Native!!Occupied housing units!!SELECTED CHARACTERISTICS!!Limited English Speaking Households,SELECTED CHARACTERISTICS,6.5,1.5
+S0501_C02_132E,Estimate!!Native!!Owner-occupied housing units,Owner-occupied housing units,4526,367
+S0501_C02_133E,Estimate!!Native!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,74.9,4.5
+S0501_C02_134E,Estimate!!Native!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,25.1,4.5
+S0501_C02_135E,Estimate!!Native!!Renter-occupied housing units,Renter-occupied housing units,7312,554
+S0501_C02_136E,Estimate!!Native!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,48.9,5.0
+S0501_C02_137E,Estimate!!Native!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,51.1,5.0
+S0501_C03_001E,Estimate!!Foreign-born!!Total population,Total population,10628,1200
+S0501_C03_002E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!Male,SEX AND AGE,55.4,4.4
+S0501_C03_003E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!Female,SEX AND AGE,44.6,4.4
+S0501_C03_004E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!Under 5 years,SEX AND AGE,0.7,0.6
+S0501_C03_005E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!5 to 17 years,SEX AND AGE,6.4,2.1
+S0501_C03_006E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!18 to 24 years,SEX AND AGE,6.9,2.0
+S0501_C03_007E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!25 to 44 years,SEX AND AGE,30.8,4.7
+S0501_C03_008E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!45 to 54 years,SEX AND AGE,15.1,4.0
+S0501_C03_009E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!55 to 64 years,SEX AND AGE,17.5,3.6
+S0501_C03_010E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!65 to 74 years,SEX AND AGE,12.8,3.5
+S0501_C03_011E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!75 to 84 years,SEX AND AGE,5.8,1.7
+S0501_C03_012E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!85 years and over,SEX AND AGE,4.0,3.2
+S0501_C03_013E,Estimate!!Foreign-born!!Total population!!SEX AND AGE!!Median age (years),SEX AND AGE,49.1,3.6
+S0501_C03_014E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race,RACE AND HISPANIC OR LATINO ORIGIN,35.6,5.9
+S0501_C03_015E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!White,RACE AND HISPANIC OR LATINO ORIGIN,10.3,3.7
+S0501_C03_016E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Black or African American,RACE AND HISPANIC OR LATINO ORIGIN,2.5,2.7
+S0501_C03_017E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!American Indian and Alaska Native,RACE AND HISPANIC OR LATINO ORIGIN,7.0,3.8
+S0501_C03_018E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Asian,RACE AND HISPANIC OR LATINO ORIGIN,3.0,1.8
+S0501_C03_019E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Native Hawaiian and Other Pacific Islander,RACE AND HISPANIC OR LATINO ORIGIN,0.0,0.5
+S0501_C03_020E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Some other race,RACE AND HISPANIC OR LATINO ORIGIN,12.8,3.8
+S0501_C03_021E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Two or more races,RACE AND HISPANIC OR LATINO ORIGIN,64.4,5.9
+S0501_C03_022E,Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Hispanic or Latino origin (of any race),RACE AND HISPANIC OR LATINO ORIGIN,93.1,2.9
+S0501_C03_023E,"Estimate!!Foreign-born!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!White alone, not Hispanic or Latino",RACE AND HISPANIC OR LATINO ORIGIN,2.7,3.0
+S0501_C03_024E,Estimate!!Foreign-born!!Total population!!HOUSEHOLD TYPE!!In married-couple family,HOUSEHOLD TYPE,45.2,6.9
+S0501_C03_025E,Estimate!!Foreign-born!!Total population!!HOUSEHOLD TYPE!!In other households,HOUSEHOLD TYPE,50.0,6.9
+S0501_C03_026E,Estimate!!Foreign-born!!Total population!!Average  household size,Average  household size,3.19,0.34
+S0501_C03_027E,Estimate!!Foreign-born!!Total population!!Average family size,Average family size,4.04,0.35
+S0501_C03_028E,Estimate!!Foreign-born!!MARITAL STATUS!!Population 15  years and over,Population 15  years and over,10070,1078
+S0501_C03_029E,Estimate!!Foreign-born!!MARITAL STATUS!!Population 15  years and over!!Never married,Population 15  years and over,27.7,5.2
+S0501_C03_030E,"Estimate!!Foreign-born!!MARITAL STATUS!!Population 15  years and over!!Now married, except separated",Population 15  years and over,42.9,5.6
+S0501_C03_031E,Estimate!!Foreign-born!!MARITAL STATUS!!Population 15  years and over!!Divorced or separated,Population 15  years and over,20.1,4.2
+S0501_C03_032E,Estimate!!Foreign-born!!MARITAL STATUS!!Population 15  years and over!!Widowed,Population 15  years and over,9.3,3.7
+S0501_C03_033E,Estimate!!Foreign-born!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school,Population 3 years and over enrolled in school,1089,347
+S0501_C03_034E,"Estimate!!Foreign-born!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Nursery school, preschool",Population 3 years and over enrolled in school,4.4,4.7
+S0501_C03_035E,Estimate!!Foreign-born!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Elementary school (grades K-8),Population 3 years and over enrolled in school,43.2,13.6
+S0501_C03_036E,Estimate!!Foreign-born!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!High school (grades 9-12),Population 3 years and over enrolled in school,28.6,11.5
+S0501_C03_037E,Estimate!!Foreign-born!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!College or graduate school,Population 3 years and over enrolled in school,23.9,11.0
+S0501_C03_038E,Estimate!!Foreign-born!!EDUCATIONAL ATTAINMENT!!Population 25 years and over,Population 25 years and over,9148,931
+S0501_C03_039E,Estimate!!Foreign-born!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Less than high school graduate,Population 25 years and over,61.1,4.9
+S0501_C03_040E,Estimate!!Foreign-born!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!High school graduate (includes equivalency),Population 25 years and over,21.3,3.6
+S0501_C03_041E,Estimate!!Foreign-born!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Some college or associate's degree,Population 25 years and over,12.1,2.9
+S0501_C03_042E,Estimate!!Foreign-born!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Bachelor's degree,Population 25 years and over,4.7,3.4
+S0501_C03_043E,Estimate!!Foreign-born!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Graduate or professional degree,Population 25 years and over,0.8,1.1
+S0501_C03_044E,Estimate!!Foreign-born!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over,Population 5 years and over,10558,1193
+S0501_C03_045E,Estimate!!Foreign-born!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!English only,Population 5 years and over,3.2,1.8
+S0501_C03_046E,Estimate!!Foreign-born!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English,Population 5 years and over,96.8,1.8
+S0501_C03_047E,"Estimate!!Foreign-born!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English!!Speak English less than very well""""",Population 5 years and over,77.8,4.9
+S0501_C03_048E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over,Population 16 years and over,9971,1045
+S0501_C03_049E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force,Population 16 years and over,56.0,5.6
+S0501_C03_050E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force,Population 16 years and over,56.0,5.6
+S0501_C03_051E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Employed,Population 16 years and over,50.7,5.5
+S0501_C03_052E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed,Population 16 years and over,5.3,1.8
+S0501_C03_053E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed!!Percent of civilian labor force,Population 16 years and over,9.5,3.2
+S0501_C03_054E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Armed Forces,Population 16 years and over,0.0,0.5
+S0501_C03_055E,Estimate!!Foreign-born!!EMPLOYMENT STATUS!!Population 16 years and over!!Not in labor force,Population 16 years and over,44.0,5.6
+S0501_C03_056E,Estimate!!Foreign-born!!Civilian employed population 16 years and over,Civilian employed population 16 years and over,5051,768
+S0501_C03_057E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Private wage and salary workers,CLASS OF WORKER,83.9,5.1
+S0501_C03_058E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Government workers,CLASS OF WORKER,2.1,1.3
+S0501_C03_059E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Self-employed workers in own not incorporated business,CLASS OF WORKER,13.8,4.8
+S0501_C03_060E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Unpaid family workers,CLASS OF WORKER,0.2,0.3
+S0501_C03_061E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!OCCUPATION!!Management, business, science, and arts occupations",OCCUPATION,5.2,3.4
+S0501_C03_062E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!OCCUPATION!!Service occupations,OCCUPATION,35.2,7.2
+S0501_C03_063E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!OCCUPATION!!Sales and office occupations,OCCUPATION,6.8,2.6
+S0501_C03_064E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!OCCUPATION!!Natural resources, construction, and maintenance occupations",OCCUPATION,40.2,6.8
+S0501_C03_065E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!OCCUPATION!!Production, transportation, and material moving occupations",OCCUPATION,12.6,4.4
+S0501_C03_066E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Agriculture, forestry, fishing and hunting, and mining",INDUSTRY,0.1,0.2
+S0501_C03_067E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Construction,INDUSTRY,38.4,7.1
+S0501_C03_068E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Manufacturing,INDUSTRY,5.9,2.6
+S0501_C03_069E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Wholesale trade,INDUSTRY,1.1,1.3
+S0501_C03_070E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Retail trade,INDUSTRY,5.6,2.7
+S0501_C03_071E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Transportation and warehousing, and utilities",INDUSTRY,2.0,1.5
+S0501_C03_072E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Information,INDUSTRY,0.8,0.9
+S0501_C03_073E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Finance and insurance, and real estate and rental and leasing",INDUSTRY,2.4,1.5
+S0501_C03_074E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Professional, scientific, and management, and administrative and waste management services",INDUSTRY,10.4,4.3
+S0501_C03_075E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Educational services, and health care and social assistance",INDUSTRY,5.1,2.2
+S0501_C03_076E,"Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Arts, entertainment, and recreation, and accommodation and food services",INDUSTRY,22.2,10.0
+S0501_C03_077E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Other services (except public administration),INDUSTRY,5.5,3.1
+S0501_C03_078E,Estimate!!Foreign-born!!Civilian employed population 16 years and over!!INDUSTRY!!Public administration,INDUSTRY,0.5,0.6
+S0501_C03_079E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings",Population 16 years and over with earnings,2613,443
+S0501_C03_080E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$1 to $9,999 or loss",Population 16 years and over with earnings,1.3,1.4
+S0501_C03_081E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$10,000 to $14,999",Population 16 years and over with earnings,3.0,2.3
+S0501_C03_082E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$15,000 to $24,999",Population 16 years and over with earnings,20.2,7.4
+S0501_C03_083E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$25,000 to $34,999",Population 16 years and over with earnings,24.2,5.9
+S0501_C03_084E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$35,000 to $49,999",Population 16 years and over with earnings,38.0,9.4
+S0501_C03_085E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$50,000 to $74,999",Population 16 years and over with earnings,9.8,5.1
+S0501_C03_086E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$75,000 or more",Population 16 years and over with earnings,3.5,2.9
+S0501_C03_087E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Male",Population 16 years and over with earnings,36821,4000
+S0501_C03_088E,"Estimate!!Foreign-born!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Female",Population 16 years and over with earnings,30772,4179
+S0501_C03_089E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households,Households,4736,568
+S0501_C03_090E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings,Households,75.7,6.2
+S0501_C03_091E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings!!Mean earnings (dollars),Households,50773,8651
+S0501_C03_092E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income,Households,36.1,6.2
+S0501_C03_093E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income!!Mean Social Security income (dollars),Households,13909,1497
+S0501_C03_094E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income,Households,16.2,4.9
+S0501_C03_095E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income!!Mean Supplemental Security Income (dollars),Households,9975,1431
+S0501_C03_096E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income,Households,2.7,2.0
+S0501_C03_097E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income!!Mean cash public assistance income (dollars),Households,2640,717
+S0501_C03_098E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income,Households,9.2,3.5
+S0501_C03_099E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income!!Mean retirement income (dollars),Households,13180,4156
+S0501_C03_100E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Food Stamp/SNAP benefits,Households,44.4,6.7
+S0501_C03_101E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Median Household income (dollars),Households,30586,4109
+S0501_C03_102E,Estimate!!Foreign-born!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Average number of workers per household,Households,1.23,0.20
+S0501_C03_103E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined,Population for whom poverty status is determined,10194,1187
+S0501_C03_104E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!Below 100 percent of the poverty level,Population for whom poverty status is determined,39.2,6.1
+S0501_C03_105E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!100 to 199 percent of the poverty level,Population for whom poverty status is determined,32.3,5.5
+S0501_C03_106E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!At or above 200 percent of the poverty level,Population for whom poverty status is determined,28.6,5.7
+S0501_C03_107E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,32.8,6.2
+S0501_C03_108E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,46.8,9.8
+S0501_C03_109E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,9.3,13.7
+S0501_C03_110E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,29.7,8.0
+S0501_C03_111E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,39.4,13.2
+S0501_C03_112E,Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,9.8,28.5
+S0501_C03_113E,"Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,38.9,15.0
+S0501_C03_114E,"Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 18 years",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,49.2,17.2
+S0501_C03_115E,"Estimate!!Foreign-born!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 5 years only",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,10.8,22.3
+S0501_C03_116E,Estimate!!Foreign-born!!Occupied housing units,Occupied housing units,4736,568
+S0501_C03_117E,Estimate!!Foreign-born!!Occupied housing units!!HOUSING TENURE!!Owner-occupied housing units,HOUSING TENURE,45.6,6.3
+S0501_C03_118E,Estimate!!Foreign-born!!Occupied housing units!!HOUSING TENURE!!Renter-occupied housing units,HOUSING TENURE,54.4,6.3
+S0501_C03_119E,Estimate!!Foreign-born!!Occupied housing units!!HOUSING TENURE!!Average household size of owner-occupied unit,HOUSING TENURE,3.64,0.44
+S0501_C03_120E,Estimate!!Foreign-born!!Occupied housing units!!HOUSING TENURE!!Average household size of renter-occupied unit,HOUSING TENURE,2.81,0.41
+S0501_C03_121E,Estimate!!Foreign-born!!Occupied housing units!!ROOMS!!1 room,ROOMS,2.9,1.7
+S0501_C03_122E,Estimate!!Foreign-born!!Occupied housing units!!ROOMS!!2 or 3 rooms,ROOMS,22.8,7.1
+S0501_C03_123E,Estimate!!Foreign-born!!Occupied housing units!!ROOMS!!4 or 5 rooms,ROOMS,52.5,5.9
+S0501_C03_124E,Estimate!!Foreign-born!!Occupied housing units!!ROOMS!!6 or 7 rooms,ROOMS,17.5,4.8
+S0501_C03_125E,Estimate!!Foreign-born!!Occupied housing units!!ROOMS!!8 or more rooms,ROOMS,4.2,2.7
+S0501_C03_126E,Estimate!!Foreign-born!!Occupied housing units!!Median number of rooms,Median number of rooms,4.3,0.2
+S0501_C03_127E,Estimate!!Foreign-born!!Occupied housing units!!1.01 or more occupants per room,1.01 or more occupants per room,15.4,5.6
+S0501_C03_128E,Estimate!!Foreign-born!!Occupied housing units!!VEHICLES AVAILABLE!!None,VEHICLES AVAILABLE,17.4,4.7
+S0501_C03_129E,Estimate!!Foreign-born!!Occupied housing units!!VEHICLES AVAILABLE!!1 or more,VEHICLES AVAILABLE,82.6,4.7
+S0501_C03_130E,Estimate!!Foreign-born!!Occupied housing units!!SELECTED CHARACTERISTICS!!No telephone service available,SELECTED CHARACTERISTICS,2.3,1.8
+S0501_C03_131E,Estimate!!Foreign-born!!Occupied housing units!!SELECTED CHARACTERISTICS!!Limited English Speaking Households,SELECTED CHARACTERISTICS,55.5,6.5
+S0501_C03_132E,Estimate!!Foreign-born!!Owner-occupied housing units,Owner-occupied housing units,2160,361
+S0501_C03_133E,Estimate!!Foreign-born!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,78.6,8.4
+S0501_C03_134E,Estimate!!Foreign-born!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,21.4,8.4
+S0501_C03_135E,Estimate!!Foreign-born!!Renter-occupied housing units,Renter-occupied housing units,2576,458
+S0501_C03_136E,Estimate!!Foreign-born!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,34.5,9.5
+S0501_C03_137E,Estimate!!Foreign-born!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,65.5,9.5
+S0501_C04_001E,Estimate!!Foreign-born; Naturalized citizen!!Total population,Total population,2694,566
+S0501_C04_002E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!Male,SEX AND AGE,48.9,9.8
+S0501_C04_003E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!Female,SEX AND AGE,51.1,9.8
+S0501_C04_004E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!Under 5 years,SEX AND AGE,0.0,1.8
+S0501_C04_005E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!5 to 17 years,SEX AND AGE,0.5,0.7
+S0501_C04_006E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!18 to 24 years,SEX AND AGE,1.8,1.7
+S0501_C04_007E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!25 to 44 years,SEX AND AGE,17.0,5.9
+S0501_C04_008E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!45 to 54 years,SEX AND AGE,9.6,5.7
+S0501_C04_009E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!55 to 64 years,SEX AND AGE,28.4,8.1
+S0501_C04_010E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!65 to 74 years,SEX AND AGE,22.0,7.7
+S0501_C04_011E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!75 to 84 years,SEX AND AGE,10.5,4.3
+S0501_C04_012E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!85 years and over,SEX AND AGE,10.2,9.4
+S0501_C04_013E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!SEX AND AGE!!Median age (years),SEX AND AGE,62.2,3.1
+S0501_C04_014E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race,RACE AND HISPANIC OR LATINO ORIGIN,39.7,10.3
+S0501_C04_015E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!White,RACE AND HISPANIC OR LATINO ORIGIN,10.8,4.1
+S0501_C04_016E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Black or African American,RACE AND HISPANIC OR LATINO ORIGIN,2.8,4.7
+S0501_C04_017E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!American Indian and Alaska Native,RACE AND HISPANIC OR LATINO ORIGIN,2.9,2.5
+S0501_C04_018E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Asian,RACE AND HISPANIC OR LATINO ORIGIN,4.4,3.4
+S0501_C04_019E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Native Hawaiian and Other Pacific Islander,RACE AND HISPANIC OR LATINO ORIGIN,0.0,1.8
+S0501_C04_020E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Some other race,RACE AND HISPANIC OR LATINO ORIGIN,18.8,9.2
+S0501_C04_021E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Two or more races,RACE AND HISPANIC OR LATINO ORIGIN,60.3,10.3
+S0501_C04_022E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Hispanic or Latino origin (of any race),RACE AND HISPANIC OR LATINO ORIGIN,91.0,6.0
+S0501_C04_023E,"Estimate!!Foreign-born; Naturalized citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!White alone, not Hispanic or Latino",RACE AND HISPANIC OR LATINO ORIGIN,1.8,2.2
+S0501_C04_024E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!HOUSEHOLD TYPE!!In married-couple family,HOUSEHOLD TYPE,56.8,9.7
+S0501_C04_025E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!HOUSEHOLD TYPE!!In other households,HOUSEHOLD TYPE,39.0,9.7
+S0501_C04_026E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!Average  household size,Average  household size,3.16,0.42
+S0501_C04_027E,Estimate!!Foreign-born; Naturalized citizen!!Total population!!Average family size,Average family size,3.77,0.46
+S0501_C04_028E,Estimate!!Foreign-born; Naturalized citizen!!MARITAL STATUS!!Population 15  years and over,Population 15  years and over,2694,566
+S0501_C04_029E,Estimate!!Foreign-born; Naturalized citizen!!MARITAL STATUS!!Population 15  years and over!!Never married,Population 15  years and over,13.8,5.8
+S0501_C04_030E,"Estimate!!Foreign-born; Naturalized citizen!!MARITAL STATUS!!Population 15  years and over!!Now married, except separated",Population 15  years and over,51.3,8.7
+S0501_C04_031E,Estimate!!Foreign-born; Naturalized citizen!!MARITAL STATUS!!Population 15  years and over!!Divorced or separated,Population 15  years and over,17.3,6.5
+S0501_C04_032E,Estimate!!Foreign-born; Naturalized citizen!!MARITAL STATUS!!Population 15  years and over!!Widowed,Population 15  years and over,17.6,9.1
+S0501_C04_033E,Estimate!!Foreign-born; Naturalized citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school,Population 3 years and over enrolled in school,141,91
+S0501_C04_034E,"Estimate!!Foreign-born; Naturalized citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Nursery school, preschool",Population 3 years and over enrolled in school,0.0,29.0
+S0501_C04_035E,Estimate!!Foreign-born; Naturalized citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Elementary school (grades K-8),Population 3 years and over enrolled in school,5.7,8.6
+S0501_C04_036E,Estimate!!Foreign-born; Naturalized citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!High school (grades 9-12),Population 3 years and over enrolled in school,17.7,25.4
+S0501_C04_037E,Estimate!!Foreign-born; Naturalized citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!College or graduate school,Population 3 years and over enrolled in school,76.6,29.2
+S0501_C04_038E,Estimate!!Foreign-born; Naturalized citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over,Population 25 years and over,2633,561
+S0501_C04_039E,Estimate!!Foreign-born; Naturalized citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Less than high school graduate,Population 25 years and over,56.1,8.1
+S0501_C04_040E,Estimate!!Foreign-born; Naturalized citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!High school graduate (includes equivalency),Population 25 years and over,24.5,7.2
+S0501_C04_041E,Estimate!!Foreign-born; Naturalized citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Some college or associate's degree,Population 25 years and over,16.1,4.6
+S0501_C04_042E,Estimate!!Foreign-born; Naturalized citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Bachelor's degree,Population 25 years and over,1.9,1.5
+S0501_C04_043E,Estimate!!Foreign-born; Naturalized citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Graduate or professional degree,Population 25 years and over,1.4,1.9
+S0501_C04_044E,Estimate!!Foreign-born; Naturalized citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over,Population 5 years and over,2694,566
+S0501_C04_045E,Estimate!!Foreign-born; Naturalized citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!English only,Population 5 years and over,5.8,5.4
+S0501_C04_046E,Estimate!!Foreign-born; Naturalized citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English,Population 5 years and over,94.2,5.4
+S0501_C04_047E,"Estimate!!Foreign-born; Naturalized citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English!!Speak English less than very well""""",Population 5 years and over,72.4,9.7
+S0501_C04_048E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over,Population 16 years and over,2694,566
+S0501_C04_049E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force,Population 16 years and over,37.0,8.2
+S0501_C04_050E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force,Population 16 years and over,37.0,8.2
+S0501_C04_051E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Employed,Population 16 years and over,31.6,7.5
+S0501_C04_052E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed,Population 16 years and over,5.5,4.6
+S0501_C04_053E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed!!Percent of civilian labor force,Population 16 years and over,14.7,11.2
+S0501_C04_054E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Armed Forces,Population 16 years and over,0.0,1.8
+S0501_C04_055E,Estimate!!Foreign-born; Naturalized citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!Not in labor force,Population 16 years and over,63.0,8.2
+S0501_C04_056E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over,Civilian employed population 16 years and over,851,239
+S0501_C04_057E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Private wage and salary workers,CLASS OF WORKER,78.5,9.8
+S0501_C04_058E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Government workers,CLASS OF WORKER,9.0,6.6
+S0501_C04_059E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Self-employed workers in own not incorporated business,CLASS OF WORKER,11.2,6.6
+S0501_C04_060E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Unpaid family workers,CLASS OF WORKER,1.3,2.0
+S0501_C04_061E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Management, business, science, and arts occupations",OCCUPATION,11.8,7.1
+S0501_C04_062E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Service occupations,OCCUPATION,26.3,9.0
+S0501_C04_063E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Sales and office occupations,OCCUPATION,11.8,6.8
+S0501_C04_064E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Natural resources, construction, and maintenance occupations",OCCUPATION,20.0,11.5
+S0501_C04_065E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Production, transportation, and material moving occupations",OCCUPATION,30.2,12.1
+S0501_C04_066E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Agriculture, forestry, fishing and hunting, and mining",INDUSTRY,0.6,0.9
+S0501_C04_067E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Construction,INDUSTRY,18.6,11.1
+S0501_C04_068E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Manufacturing,INDUSTRY,16.5,9.4
+S0501_C04_069E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Wholesale trade,INDUSTRY,0.4,0.6
+S0501_C04_070E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Retail trade,INDUSTRY,12.6,8.4
+S0501_C04_071E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Transportation and warehousing, and utilities",INDUSTRY,2.5,4.0
+S0501_C04_072E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Information,INDUSTRY,2.8,3.0
+S0501_C04_073E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Finance and insurance, and real estate and rental and leasing",INDUSTRY,4.0,3.2
+S0501_C04_074E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Professional, scientific, and management, and administrative and waste management services",INDUSTRY,6.6,5.6
+S0501_C04_075E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Educational services, and health care and social assistance",INDUSTRY,19.2,10.2
+S0501_C04_076E,"Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Arts, entertainment, and recreation, and accommodation and food services",INDUSTRY,6.8,5.7
+S0501_C04_077E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Other services (except public administration),INDUSTRY,8.6,8.5
+S0501_C04_078E,Estimate!!Foreign-born; Naturalized citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Public administration,INDUSTRY,1.1,1.9
+S0501_C04_079E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings",Population 16 years and over with earnings,602,194
+S0501_C04_080E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$1 to $9,999 or loss",Population 16 years and over with earnings,0.0,8.0
+S0501_C04_081E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$10,000 to $14,999",Population 16 years and over with earnings,3.0,3.9
+S0501_C04_082E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$15,000 to $24,999",Population 16 years and over with earnings,15.9,9.9
+S0501_C04_083E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$25,000 to $34,999",Population 16 years and over with earnings,25.9,11.8
+S0501_C04_084E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$35,000 to $49,999",Population 16 years and over with earnings,33.1,14.8
+S0501_C04_085E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$50,000 to $74,999",Population 16 years and over with earnings,8.5,8.6
+S0501_C04_086E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$75,000 or more",Population 16 years and over with earnings,13.6,10.7
+S0501_C04_087E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Male",Population 16 years and over with earnings,39620,3726
+S0501_C04_088E,"Estimate!!Foreign-born; Naturalized citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Female",Population 16 years and over with earnings,31556,8901
+S0501_C04_089E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households,Households,1432,304
+S0501_C04_090E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings,Households,65.8,9.5
+S0501_C04_091E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings!!Mean earnings (dollars),Households,73368,29308
+S0501_C04_092E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income,Households,52.8,11.5
+S0501_C04_093E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income!!Mean Social Security income (dollars),Households,16933,2240
+S0501_C04_094E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income,Households,21.4,9.2
+S0501_C04_095E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income!!Mean Supplemental Security Income (dollars),Households,9134,1838
+S0501_C04_096E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income,Households,6.0,6.0
+S0501_C04_097E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income!!Mean cash public assistance income (dollars),Households,3036,949
+S0501_C04_098E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income,Households,26.1,9.4
+S0501_C04_099E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income!!Mean retirement income (dollars),Households,14192,4915
+S0501_C04_100E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Food Stamp/SNAP benefits,Households,44.8,9.5
+S0501_C04_101E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Median Household income (dollars),Households,34395,10498
+S0501_C04_102E,Estimate!!Foreign-born; Naturalized citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Average number of workers per household,Households,1.09,0.31
+S0501_C04_103E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined,Population for whom poverty status is determined,2650,568
+S0501_C04_104E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!Below 100 percent of the poverty level,Population for whom poverty status is determined,28.6,8.5
+S0501_C04_105E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!100 to 199 percent of the poverty level,Population for whom poverty status is determined,32.2,8.3
+S0501_C04_106E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!At or above 200 percent of the poverty level,Population for whom poverty status is determined,39.2,9.2
+S0501_C04_107E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,21.3,9.1
+S0501_C04_108E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,36.1,19.9
+S0501_C04_109E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,20.0,31.0
+S0501_C04_110E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,26.4,11.4
+S0501_C04_111E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,57.2,28.1
+S0501_C04_112E,Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,57.1,57.1
+S0501_C04_113E,"Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,19.0,18.1
+S0501_C04_114E,"Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 18 years",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,23.6,30.8
+S0501_C04_115E,"Estimate!!Foreign-born; Naturalized citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 5 years only",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,12.7,28.8
+S0501_C04_116E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units,Occupied housing units,1432,304
+S0501_C04_117E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!HOUSING TENURE!!Owner-occupied housing units,HOUSING TENURE,71.9,9.7
+S0501_C04_118E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!HOUSING TENURE!!Renter-occupied housing units,HOUSING TENURE,28.1,9.7
+S0501_C04_119E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!HOUSING TENURE!!Average household size of owner-occupied unit,HOUSING TENURE,3.66,0.54
+S0501_C04_120E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!HOUSING TENURE!!Average household size of renter-occupied unit,HOUSING TENURE,1.88,0.38
+S0501_C04_121E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!ROOMS!!1 room,ROOMS,1.5,1.9
+S0501_C04_122E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!ROOMS!!2 or 3 rooms,ROOMS,15.9,7.2
+S0501_C04_123E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!ROOMS!!4 or 5 rooms,ROOMS,46.9,9.4
+S0501_C04_124E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!ROOMS!!6 or 7 rooms,ROOMS,28.5,9.1
+S0501_C04_125E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!ROOMS!!8 or more rooms,ROOMS,7.3,6.4
+S0501_C04_126E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!Median number of rooms,Median number of rooms,4.8,0.4
+S0501_C04_127E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!1.01 or more occupants per room,1.01 or more occupants per room,6.0,3.7
+S0501_C04_128E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!VEHICLES AVAILABLE!!None,VEHICLES AVAILABLE,18.8,9.3
+S0501_C04_129E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!VEHICLES AVAILABLE!!1 or more,VEHICLES AVAILABLE,81.2,9.3
+S0501_C04_130E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!SELECTED CHARACTERISTICS!!No telephone service available,SELECTED CHARACTERISTICS,2.4,2.3
+S0501_C04_131E,Estimate!!Foreign-born; Naturalized citizen!!Occupied housing units!!SELECTED CHARACTERISTICS!!Limited English Speaking Households,SELECTED CHARACTERISTICS,43.3,11.1
+S0501_C04_132E,Estimate!!Foreign-born; Naturalized citizen!!Owner-occupied housing units,Owner-occupied housing units,1030,249
+S0501_C04_133E,Estimate!!Foreign-born; Naturalized citizen!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,87.5,9.1
+S0501_C04_134E,Estimate!!Foreign-born; Naturalized citizen!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,12.5,9.1
+S0501_C04_135E,Estimate!!Foreign-born; Naturalized citizen!!Renter-occupied housing units,Renter-occupied housing units,402,168
+S0501_C04_136E,Estimate!!Foreign-born; Naturalized citizen!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,55.2,19.2
+S0501_C04_137E,Estimate!!Foreign-born; Naturalized citizen!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,44.8,19.2
+S0501_C05_001E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population,Total population,7934,1102
+S0501_C05_002E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!Male,SEX AND AGE,57.6,5.0
+S0501_C05_003E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!Female,SEX AND AGE,42.4,5.0
+S0501_C05_004E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!Under 5 years,SEX AND AGE,0.9,0.8
+S0501_C05_005E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!5 to 17 years,SEX AND AGE,8.4,2.7
+S0501_C05_006E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!18 to 24 years,SEX AND AGE,8.6,2.7
+S0501_C05_007E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!25 to 44 years,SEX AND AGE,35.4,5.5
+S0501_C05_008E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!45 to 54 years,SEX AND AGE,16.9,5.1
+S0501_C05_009E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!55 to 64 years,SEX AND AGE,13.9,4.0
+S0501_C05_010E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!65 to 74 years,SEX AND AGE,9.7,3.8
+S0501_C05_011E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!75 to 84 years,SEX AND AGE,4.2,1.6
+S0501_C05_012E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!85 years and over,SEX AND AGE,1.9,1.6
+S0501_C05_013E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!SEX AND AGE!!Median age (years),SEX AND AGE,42.5,4.2
+S0501_C05_014E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race,RACE AND HISPANIC OR LATINO ORIGIN,34.2,7.0
+S0501_C05_015E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!White,RACE AND HISPANIC OR LATINO ORIGIN,10.1,4.8
+S0501_C05_016E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Black or African American,RACE AND HISPANIC OR LATINO ORIGIN,2.4,3.2
+S0501_C05_017E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!American Indian and Alaska Native,RACE AND HISPANIC OR LATINO ORIGIN,8.3,5.0
+S0501_C05_018E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Asian,RACE AND HISPANIC OR LATINO ORIGIN,2.5,2.4
+S0501_C05_019E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Native Hawaiian and Other Pacific Islander,RACE AND HISPANIC OR LATINO ORIGIN,0.0,0.6
+S0501_C05_020E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!One race!!Some other race,RACE AND HISPANIC OR LATINO ORIGIN,10.8,3.8
+S0501_C05_021E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Two or more races,RACE AND HISPANIC OR LATINO ORIGIN,65.8,7.0
+S0501_C05_022E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!Hispanic or Latino origin (of any race),RACE AND HISPANIC OR LATINO ORIGIN,93.8,3.5
+S0501_C05_023E,"Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!RACE AND HISPANIC OR LATINO ORIGIN!!White alone, not Hispanic or Latino",RACE AND HISPANIC OR LATINO ORIGIN,3.0,3.9
+S0501_C05_024E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!HOUSEHOLD TYPE!!In married-couple family,HOUSEHOLD TYPE,41.2,8.3
+S0501_C05_025E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!HOUSEHOLD TYPE!!In other households,HOUSEHOLD TYPE,53.7,8.7
+S0501_C05_026E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!Average  household size,Average  household size,3.20,0.45
+S0501_C05_027E,Estimate!!Foreign-born; Not a U.S. citizen!!Total population!!Average family size,Average family size,4.20,0.48
+S0501_C05_028E,Estimate!!Foreign-born; Not a U.S. citizen!!MARITAL STATUS!!Population 15  years and over,Population 15  years and over,7376,986
+S0501_C05_029E,Estimate!!Foreign-born; Not a U.S. citizen!!MARITAL STATUS!!Population 15  years and over!!Never married,Population 15  years and over,32.7,6.4
+S0501_C05_030E,"Estimate!!Foreign-born; Not a U.S. citizen!!MARITAL STATUS!!Population 15  years and over!!Now married, except separated",Population 15  years and over,39.9,6.9
+S0501_C05_031E,Estimate!!Foreign-born; Not a U.S. citizen!!MARITAL STATUS!!Population 15  years and over!!Divorced or separated,Population 15  years and over,21.1,4.7
+S0501_C05_032E,Estimate!!Foreign-born; Not a U.S. citizen!!MARITAL STATUS!!Population 15  years and over!!Widowed,Population 15  years and over,6.3,2.5
+S0501_C05_033E,Estimate!!Foreign-born; Not a U.S. citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school,Population 3 years and over enrolled in school,948,324
+S0501_C05_034E,"Estimate!!Foreign-born; Not a U.S. citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Nursery school, preschool",Population 3 years and over enrolled in school,5.1,5.4
+S0501_C05_035E,Estimate!!Foreign-born; Not a U.S. citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!Elementary school (grades K-8),Population 3 years and over enrolled in school,48.7,15.3
+S0501_C05_036E,Estimate!!Foreign-born; Not a U.S. citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!High school (grades 9-12),Population 3 years and over enrolled in school,30.2,13.2
+S0501_C05_037E,Estimate!!Foreign-born; Not a U.S. citizen!!SCHOOL ENROLLMENT!!Population 3 years and over enrolled in school!!College or graduate school,Population 3 years and over enrolled in school,16.0,10.3
+S0501_C05_038E,Estimate!!Foreign-born; Not a U.S. citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over,Population 25 years and over,6515,819
+S0501_C05_039E,Estimate!!Foreign-born; Not a U.S. citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Less than high school graduate,Population 25 years and over,63.1,6.5
+S0501_C05_040E,Estimate!!Foreign-born; Not a U.S. citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!High school graduate (includes equivalency),Population 25 years and over,20.1,4.5
+S0501_C05_041E,Estimate!!Foreign-born; Not a U.S. citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Some college or associate's degree,Population 25 years and over,10.4,3.5
+S0501_C05_042E,Estimate!!Foreign-born; Not a U.S. citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Bachelor's degree,Population 25 years and over,5.8,4.6
+S0501_C05_043E,Estimate!!Foreign-born; Not a U.S. citizen!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Graduate or professional degree,Population 25 years and over,0.5,0.9
+S0501_C05_044E,Estimate!!Foreign-born; Not a U.S. citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over,Population 5 years and over,7864,1099
+S0501_C05_045E,Estimate!!Foreign-born; Not a U.S. citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!English only,Population 5 years and over,2.4,1.3
+S0501_C05_046E,Estimate!!Foreign-born; Not a U.S. citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English,Population 5 years and over,97.6,1.3
+S0501_C05_047E,"Estimate!!Foreign-born; Not a U.S. citizen!!LANGUAGE SPOKEN AT HOME AND ABILITY TO SPEAK ENGLISH!!Population 5 years and over!!Language other than English!!Speak English less than very well""""",Population 5 years and over,79.6,5.7
+S0501_C05_048E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over,Population 16 years and over,7277,944
+S0501_C05_049E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force,Population 16 years and over,63.0,6.2
+S0501_C05_050E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force,Population 16 years and over,63.0,6.2
+S0501_C05_051E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Employed,Population 16 years and over,57.7,6.0
+S0501_C05_052E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed,Population 16 years and over,5.2,2.0
+S0501_C05_053E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Civilian labor force!!Unemployed!!Percent of civilian labor force,Population 16 years and over,8.3,3.1
+S0501_C05_054E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!In labor force!!Armed Forces,Population 16 years and over,0.0,0.7
+S0501_C05_055E,Estimate!!Foreign-born; Not a U.S. citizen!!EMPLOYMENT STATUS!!Population 16 years and over!!Not in labor force,Population 16 years and over,37.0,6.2
+S0501_C05_056E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over,Civilian employed population 16 years and over,4200,736
+S0501_C05_057E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Private wage and salary workers,CLASS OF WORKER,85.0,5.8
+S0501_C05_058E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Government workers,CLASS OF WORKER,0.7,0.6
+S0501_C05_059E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Self-employed workers in own not incorporated business,CLASS OF WORKER,14.3,5.7
+S0501_C05_060E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!CLASS OF WORKER!!Unpaid family workers,CLASS OF WORKER,0.0,1.2
+S0501_C05_061E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Management, business, science, and arts occupations",OCCUPATION,3.9,4.1
+S0501_C05_062E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Service occupations,OCCUPATION,37.0,8.4
+S0501_C05_063E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Sales and office occupations,OCCUPATION,5.8,2.8
+S0501_C05_064E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Natural resources, construction, and maintenance occupations",OCCUPATION,44.3,7.9
+S0501_C05_065E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!OCCUPATION!!Production, transportation, and material moving occupations",OCCUPATION,9.0,4.4
+S0501_C05_066E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Agriculture, forestry, fishing and hunting, and mining",INDUSTRY,0.0,1.2
+S0501_C05_067E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Construction,INDUSTRY,42.4,8.4
+S0501_C05_068E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Manufacturing,INDUSTRY,3.8,2.3
+S0501_C05_069E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Wholesale trade,INDUSTRY,1.2,1.6
+S0501_C05_070E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Retail trade,INDUSTRY,4.2,2.6
+S0501_C05_071E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Transportation and warehousing, and utilities",INDUSTRY,1.9,1.5
+S0501_C05_072E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Information,INDUSTRY,0.4,0.7
+S0501_C05_073E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Finance and insurance, and real estate and rental and leasing",INDUSTRY,2.1,1.6
+S0501_C05_074E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Professional, scientific, and management, and administrative and waste management services",INDUSTRY,11.2,5.3
+S0501_C05_075E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Educational services, and health care and social assistance",INDUSTRY,2.3,1.5
+S0501_C05_076E,"Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Arts, entertainment, and recreation, and accommodation and food services",INDUSTRY,25.3,11.5
+S0501_C05_077E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Other services (except public administration),INDUSTRY,4.9,3.0
+S0501_C05_078E,Estimate!!Foreign-born; Not a U.S. citizen!!Civilian employed population 16 years and over!!INDUSTRY!!Public administration,INDUSTRY,0.4,0.6
+S0501_C05_079E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings",Population 16 years and over with earnings,2011,401
+S0501_C05_080E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$1 to $9,999 or loss",Population 16 years and over with earnings,1.6,1.9
+S0501_C05_081E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$10,000 to $14,999",Population 16 years and over with earnings,3.0,2.7
+S0501_C05_082E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$15,000 to $24,999",Population 16 years and over with earnings,21.5,9.6
+S0501_C05_083E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$25,000 to $34,999",Population 16 years and over with earnings,23.7,7.2
+S0501_C05_084E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$35,000 to $49,999",Population 16 years and over with earnings,39.5,11.7
+S0501_C05_085E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$50,000 to $74,999",Population 16 years and over with earnings,10.1,6.5
+S0501_C05_086E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!$75,000 or more",Population 16 years and over with earnings,0.5,1.0
+S0501_C05_087E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Male",Population 16 years and over with earnings,35916,5073
+S0501_C05_088E,"Estimate!!Foreign-born; Not a U.S. citizen!!EARNINGS IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS) FOR FULL-TIME, YEAR-ROUND WORKERS!!Population 16 years and over with earnings!!Median earnings (dollars) for full-time, year-round workers!!Female",Population 16 years and over with earnings,29766,9134
+S0501_C05_089E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households,Households,3304,516
+S0501_C05_090E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings,Households,80.0,8.3
+S0501_C05_091E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With earnings!!Mean earnings (dollars),Households,42723,6067
+S0501_C05_092E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income,Households,28.9,7.2
+S0501_C05_093E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Social Security income!!Mean Social Security income (dollars),Households,11515,1753
+S0501_C05_094E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income,Households,13.9,6.4
+S0501_C05_095E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Supplemental Security Income!!Mean Supplemental Security Income (dollars),Households,10536,2022
+S0501_C05_096E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income,Households,1.2,1.1
+S0501_C05_097E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With cash public assistance income!!Mean cash public assistance income (dollars),Households,1790,402
+S0501_C05_098E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income,Households,1.9,1.8
+S0501_C05_099E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With retirement income!!Mean retirement income (dollars),Households,7171,5240
+S0501_C05_100E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!With Food Stamp/SNAP benefits,Households,44.2,8.7
+S0501_C05_101E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Median Household income (dollars),Households,28865,4248
+S0501_C05_102E,Estimate!!Foreign-born; Not a U.S. citizen!!INCOME IN THE PAST 12 MONTHS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Households!!Average number of workers per household,Households,1.30,0.23
+S0501_C05_103E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined,Population for whom poverty status is determined,7544,1087
+S0501_C05_104E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!Below 100 percent of the poverty level,Population for whom poverty status is determined,42.9,7.3
+S0501_C05_105E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!100 to 199 percent of the poverty level,Population for whom poverty status is determined,32.3,6.9
+S0501_C05_106E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!Population for whom poverty status is determined!!At or above 200 percent of the poverty level,Population for whom poverty status is determined,24.8,6.7
+S0501_C05_107E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,39.3,8.7
+S0501_C05_108E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,50.2,11.9
+S0501_C05_109E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!All families!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,0.0,37.1
+S0501_C05_110E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,31.6,12.4
+S0501_C05_111E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 18 years,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,34.7,16.1
+S0501_C05_112E,Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Married-couple family!!With related children of the householder under 5 years only,POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,0.0,44.6
+S0501_C05_113E,"Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,53.3,16.7
+S0501_C05_114E,"Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 18 years",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,59.4,19.6
+S0501_C05_115E,"Estimate!!Foreign-born; Not a U.S. citizen!!POVERTY STATUS IN THE PAST 12 MONTHS!!POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED!!Female householder, no spouse present, family!!With related children of the householder under 5 years only",POVERTY RATES FOR FAMILIES FOR WHOM POVERTY STATUS IS DETERMINED,0.0,100.0
+S0501_C05_116E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units,Occupied housing units,3304,516
+S0501_C05_117E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!HOUSING TENURE!!Owner-occupied housing units,HOUSING TENURE,34.2,6.6
+S0501_C05_118E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!HOUSING TENURE!!Renter-occupied housing units,HOUSING TENURE,65.8,6.6
+S0501_C05_119E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!HOUSING TENURE!!Average household size of owner-occupied unit,HOUSING TENURE,3.62,0.69
+S0501_C05_120E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!HOUSING TENURE!!Average household size of renter-occupied unit,HOUSING TENURE,2.98,0.50
+S0501_C05_121E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!ROOMS!!1 room,ROOMS,3.5,2.4
+S0501_C05_122E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!ROOMS!!2 or 3 rooms,ROOMS,25.8,9.4
+S0501_C05_123E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!ROOMS!!4 or 5 rooms,ROOMS,55.0,8.0
+S0501_C05_124E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!ROOMS!!6 or 7 rooms,ROOMS,12.7,4.9
+S0501_C05_125E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!ROOMS!!8 or more rooms,ROOMS,2.9,2.4
+S0501_C05_126E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!Median number of rooms,Median number of rooms,4.2,0.3
+S0501_C05_127E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!1.01 or more occupants per room,1.01 or more occupants per room,19.4,7.6
+S0501_C05_128E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!VEHICLES AVAILABLE!!None,VEHICLES AVAILABLE,16.7,5.4
+S0501_C05_129E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!VEHICLES AVAILABLE!!1 or more,VEHICLES AVAILABLE,83.3,5.4
+S0501_C05_130E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!SELECTED CHARACTERISTICS!!No telephone service available,SELECTED CHARACTERISTICS,2.3,2.4
+S0501_C05_131E,Estimate!!Foreign-born; Not a U.S. citizen!!Occupied housing units!!SELECTED CHARACTERISTICS!!Limited English Speaking Households,SELECTED CHARACTERISTICS,60.8,7.7
+S0501_C05_132E,Estimate!!Foreign-born; Not a U.S. citizen!!Owner-occupied housing units,Owner-occupied housing units,1130,266
+S0501_C05_133E,Estimate!!Foreign-born; Not a U.S. citizen!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,70.4,13.2
+S0501_C05_134E,Estimate!!Foreign-born; Not a U.S. citizen!!Owner-occupied housing units!!SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,29.6,13.2
+S0501_C05_135E,Estimate!!Foreign-born; Not a U.S. citizen!!Renter-occupied housing units,Renter-occupied housing units,2174,416
+S0501_C05_136E,Estimate!!Foreign-born; Not a U.S. citizen!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!Less than 30 percent,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,30.7,9.9
+S0501_C05_137E,Estimate!!Foreign-born; Not a U.S. citizen!!Renter-occupied housing units!!GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS!!30 percent or more,GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME IN THE PAST 12 MONTHS,69.3,9.9
