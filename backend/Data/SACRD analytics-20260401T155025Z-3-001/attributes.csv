@@ -1,0 +1,808 @@
+id,name,portal
+1,"ADHD",Mental Healthcare Portal
+95,"Adoption",Mental Healthcare Portal
+73,"Alzheimer’s/Dementia",Mental Healthcare Portal
+80,"Anger Management",Mental Healthcare Portal
+13,"Anxiety Disorders",Mental Healthcare Portal
+14,"Autism",Mental Healthcare Portal
+86,"Behavioral Therapy",Mental Healthcare Portal
+29,"Bereavement",Mental Healthcare Portal
+15,"Bipolar Disorders",Mental Healthcare Portal
+47,"Board Approved Clinical Consultant",Mental Healthcare Portal
+35,"Bullying",Mental Healthcare Portal
+58,"Case Management",Mental Healthcare Portal
+48,"Case Manager Certification",Mental Healthcare Portal
+49,"Certified Addiction Specialist",Mental Healthcare Portal
+50,"Certified Clinical Mental Health Counselor",Mental Healthcare Portal
+94,"Certified Counselors",Mental Healthcare Portal
+98,"Combat Trauma",Mental Healthcare Portal
+75,"Counseling Interns",Mental Healthcare Portal
+102,"Counselor",Mental Healthcare Portal
+60,"Couples Therapy/Counseling",Mental Healthcare Portal
+12,"Culture Matching",Mental Healthcare Portal
+16,"Depression",Mental Healthcare Portal
+51,"Diplomate in Clinical Social Work",Mental Healthcare Portal
+17,"Disruptive Disorders",Mental Healthcare Portal
+18,"Dissociative Disorders",Mental Healthcare Portal
+27,"Divorce",Mental Healthcare Portal
+28,"Domestic Violence",Mental Healthcare Portal
+97,"Donation Encouraged",Mental Healthcare Portal
+19,"Eating Disorders",Mental Healthcare Portal
+63,"Educational Service",Mental Healthcare Portal
+286,"Emergency Shelter",Big Bend Regional Resource Directory
+644,"Equine Therapy",Mental Healthcare Portal
+74,"Family Therapist",Mental Healthcare Portal
+57,"Family Therapy/Counseling",Mental Healthcare Portal
+69,"Free",Mental Healthcare Portal
+56,"Group Therapy/Counseling",Mental Healthcare Portal
+248,"Help Pay for Housing",Big Bend Regional Resource Directory
+233,"Help Pay for Transportation",Big Bend Regional Resource Directory
+247,"Help Pay for Utilities",Big Bend Regional Resource Directory
+92,"Homelessness",Mental Healthcare Portal
+76,"Hotline",Mental Healthcare Portal
+184,"Income-Restricted",Housing Finder
+55,"Individual Therapy/Counseling",Mental Healthcare Portal
+54,"Inpatient Hospitalization",Mental Healthcare Portal
+82,"Intellectual or Developmental Disability (IDD)",Mental Healthcare Portal
+36,"LCDC",Mental Healthcare Portal
+37,"LCSW",Mental Healthcare Portal
+38,"LMFT",Mental Healthcare Portal
+39,"LMSW",Mental Healthcare Portal
+96,"Loneliness",Mental Healthcare Portal
+40,"LPC",Mental Healthcare Portal
+41,"LPC-A",Mental Healthcare Portal
+42,"LVN",Mental Healthcare Portal
+52,"Master Addiction Counselor",Mental Healthcare Portal
+65,"Medicaid",Mental Healthcare Portal
+64,"Medicare",Mental Healthcare Portal
+59,"Medication Management",Mental Healthcare Portal
+77,"Meditation",Mental Healthcare Portal
+90,"Military Sexual Trauma (MST)",Mental Healthcare Portal
+89,"Mobile Assessment Team",Mental Healthcare Portal
+87,"Occupational Therapy",Mental Healthcare Portal
+20,"OCD",Mental Healthcare Portal
+44,"PA/NP",Mental Healthcare Portal
+61,"Pastoral Counseling",Mental Healthcare Portal
+93,"PCP",Mental Healthcare Portal
+62,"Peer Support",Mental Healthcare Portal
+21,"Personality Disorders",Mental Healthcare Portal
+101,"Play Therapy",Mental Healthcare Portal
+71,"PMHNP",Mental Healthcare Portal
+72,"PMHNP-BC",Mental Healthcare Portal
+91,"Pregnancy or Abortion",Mental Healthcare Portal
+66,"Private Insurance",Mental Healthcare Portal
+67,"Private Pay",Mental Healthcare Portal
+45,"Psychiatry",Mental Healthcare Portal
+100,"Psychological Testing",Mental Healthcare Portal
+46,"Psychology",Mental Healthcare Portal
+22,"Psychosis",Mental Healthcare Portal
+23,"PTSD/Trauma",Mental Healthcare Portal
+79,"QMHP",Mental Healthcare Portal
+34,"Race or Ethnicity Related Trauma",Mental Healthcare Portal
+78,"Recreation/Art/Music Therapy",Mental Healthcare Portal
+70,"Referral Required",Mental Healthcare Portal
+83,"Residential Care Services",Mental Healthcare Portal
+43,"RN",Mental Healthcare Portal
+99,"Sex Addiction",Mental Healthcare Portal
+31,"Sexual Abuse",Mental Healthcare Portal
+33,"Sexuality-related Trauma",Mental Healthcare Portal
+185,"Short-Term Lease Options",Housing Finder
+24,"Sleep Disorders",Mental Healthcare Portal
+68,"Sliding Scale",Mental Healthcare Portal
+25,"Somatic Symptom Disorders",Mental Healthcare Portal
+88,"Speech Therapy",Mental Healthcare Portal
+81,"Stress Management",Mental Healthcare Portal
+26,"Substance Use Disorders",Mental Healthcare Portal
+30,"Suicidal Ideation",Mental Healthcare Portal
+103,"Telehealth",Mental Healthcare Portal
+287,"Temporary Shelter",Big Bend Regional Resource Directory
+32,"Trafficking",Mental Healthcare Portal
+85,"Trained Facilitators",Mental Healthcare Portal
+53,"Trauma Informed Care",Mental Healthcare Portal
+262,"Adult Care",Big Bend Regional Resource Directory
+200,"Emergency Shelter for Adults and Families",The Famous Test Portal
+291,"Free or Affordable Computers",Digital Connectivity Asset Map
+197,"Other Information",Housing Finder
+199,"SA Homelink Access Points",The Famous Test Portal
+285,"Advocacy/Legal Aid",Big Bend Regional Resource Directory
+151,"All Bills Paid",Housing Finder
+104,"Amenities",Housing Finder
+144,"Application Fee",Housing Finder
+267,"Arts & Culture",Big Bend Regional Resource Directory
+195,"Built",Housing Finder
+174,"Bus Lines Nearby",Housing Finder
+140,"Central/Downtown",Housing Finder
+162,"Credit Check",Housing Finder
+165,"First-Time Renters",Housing Finder
+249,"Food Pantry",Big Bend Regional Resource Directory
+279,"Free Computer Use",Big Bend Regional Resource Directory
+152,"Income-Based",Housing Finder
+148,"Leasing Options",Housing Finder
+150,"Monthly income",Housing Finder
+569,"Myself",Mental Healthcare Portal
+132,"North",Housing Finder
+163,"Rental History Check",Housing Finder
+164,"Renter Insurance",Housing Finder
+288,"Skills & Training",Big Bend Regional Resource Directory
+232,"Transportation Assistance",Big Bend Regional Resource Directory
+639,"Adoption and Foster Care",Hill Country Resources
+243,"Chiropractors",Big Bend Regional Resource Directory
+110,"Efficiency",Housing Finder
+588,"Food",Hill Country Resources
+514,"For Landlords",Housing Services
+575,"Income Restricted",Housing Services
+419,"Legal Aid Referrals",Housing Services
+610,"Older Adult Services",Hill Country Resources
+606,"Overdose Prevention",Hill Country Resources
+637,"Parenting Classes",Hill Country Resources
+583,"Pet Friendly",Housing Services
+598,"Preventative Care and Wellness",Hill Country Resources
+315,"Rental Assistance",Housing Services
+304,"Rental Properties",Housing Services
+198,"Seniors",Housing Finder
+548,"Woman",Mental Healthcare Portal
+557,"Woman",Mental Healthcare Portal
+442,"English",Housing Services
+361,"Furniture",Housing Services
+428,"Home Repairs - Minor",Housing Services
+342,"Accessibility Modifications",Housing Services
+362,"Household Items",Housing Services
+368,"Short-term Storage",Housing Services
+397,"Spanish",Housing Services
+363,"Appliances - Major",Housing Services
+371,"Help Packing/Unpacking - Free",Housing Services
+398,"Languages other than English and Spanish",Housing Services
+429,"Safety - Fire Prevention",Housing Services
+360,"Appliances - Small",Housing Services
+434,"Help Packing/Unpacking - For a Fee",Housing Services
+430,"Safety - Fall Reduction",Housing Services
+954,"Advocacy",Older Adults
+356,"Code Compliance",Housing Services
+956,"Controlled Substance Disposal",Substance Use
+930,"Donation Encouraged",Substance Use
+373,"Help Moving - Free",Housing Services
+349,"Electrical",Housing Services
+435,"Help Moving - For a Fee",Housing Services
+348,"Plumbing",Housing Services
+369,"Removal and Disposal - Free",Housing Services
+353,"Heating and Cooling",Housing Services
+372,"Removal and Disposal - For a Fee",Housing Services
+937,"Court-Ordered Treatment",Substance Use
+344,"Weatherization",Housing Services
+149,"Admin Fee",Housing Finder
+166,"Broken Lease",Housing Finder
+182,"Bus Maps Link",Housing Finder
+250,"Free Food",Big Bend Regional Resource Directory
+141,"Inside 410",Housing Finder
+191,"Management Company",Housing Finder
+133,"Northeast",Housing Finder
+750,"Academic Support & Tutoring",IDD and Disability Support
+869,"Accessibility Modifications",Older Adults
+892,"Accessibility Modifications",Older Adults
+682,"Accessible",Substance Use
+711,"Accessible Spaces",IDD and Disability Support
+835,"Accessible Transportation",Older Adults
+780,"Accessible Vehicle Modification",IDD and Disability Support
+701,"Active Duty Military",Substance Use
+775,"Adapted Entertainment & Activities",IDD and Disability Support
+760,"Adapted Sports & Recreation",IDD and Disability Support
+730,"Adaptive Clothing & Products",IDD and Disability Support
+856,"Adult Day Care",Older Adults
+636,"Adult Education",Hill Country Resources
+688,"Adults (25+)",Substance Use
+614,"Advocacy and Legal Aid",Hill Country Resources
+667,"Al-Anon/Alateen",Substance Use
+576,"All Bills Paid",Housing Services
+180,"Assisted Living",Housing Finder
+899,"Basic Computer & Internet Skills",Older Adults
+842,"Benefit Assistance",Older Adults
+713,"Benefits Navigation",IDD and Disability Support
+735,"Benefits Navigation",IDD and Disability Support
+784,"Blind & Visually Impaired",IDD and Disability Support
+909,"Caregiver of Parent(s) or Other Family",Older Adults
+813,"Caregiver Support Groups",Older Adults
+740,"Caregiver Support Groups",IDD and Disability Support
+608,"Child and Family Protection",Hill Country Resources
+589,"Clothing",Hill Country Resources
+818,"Community Events & Outings",Older Adults
+851,"Community Meals",Older Adults
+648,"Community Presentations & Training",Substance Use
+655,"Court-Ordered Screening",Substance Use
+663,"Crisis Hotlines",Substance Use
+745,"Day Habilitation",IDD and Disability Support
+678,"Detox",Substance Use
+726,"Developmental Screenings",IDD and Disability Support
+772,"Disability Awareness Training",IDD and Disability Support
+658,"Dual Diagnosis Treatment Programs",Substance Use
+111,"Efficiency",Housing Finder
+620,"Emergency Care",Hill Country Resources
+322,"Emergency Shelter",Housing Services
+767,"Emergency Shelters",IDD and Disability Support
+840,"Encore Career Guidance",Older Adults
+10,"English",Mental Healthcare Portal
+829,"Estate Planning",Older Adults
+902,"Faith-based Volunteering",Older Adults
+651,"Family Counseling",Substance Use
+665,"Family Intervention Education & Coaching",Substance Use
+515,"For Prospective Homeowners",Housing Services
+503,"For Renters",Housing Services
+694,"Free",Substance Use
+802,"Free",IDD and Disability Support
+921,"Free",Older Adults
+592,"Help Find Housing",Hill Country Resources
+303,"Homeless",Housing Services
+468,"ID Recovery",Housing Services
+475,"Income",Housing Services
+792,"Infants & Toddlers",IDD and Disability Support
+672,"Job Placement Assistance",Substance Use
+549,"Man",Mental Healthcare Portal
+558,"Man",Mental Healthcare Portal
+660,"Naloxone Supplies and Training",Substance Use
+642,"Network Opportunities",Hill Country Resources
+755,"On-the-Job Support",IDD and Disability Support
+631,"Preschool",Hill Country Resources
+605,"Rehabilitation",Hill Country Resources
+477,"Single Adult - Male",Housing Services
+676,"Sober Living",Substance Use
+799,"Spanish",IDD and Disability Support
+918,"Spanish",Older Adults
+431,"Structural Repairs - Foundation",Housing Services
+284,"Vision Care",Big Bend Regional Resource Directory
+640,"Workforce Readiness",Hill Country Resources
+346,"Structural Repairs - Roof",Housing Services
+432,"Structural Repairs - Siding",Housing Services
+350,"Structural Repairs - Flooring",Housing Services
+351,"Structural Repairs - Windows and Doors",Housing Services
+943,"Assistive Technology (AT)",Older Adults
+931,"Court-Ordered Education",Substance Use
+433,"Drainage",Housing Services
+540,"Interior Update and Repairs",Housing Services
+541,"Major Appliance Repair and Installation",Housing Services
+355,"Tree and Landscape Assistance",Housing Services
+345,"Pest Control",Housing Services
+134,"East",Housing Finder
+167,"Eviction",Housing Finder
+153,"Market Rate",Housing Finder
+142,"Outside 410 but Inside 1604",Housing Finder
+196,"Stories",Housing Finder
+113,"1BR",Housing Finder
+712,"Accessible Travel Resources",IDD and Disability Support
+887,"Activities of Daily Living (ADLs)",Older Adults
+751,"Adult Basic & Ongoing Education (ABOE)",IDD and Disability Support
+870,"Aging in Place",Older Adults
+668,"Alcoholics Anonymous",Substance Use
+776,"Arts",IDD and Disability Support
+683,"ASL",Substance Use
+800,"ASL",IDD and Disability Support
+919,"ASL",Older Adults
+731,"Assistive Technology (AT)",IDD and Disability Support
+814,"Caregiver Training",Older Adults
+741,"Caregiver Training & Mentoring",IDD and Disability Support
+632,"Childcare",Hill Country Resources
+794,"Children",IDD and Disability Support
+689,"Children (<13)",Substance Use
+843,"Connectivity Assistance",Older Adults
+785,"Deaf & Hard of Hearing",IDD and Disability Support
+857,"Dementia Education & Training",Older Adults
+727,"Diagnostic Evaluations",IDD and Disability Support
+714,"Disability Rights Information & Training",IDD and Disability Support
+358,"Disaster cleanup",Housing Services
+893,"Durable Medical Equipment (DME)",Older Adults
+773,"Employee Accommodation Guidance",IDD and Disability Support
+656,"Employment Screening",Substance Use
+841,"Encore Career Training",Older Adults
+611,"End of Life Services",Hill Country Resources
+830,"Eviction Prevention",Older Adults
+819,"Exercise & Fitness",Older Adults
+702,"Experiencing Homelessness",Substance Use
+852,"Food Pantries",Older Adults
+520,"For Homeowners",Housing Services
+504,"For Prospective Homeowner",Housing Services
+903,"Friendly Visitor Programs",Older Adults
+768,"Group Homes & Supervised Living",IDD and Disability Support
+652,"Group Therapy and Counseling",Substance Use
+609,"Help Escaping Violence",Hill Country Resources
+641,"Help Finding Work",Hill Country Resources
+593,"Help Pay for Housing",Hill Country Resources
+746,"Homemaking Assistance",IDD and Disability Support
+590,"Household Goods",Hill Country Resources
+420,"Housing Counseling",Housing Services
+615,"Immigration Services",Hill Country Resources
+761,"In-Home Skilled Care",IDD and Disability Support
+473,"Income",Housing Services
+577,"Income Based",Housing Services
+659,"Integrated Screening and Assessment",Substance Use
+666,"Intervention Professionals",Substance Use
+673,"Job Readiness and Resume Support",Substance Use
+559,"LGBTQ+",Mental Healthcare Portal
+695,"Medicaid",Substance Use
+803,"Medicaid",IDD and Disability Support
+922,"Medicaid",Older Adults
+836,"Medical Transportation",Older Adults
+679,"Medication Assisted Treatment (MAT)",Substance Use
+900,"Mobile Device & App Training",Older Adults
+316,"Mortgage Assistance",Housing Services
+283,"Nutrition Education",Big Bend Regional Resource Directory
+661,"Overdose Prevention Education",Substance Use
+781,"Paratransit Services",IDD and Disability Support
+649,"Parent & Family Education",Substance Use
+664,"Peer Operated Hotlines",Substance Use
+604,"Peer Support Groups",Hill Country Resources
+756,"Pre-Vocational Training",IDD and Disability Support
+302,"Renter",Housing Services
+478,"Single Adult - Female",Housing Services
+11,"Spanish",Mental Healthcare Portal
+677,"Supportive Housing",Substance Use
+323,"Temporary Shelter",Housing Services
+550,"Transgender Woman",Mental Healthcare Portal
+599,"Urgent Care",Hill Country Resources
+643,"Volunteer and Support Opportunities",Hill Country Resources
+176,"Wheelchair Accessible",Housing Finder
+935,"Mental Health Diagnosis",IDD and Disability Support
+811,"Charitable Funding",IDD and Disability Support
+951,"Final Arrangements",Older Adults
+521,"Student Housing",Housing Finder
+547,"Weather Relief",Housing Services
+936,"Medical Diagnosis",IDD and Disability Support
+168,"Foreclosure",Housing Finder
+143,"Outside 1604",Housing Finder
+145,"Risk Fee",Housing Finder
+154,"SARAH PLACE",Housing Finder
+146,"Security Deposit",Housing Finder
+135,"Southeast",Housing Finder
+105,"Units",Housing Finder
+112,"1BR",Housing Finder
+871,"Affordable Housing Assistance",Older Adults
+289,"ASL",Mental Healthcare Portal
+612,"Bereavement and Grief",Hill Country Resources
+777,"Camps",IDD and Disability Support
+479,"Childless Couple",Housing Services
+633,"Children's Programs",Hill Country Resources
+911,"Cognitively Impaired",Older Adults
+732,"Communication Devices (AAC)",IDD and Disability Support
+888,"Companion Care",Older Adults
+815,"Dementia Education & Training",Older Adults
+858,"Dental Care",Older Adults
+786,"Disabled Individuals Experiencing Homelessness",IDD and Disability Support
+728,"Early Childhood Intervention (ECI)",IDD and Disability Support
+616,"Educational Support and Training",Hill Country Resources
+894,"Elder Abuse Prevention",Older Adults
+684,"Evening or Weekend Hours",Substance Use
+669,"Faith-Based Groups",Substance Use
+820,"Faith-Based Peer Groups",Older Adults
+844,"Financial Counseling & Planning",Older Adults
+737,"Financial Literacy & Money Management",IDD and Disability Support
+703,"First Responders",Substance Use
+505,"For Homeowners",Housing Services
+831,"Foreclosure Prevention",Older Adults
+715,"Future & Estate Planning",IDD and Disability Support
+742,"Future & Estate Planning",IDD and Disability Support
+904,"General Volunteer Placement",Older Adults
+853,"Grocery Shopping Services",Older Adults
+621,"Health Education",Hill Country Resources
+769,"Home Accessibility Modifications & Repair",IDD and Disability Support
+392,"In-home Personal Assistance",Housing Services
+747,"In-Home Personal Assistance",IDD and Disability Support
+774,"Inclusive Hiring Programs",IDD and Disability Support
+653,"Individual Therapy and Counseling",Substance Use
+801,"Languages other than Spanish, ASL, or English",IDD and Disability Support
+920,"Languages other than Spanish, ASL, or English",Older Adults
+533,"Low-Barrier Shelter",Housing Services
+282,"Medical Supplies",Big Bend Regional Resource Directory
+696,"Medicare",Substance Use
+804,"Medicare",IDD and Disability Support
+923,"Medicare",Older Adults
+762,"Mental & Behavioral Health Services",IDD and Disability Support
+560,"Non-binary",Mental Healthcare Portal
+690,"Older Adults (55+)",Substance Use
+190,"On-Site Support Services",Housing Finder
+680,"Outpatient Services and Treatment",Substance Use
+657,"Personal or Voluntary Testing",Substance Use
+752,"Post-Secondary & College Programs",IDD and Disability Support
+674,"Recovery-Friendly Employer Networks",Substance Use
+837,"Rural Transportation Services",Older Adults
+901,"Scam & Fraud Education",Older Adults
+662,"Supplies Exchange",Substance Use
+795,"Teens",IDD and Disability Support
+551,"Transgender Man",Mental Healthcare Portal
+618,"Transportation Assistance",Hill Country Resources
+782,"Transportation Assistance",IDD and Disability Support
+594,"Utility Assistance",Hill Country Resources
+317,"Utility Assistance - Electric",Housing Services
+757,"Vocational Rehabilitation",IDD and Disability Support
+650,"Youth Prevention Programs",Substance Use
+169,"Bankruptcy",Housing Finder
+147,"Pet Deposit/One-Time Fee",Housing Finder
+155,"Section 8 Vouchers",Housing Finder
+136,"South",Housing Finder
+114,"2BR",Housing Finder
+872,"Assisted Living Facilities",Older Adults
+591,"Benefits Navigation",Hill Country Resources
+480,"Couple with Children",Housing Services
+733,"Device Loan & Reuse",IDD and Disability Support
+787,"Disabled Veterans",IDD and Disability Support
+895,"Emergency Response",Older Adults
+517,"Enroll for Supported Housing (Homelink)",Housing Services
+778,"Faith Community Inclusion",IDD and Disability Support
+729,"Functional & Behavioral Assessments",IDD and Disability Support
+716,"General Legal Aid & Counsel",IDD and Disability Support
+821,"Grief Counseling",Older Adults
+832,"Guardianship Support",Older Adults
+617,"Help Finding Work",Hill Country Resources
+281,"Help Pay for Healthcare",Big Bend Regional Resource Directory
+889,"Hoarding Support & Cleanup",Older Adults
+595,"Home Repairs",Hill Country Resources
+301,"Homeowner",Housing Services
+859,"Hospice Care",Older Adults
+770,"Housing Search Assistance & Vouchers",IDD and Disability Support
+440,"In-home Healthcare",Housing Services
+748,"Independent Living Skills Training",IDD and Disability Support
+704,"Justice Involved",Substance Use
+685,"Languages other than Spanish and English",Substance Use
+912,"Late-Life Housing Insecurity",Older Adults
+845,"Long-term Care Planning",Older Adults
+854,"Meal Delivery",Older Adults
+905,"Meal Delivery Volunteers",Older Adults
+670,"Narcotics Anonymous",Substance Use
+552,"Non-Binary",Mental Healthcare Portal
+622,"Nutrition Education",Hill Country Resources
+763,"Occupational Therapy (OT)",IDD and Disability Support
+556,"Other Language(s)",Mental Healthcare Portal
+697,"Payment Plans Available",Substance Use
+805,"Payment Plans Available",IDD and Disability Support
+924,"Payment Plans Available",Older Adults
+654,"Peer Support and Coaching",Substance Use
+816,"Peer-to-Peer Coaching for Caregivers",Older Adults
+181,"Permanent Supportive Housing",Housing Finder
+681,"Residential/Inpatient Services and Treatment",Substance Use
+743,"Respite Care",IDD and Disability Support
+838,"Shopping Transportation",Older Adults
+753,"Special Education Services",IDD and Disability Support
+738,"Special Needs Trusts & ABLE Accounts",IDD and Disability Support
+638,"Support Groups",Hill Country Resources
+691,"Teenagers (13-17)",Substance Use
+783,"Travel Training",IDD and Disability Support
+518,"Utility Assistance - Gas",Housing Services
+561,"Veteran",Mental Healthcare Portal
+675,"Vocational and Skills Training",Substance Use
+758,"Volunteer Opportunities",IDD and Disability Support
+796,"Young Adults",IDD and Disability Support
+634,"Youth Activities",Hill Country Resources
+527,"Home Visits/Socialization",Housing Services
+170,"Misdemeanor",Housing Finder
+183,"Pet Rent",Housing Finder
+137,"Southwest",Housing Finder
+156,"Tax Credits",Housing Finder
+115,"2BR",Housing Finder
+797,"Adults",IDD and Disability Support
+553,"Agender/Doesn't Identify as Any Gender",Mental Healthcare Portal
+873,"Continuing Care Communities",Older Adults
+734,"Durable Medical Equipment (DME)",IDD and Disability Support
+596,"Emergency Shelter",Hill Country Resources
+623,"Exercise and Fitness",Hill Country Resources
+562,"Faith-Based",Mental Healthcare Portal
+717,"Guardianship & Supported Decision-Making",IDD and Disability Support
+280,"Hearing Tests",Big Bend Regional Resource Directory
+452,"Hoarding Help & Junk Removal",Housing Services
+896,"Home Safety Checks",Older Adults
+890,"Homemaking",Older Adults
+788,"Intellectual & Developmental Disabilities (IDD)",IDD and Disability Support
+822,"Intergenerational Programs",Older Adults
+705,"LGBTQ+ Affirming",Substance Use
+913,"LGBTQ+ Older Adult",Older Adults
+749,"Meal & Nutrition Services",IDD and Disability Support
+846,"Medicaid Asset Protection",Older Adults
+860,"Medication Disposal",Older Adults
+481,"Mother and Child(ren)",Housing Services
+906,"Neighborly Help",Older Adults
+855,"Nutrition Education",Older Adults
+671,"Other Support Groups",Substance Use
+764,"Physical Therapy (PT)",IDD and Disability Support
+698,"Private Insurance",Substance Use
+806,"Private Insurance",IDD and Disability Support
+925,"Private Insurance",Older Adults
+833,"Probate Assistance",Older Adults
+619,"Resource Navigation",Hill Country Resources
+817,"Respite Care",Older Adults
+580,"Section 8 Vouchers",Housing Services
+179,"Sober Living",Housing Finder
+839,"Social & Personal Transportation",Older Adults
+779,"Social Skills Building",IDD and Disability Support
+686,"Spanish",Substance Use
+744,"Specialized Childcare",IDD and Disability Support
+771,"Supported Independent Living",IDD and Disability Support
+739,"Tax Preparation Assistance",IDD and Disability Support
+327,"Titles",Housing Services
+754,"Transition to Adulthood",IDD and Disability Support
+499,"Transitional Housing",Housing Services
+635,"Tutoring and Mentoring",Hill Country Resources
+318,"Utility Assistance - Water",Housing Services
+613,"Veteran Services",Hill Country Resources
+441,"Wellness/Welfare Checks",Housing Services
+759,"Work Experience Internships",IDD and Disability Support
+940,"Estate Cleanout",Older Adults
+531,"Residential Treatment",Housing Services
+534,"Residential Recovery",Housing Services
+171,"Felony",Housing Finder
+138,"West",Housing Finder
+116,"3BR",Housing Finder
+528,"Adult Day Care",Housing Services
+563,"American Indian or Alaska Native",Mental Healthcare Portal
+597,"Disaster Response",Hill Country Resources
+874,"Eviction Prevention",Older Adults
+482,"Father with Child(ren)",Housing Services
+246,"Fitness Classes",Big Bend Regional Resource Directory
+554,"Gender not Listed",Mental Healthcare Portal
+718,"Immigration Legal Services",IDD and Disability Support
+823,"Lifelong Learning",Older Adults
+891,"Medication Management",Older Adults
+706,"Men Only",Substance Use
+624,"Mental Health",Hill Country Resources
+861,"Mental Health Counseling",Older Adults
+789,"Mobility Disabilities",IDD and Disability Support
+914,"Mobility-Impaired",Older Adults
+847,"Mortgage Assistance",Older Adults
+798,"Older Adults",IDD and Disability Support
+807,"Private Pay",IDD and Disability Support
+926,"Private Pay",Older Adults
+699,"Private Pay",Substance Use
+834,"Real Estate Assistance",Older Adults
+187,"Rooms and Shares",Housing Finder
+897,"Scam & Fraud Education",Older Adults
+907,"Skilled Volunteer Opportunities",Older Adults
+500,"Sober Living",Housing Services
+581,"Special Discounts",Housing Services
+765,"Specialized Medical & Dental Care",IDD and Disability Support
+687,"Transportation Assistance Provided",Substance Use
+319,"Utility Assistance - Internet",Housing Services
+736,"Work Incentive Counseling",IDD and Disability Support
+693,"Young Adults (18-25)",Substance Use
+949,"Older Adults Caring for Children & Grandchildren",Older Adults
+941,"Extreme Cleaning",Older Adults
+910,"Older Adults Caring for Older Adults",Older Adults
+950,"Sensory-Impaired",Older Adults
+812,"Neurodiversity",IDD and Disability Support
+491,"Older Adult (55+)",Housing Services
+952,"Palliative Care",Older Adults
+932,"Parenting Men",Substance Use
+529,"Respite/Caregiver Support",Housing Services
+953,"Weather Relief",Older Adults
+139,"Northwest",Housing Finder
+172,"RSO",Housing Finder
+117,"3BR",Housing Finder
+564,"Asian",Mental Healthcare Portal
+875,"Foreclosure Prevention",Older Adults
+483,"Grandparent(s) Raising Children",Housing Services
+501,"Group Living",Housing Services
+719,"Information & Referral Services",IDD and Disability Support
+245,"Massage Therapy",Big Bend Regional Resource Directory
+582,"Notes",Housing Services
+824,"Older LGBTQ+ Opportunities & Support",Older Adults
+707,"Parenting Women",Substance Use
+939,"Personal Care Items",Older Adults
+175,"Pet Friendly",Housing Finder
+555,"Prefer not to State",Mental Healthcare Portal
+862,"Primary Care",Older Adults
+848,"Rental Assistance",Older Adults
+808,"Sliding Scale Fee",IDD and Disability Support
+927,"Sliding Scale Fee",Older Adults
+700,"Sliding Scale Fee",Substance Use
+915,"Solo Ager",Older Adults
+790,"Speech & Language Disabilities",IDD and Disability Support
+766,"Speech & Language Therapy",IDD and Disability Support
+625,"Speech Therapy",Hill Country Resources
+955,"Tax Preparation Assistance",Older Adults
+908,"Transportation Volunteer Drivers",Older Adults
+519,"Utility Assistance - Phone",Housing Services
+898,"Wellness Checks",Older Adults
+942,"Hoarding Help & Junk Removal",Older Adults
+173,"No US ID",Housing Finder
+186,"Seniors, Minimum Age",Housing Finder
+118,"4BR",Housing Finder
+244,"Acupuncturists",Big Bend Regional Resource Directory
+565,"Black or African American",Mental Healthcare Portal
+158,"Cats",Housing Finder
+484,"Foster Parent/Guardian",Housing Services
+876,"Home Sharing",Older Adults
+320,"Housing Vouchers",Housing Services
+809,"Income-Based Eligibility",IDD and Disability Support
+928,"Income-Based Eligibility",Older Adults
+626,"Occupational Therapy",Hill Country Resources
+532,"Older Adult Community",Housing Services
+720,"Peer Mentorship & Support",IDD and Disability Support
+708,"Pregnant Women",Substance Use
+863,"Respite Care",Older Adults
+849,"Scam & Fraud Education",Older Adults
+825,"Senior Centers & Activity Centers",Older Adults
+916,"Technology-Limited",Older Adults
+791,"Traumatic Brain Injury (TBI)",IDD and Disability Support
+938,"Thrifty Options",Older Adults
+119,"4BR",Housing Finder
+523,"Assisted Living Community",Housing Services
+159,"Dogs",Housing Finder
+485,"Foster Youth",Housing Services
+566,"Hispanic or Latino",Mental Healthcare Portal
+530,"Home Improvement Assistance",Housing Services
+877,"Home Maintenance",Older Adults
+627,"Physical Therapy",Hill Country Resources
+721,"Protection & Advocacy",IDD and Disability Support
+810,"Serves Uninsured Individuals",IDD and Disability Support
+929,"Serves Uninsured Individuals",Older Adults
+864,"Sexual Health & Education",Older Adults
+826,"Social Clubs & Groups",Older Adults
+850,"Utility Assistance",Older Adults
+917,"Veteran Older Adult",Older Adults
+709,"Veterans & Military Families",Substance Use
+234,"Veterans Care",Big Bend Regional Resource Directory
+330,"Wills",Housing Services
+957,"Home Repairs, Major",Older Adults
+5,"All male",Mental Healthcare Portal
+3,"Children (12 and under)",Mental Healthcare Portal
+292,"Device Lending",Digital Connectivity Asset Map
+263,"Help Escaping Violence",Big Bend Regional Resource Directory
+201,"Youth Shelters",The Famous Test Portal
+268,"Basic Literacy",Big Bend Regional Resource Directory
+277,"Food Delivery",Big Bend Regional Resource Directory
+570,"Friend or Family",Mental Healthcare Portal
+202,"Rental and Financial Assistance",The Famous Test Portal
+120,"5BR",Housing Finder
+584,"Cats",Housing Services
+524,"Continuing Care Community",Housing Services
+878,"Homeless Services & Shelters",Older Adults
+542,"Moving Cost Assistance",Housing Services
+567,"Native Hawaiian or Other Pacific Islander",Mental Healthcare Portal
+194,"Number/Breed/Size Restrictions",Housing Finder
+486,"Other Youth (18-24)",Housing Services
+647,"Parenting Programs",Big Bend Regional Resource Directory
+242,"Pediatricians",Big Bend Regional Resource Directory
+722,"Representative Payee Services",IDD and Disability Support
+628,"Sexual and Reproductive Health",Hill Country Resources
+947,"Skilled Nursing",Older Adults
+865,"Specialized Medical Care",Older Adults
+827,"Support Groups for Older Adults",Older Adults
+828,"Wellness Checks",Older Adults
+710,"Women Only",Substance Use
+203,"Medical",The Famous Test Portal
+121,"5BR",Housing Finder
+367,"Help with Deposits",Housing Services
+879,"Independent Living Communities",Older Adults
+525,"Memory Care Facility",Housing Services
+487,"Minor (Under 18)",Housing Services
+241,"Ob/Gyn Providers",Big Bend Regional Resource Directory
+723,"Self-Advocacy Training & Support",IDD and Disability Support
+948,"Speech & Language Therapy",Older Adults
+629,"Spiritual Care",Hill Country Resources
+866,"Substance Use & Addiction Support",Older Adults
+568,"White",Mental Healthcare Portal
+933,"Youth",Substance Use
+204,"Substance Abuse Rehabilitation",The Famous Test Portal
+502,"Care Facility",Housing Services
+240,"Family Practice Providers",Big Bend Regional Resource Directory
+630,"Help Pay for Healthcare",Hill Country Resources
+587,"It does not matter",Mental Healthcare Portal
+880,"Memory Care",Older Adults
+724,"Service Coordination",IDD and Disability Support
+130,"Single Family",Housing Finder
+574,"Special Discounts",Housing Services
+331,"Tenants Rights",Housing Services
+867,"Vaccinations",Older Adults
+205,"Additional Resources",The Famous Test Portal
+310,"Permanent Supportive Housing",Housing Services
+239,"Physical, Occupational, and Speech Therapy",Big Bend Regional Resource Directory
+881,"Relocation Assistance",Older Adults
+341,"Right to Habitation",Housing Services
+600,"Screenings and Immunizations",Hill Country Resources
+131,"Single Family",Housing Finder
+725,"Special Education Advocacy",IDD and Disability Support
+489,"Student",Housing Services
+868,"Vision Care",Older Adults
+601,"Disability Support",Hill Country Resources
+126,"Duplex",Housing Finder
+238,"Hospice",Big Bend Regional Resource Directory
+332,"Landlord Rights",Housing Services
+490,"LGBTQ+",Housing Services
+461,"On-Site Social Services",Housing Services
+882,"Rental Assistance",Older Adults
+934,"Volunteer Opportunities for IDD Allies",IDD and Disability Support
+106,"School District",Housing Finder
+602,"Dental Care",Hill Country Resources
+127,"Duplex",Housing Finder
+334,"Eviction Prevention",Housing Services
+237,"Home Health",Big Bend Regional Resource Directory
+314,"Hospice",Housing Services
+883,"Residential Care Homes",Older Adults
+189,"Link to Floor Plans on Property Website",Housing Finder
+469,"Courtesy Lodging",Housing Services
+236,"Dentists",Big Bend Regional Resource Directory
+335,"Foreclosure Prevention",Housing Services
+884,"Skilled Nursing Facilities",Older Adults
+192,"Townhouse",Housing Finder
+492,"Veteran",Housing Services
+603,"Vision Care",Hill Country Resources
+188,"Link to Property Reviews on Google",Housing Finder
+493,"Active Military",Housing Services
+467,"Housing Case Management",Housing Services
+235,"Mental Health",Big Bend Regional Resource Directory
+426,"Property Taxes",Housing Services
+885,"Smart Home Technology",Older Adults
+193,"Townhouse",Housing Finder
+128,"ADU (Auxillary Dwelling Unit)",Housing Finder
+646,"Disability Support",Big Bend Regional Resource Directory
+494,"Disabled",Housing Services
+453,"Referrals to Case Management",Housing Services
+427,"Tax Liens",Housing Services
+129,"ADU (Auxillary Dwelling Unit)",Housing Finder
+337,"Government Notices",Housing Services
+495,"Recovery",Housing Services
+526,"Student Housing",Housing Services
+8,"All female",Mental Healthcare Portal
+293,"Assistive Technology",Digital Connectivity Asset Map
+264,"Senior Programs",Big Bend Regional Resource Directory
+206,"Transitional Housing",The Famous Test Portal
+9,"Youth (13-25)",Mental Healthcare Portal
+269,"Books",Big Bend Regional Resource Directory
+278,"Nutrition Education",Big Bend Regional Resource Directory
+571,"Parent",Mental Healthcare Portal
+585,"Dogs",Housing Services
+338,"Insurance Disputes",Housing Services
+496,"Violence Survivor",Housing Services
+497,"Justice History",Housing Services
+340,"Reverse Mortgage Assistance",Housing Services
+498,"Immigrant/Refugee",Housing Services
+446,"Legal Document Translation",Housing Services
+122,"Mobile Home Park",Housing Finder
+123,"Mobile Home Park",Housing Finder
+124,"Rooms and Shares",Housing Finder
+572,"Client/Patient",Mental Healthcare Portal
+125,"Rooms and Shares",Housing Finder
+2,"Adults (26-65)",Mental Healthcare Portal
+294,"Help Paying For Internet",Digital Connectivity Asset Map
+207,"Rapid Re-housing Programs",The Famous Test Portal
+265,"Veterans Services",Big Bend Regional Resource Directory
+270,"Children's Programs",Big Bend Regional Resource Directory
+586,"Number/Breed/Size Restrictions",Housing Services
+266,"Bathrooms",Big Bend Regional Resource Directory
+4,"LGBTQ+ welcoming",Mental Healthcare Portal
+208,"Permanent Supportive Housing",The Famous Test Portal
+6,"Seniors (65 and older)",Mental Healthcare Portal
+7,"Veterans",Mental Healthcare Portal
+271,"Citizenship",Big Bend Regional Resource Directory
+573,"Someone else",Mental Healthcare Portal
+84,"ASL or Hearing Impaired",Mental Healthcare Portal
+296,"Drop-In Technology Help",Digital Connectivity Asset Map
+209,"Other Permanent Housing",The Famous Test Portal
+272,"Computer Skills",Big Bend Regional Resource Directory
+210,"Day Centers",The Famous Test Portal
+297,"Online Safety Classes",Digital Connectivity Asset Map
+273,"ESL",Big Bend Regional Resource Directory
+944,"Occupational Therapy",Older Adults
+211,"Clothing Closets",The Famous Test Portal
+298,"Computer Skills Classes",Digital Connectivity Asset Map
+274,"GED",Big Bend Regional Resource Directory
+212,"Food Pantries",The Famous Test Portal
+299,"Free Wi-Fi",Digital Connectivity Asset Map
+275,"Nutrition Education",Big Bend Regional Resource Directory
+945,"Physical Health",Older Adults
+300,"Free Computer Use",Digital Connectivity Asset Map
+213,"Free Legal Assistance",The Famous Test Portal
+946,"Remote Monitoring",Older Adults
+276,"Youth Programs",Big Bend Regional Resource Directory
+225,"Batterer's Intervention & Prevention (BIPP)",Love Should Not Hurt
+219,"Child Care",Love Should Not Hurt
+216,"Counseling - Adults",Love Should Not Hurt
+222,"Counseling - Youth and Children",Love Should Not Hurt
+255,"Firearm Safety",Love Should Not Hurt
+224,"For Men",Love Should Not Hurt
+229,"Healthy Relationships",Love Should Not Hurt
+218,"Housing Assistance",Love Should Not Hurt
+231,"Immediate Assistance",Love Should Not Hurt
+226,"Legal Aid",Love Should Not Hurt
+221,"LGBTQ Affirming",Love Should Not Hurt
+217,"Medical Care",Love Should Not Hurt
+215,"Parenting Classes",Love Should Not Hurt
+260,"Protective Orders",Love Should Not Hurt
+227,"Public Awareness",Love Should Not Hurt
+259,"Safe Exit Planning",Love Should Not Hurt
+258,"Safe Place for Youth",Love Should Not Hurt
+230,"Supervised Visits",Love Should Not Hurt
+228,"Survivor Services",Love Should Not Hurt
