@@ -16,6 +16,22 @@ import calendar
 
 global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
 
+DATA_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Data"))
+
+
+def _resolve_data_path(*candidates):
+    """
+    Resolve a data file path across possible legacy/new folder layouts.
+    Returns the first existing match; falls back to the first candidate path.
+    """
+    if not candidates:
+        return DATA_ROOT
+    for rel_path in candidates:
+        candidate_abs = os.path.join(DATA_ROOT, rel_path)
+        if os.path.exists(candidate_abs):
+            return candidate_abs
+    return os.path.join(DATA_ROOT, candidates[0])
+
 # Helper function to convert numeric types in DataFrame to native Python types
 def _convert_dataframe_numerics_to_native_types(df):
     """Convert DataFrame numeric types to native Python types and handle NaN values for JSON serialization."""
@@ -59,19 +75,25 @@ senior_centers_df = pd.DataFrame(columns=['name', 'lat', 'lon'])  # TODO: Replac
 injuries_df = pd.DataFrame(columns=['intersection', 'lat', 'lon', 'injury_count'])  # TODO: Replace with real injury data
 
 # --- Load VIA stops and routes ---
-if os.path.exists('../Data/VIA/stops_cleaned.csv'):
-    via_stops_df = pd.read_csv('../Data/VIA/stops_cleaned.csv')
+via_stops_path = _resolve_data_path('VIA/stops_cleaned.csv')
+if os.path.exists(via_stops_path):
+    via_stops_df = pd.read_csv(via_stops_path)
 else:
     via_stops_df = pd.DataFrame()
-if os.path.exists('../Data/VIA/via_routes_cleaned.csv'):
-    via_routes_df = pd.read_csv('../Data/VIA/via_routes_cleaned.csv')
+via_routes_path = _resolve_data_path('VIA/via_routes_cleaned.csv')
+if os.path.exists(via_routes_path):
+    via_routes_df = pd.read_csv(via_routes_path)
 else:
     via_routes_df = pd.DataFrame()
 
 # --- Load sensitive locations from extracted CSV ---
 import re
 try:
-    sensitive_locations_df = pd.read_csv('../Data/possible_sensitive_locations.csv')
+    sensitive_locations_path = _resolve_data_path(
+        'possible_sensitive_locations.csv',
+        '311/possible_sensitive_locations.csv',
+    )
+    sensitive_locations_df = pd.read_csv(sensitive_locations_path)
     # Extract lat/lon from GoogleMapView column
     def extract_lat_lon(url):
         if pd.isna(url) or url == 'Not Available':
@@ -1250,11 +1272,20 @@ def add_pothole_markers(df, folium_map, feature_group, color_column='color', mar
 
 # --- Load additional datasets for chatbot analysis ---
 # Define paths relative to this file for stable imports/tests
-data_folder_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Data'))
+data_folder_path = DATA_ROOT
 
-pothole_cases_path = os.path.join(data_folder_path, '311_Pothole_Cases_18_24.csv')
-pavement_path = os.path.join(data_folder_path, 'COSA_Pavement.csv')
-complaint_full_path = os.path.join(data_folder_path, 'COSA_pavement_311.csv')
+pothole_cases_path = _resolve_data_path(
+    '311_Pothole_Cases_18_24.csv',
+    '311/311_Pothole_Cases_18_24.csv',
+)
+pavement_path = _resolve_data_path(
+    'COSA_Pavement.csv',
+    'COSA_Infrastructure/COSA_Pavement.csv',
+)
+complaint_full_path = _resolve_data_path(
+    'COSA_pavement_311.csv',
+    'COSA_Infrastructure/COSA_pavement_311.csv',
+)
 
 try:
     pothole_cases_df = pd.read_csv(pothole_cases_path)
@@ -2128,5 +2159,5 @@ def load_survey_data(path):
         return pd.DataFrame()
 
 # Load survey data
-survey_path = os.path.join(data_folder_path, "Survey Data.csv")
+survey_path = _resolve_data_path("Survey Data.csv")
 survey_df = load_survey_data(survey_path)
