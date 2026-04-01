@@ -1,0 +1,79 @@
+SUBCATEGORY,CATEGORY,DESCRIPTION,LESS-BROAD,BROAD,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9,Unnamed: 10,Unnamed: 11,Unnamed: 12,Unnamed: 13,Unnamed: 14,Unnamed: 15,Unnamed: 16,Unnamed: 17
+AuB,Au,"Austin silty clay, 1 to 3 percent slopes",silty clay,clay,broad types count,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+AuC,Au,"Austin silty clay, 2 to 5 percent slopes, moderately eroded",silty clay,clay,clay,loam,soils,sand,complex,other,(total),Unknown,Unknown,Unknown,Unknown,Unknown
+BpC,Bp,"Whitewright clay loam, 1 to 5 percent slopes",clay loam,loam,23,33,7,6,5,4,78,Unknown,Unknown,Unknown,Unknown,Unknown
+BrD,Br,"Brackett gravelly clay loam, 3 to 12 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+BrE,Br,"Brackett gravelly clay loam, 12 to 20 percent slopes",clay loam,loam,less-broad types count,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+BsC,Bs,"Whitewright-Austin complex, 1 to 5 percent slopes",complex,complex,silty clay,clay loam,complex,association,clay,soils,sandy loam,sand,gravelly clay,loam,other,(total)
+BtE,Bt,"Brackett-Eckrant association, 20 to 60 percent slopes",association,other,7,16,5,2,13,7,11,6,3,6,2,78
+Ca,Ca,"Anhalt clay, 0 to 2 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Cb,Cb,"Crawford, stony and Bexar soils, 0 to 5 percent slopes",soils,soils,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+CfA,Cf,"Miguel fine sandy loam, 0 to 1 percent slopes",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+CfB,Cf,"Miguel fine sandy loam, 1 to 3 percent slopes",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+CkC2,Ck,"Miguel fine sandy loam, 2 to 5 percent slopes, eroded",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+DmC,Dm,"Duval loamy fine sand, 0 to 5 percent slopes",sand,sand,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+DnB,Dn,"Duval very fine sandy loam, 1 to 3 percent slopes",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+DnC,Dn,"Duval fine sandy loam, 3 to 5 percent slopes",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+DsC2,Ds,"Duval fine sandy loam, 3 to 5 percent slopes, eroded",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+EuC,Eu,"Aluf sand, 0 to 5 percent slopes",sand,sand,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Fr,Fr,"Loire clay loam, 0 to 2 percent slopes, occasionally flooded",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Go,Go,"Gowen clay loam, 0 to 2 percent slopes, occasionally flooded",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Gu,Gu,"Gullied land-Sunev complex, 3 to 20 percent slopes",complex,complex,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HgD,Hg,"Rock outcrop-Olmos complex, 5 to 25 percent slopes",complex,complex,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HkB,Hk,"Wilco loamy fine sand, 0 to 3 percent slopes",sand,sand,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HkC,Hk,"Wilco loamy fine sand, 3 to 5 percent slopes",sand,sand,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HkC2,Hk,"Wilco loamy fine sand, 3 to 5 percent slopes, eroded",sand,sand,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HnB,Hn,"Heiden clay, 1 to 3 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HnC2,Hn,"Heiden clay, 3 to 5 percent slopes, eroded",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HnC3,Hn,"Heiden-Ferris complex, 3 to 5 percent slopes, severely eroded",complex,complex,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HoD3,Ho,"Heiden-Ferris complex, 5 to 10 percent slopes, severely eroded",complex,complex,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HsA,Hs,"Houston Black clay, 0 to 1 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HsB,Hs,"Houston Black clay, 1 to 3 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HsC,Hs,"Houston Black clay, 3 to 5 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HtA,Ht,"Branyon clay, 0 to 1 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HtB,Ht,"Branyon clay, 1 to 3 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HuB,Hu,"Houston Black gravelly clay, 1 to 3 percent slopes",gravelly clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HuC,Hu,"Houston Black gravelly clay, 3 to 5 percent slopes",gravelly clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+HuD,Hu,"Houston Black gravelly clay, 5 to 8 percent slopes",gravelly clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+KaB,Ka,"Atco loam, 1 to 3 percent slopes",loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+KaC,Ka,"Atco loam, 3 to 5 percent slopes",loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+KcC2,Kc,"Atco clay loam, 3 to 5 percent slopes, eroded",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Kr,Kr,"Krum clay, 1 to 5 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+LfB,Lf,"Leming loamy fine sand, 0 to 3 percent slopes",sand,sand,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+LvA,Lv,"Lewisville silty clay, 0 to 1 percent slopes",silty clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+LvB,Lv,"Lewisville silty clay, 1 to 3 percent slopes",silty clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+LvC,Lv,"Lewisville silty clay, 3 to 5 percent slopes, eroded",silty clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Ok,Ok,"Oakalla silty clay loam, 0 to 2 percent slopes, frequently flooded",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Or,Or,"Orif soils, moist, 0 to 3 percent slopes, frequently flooded",soils,soils,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+OrA,Or,"Laparita clay loam, 0 to 1 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+OrB,Or,"Laparita clay loam, 1 to 3 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+PaA,Pa,"Patrick soils, 0 to 1 percent slopes, rarely flooded",soils,soils,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+PaB,Pa,"Patrick soils, 1 to 3 percent slopes, rarely flooded",soils,soils,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+PaC,Pa,"Patrick soils, 3 to 5 percent slopes, rarely flooded",soils,soils,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Pt,Pt,"Pits and Quarries, 1 to 90 percent slopes",other,other,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+SaB,Sa,"San Antonio clay loam, 1 to 3 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+SaC,Sa,"San Antonio clay loam, 3 to 5 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+SaC2,Sa,"San Antonio clay loam, 3 to 5 percent slopes, eroded",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+ScB,Sc,"Stephen silty clay, 1 to 4 percent slopes",silty clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+ScC,Sc,"Stephen silty clay, 3 to 5 percent slopes",silty clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+TaB,Ta,"Eckrant cobbly clay, 1 to 8 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+TaC,Ta,"Eckrant very cobbly clay, 5 to 15 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+TaD,Ta,"Eckrant-Rock outcrop association, 8 to 30 percent slopes",association,other,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Tb,Tb,"Eddy gravelly clay loam, 1 to 8 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+TbB,Tb,"Tarpley clay, 1 to 3 percent slopes",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Tc,Tc,"Tinn clay, 0 to 1 percent slopes, occasionally flooded",clay,clay,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Tf,Tf,"Tinn and Frio soils, 0 to 1 percent slopes, frequently flooded",soils,soils,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+VaA,Va,"Sunev loam, 0 to 1 percent slopes",loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+VaB,Va,"Sunev loam, 1 to 3 percent slopes",loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+VcA,Vc,"Sunev clay loam, 0 to 1 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+VcB,Vc,"Sunev clay loam, 1 to 3 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+VcC,Vc,"Sunev clay loam, 3 to 5 percent slopes",clay loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+W,W,Water,other,other,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+WbB,Wb,"Floresville fine sandy loam, 1 to 3 percent slopes",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+WbC,Wb,"Floresville fine sandy loam, 3 to 5 percent slopes",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+WeC2,We,"Floresville fine sandy loam, 1 to 5 percent slopes, eroded",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+WeC3,We,"Floresville fine sandy loam, 3 to 5 percent slopes, severely eroded",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+WmA,Wm,"Willacy loam, 0 to 1 percent slopes",loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+WmB,Wm,"Willacy loam, 1 to 3 percent slopes",loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Za,Za,"Zavala fine sandy loam, 0 to 2 percent slopes, occasionally flooded",sandy loam,loam,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
+Zg,Zg,"Zavala and Gowen soils, 0 to 2 percent slopes, frequently flooded",soils,soils,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown
