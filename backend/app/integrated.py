@@ -789,7 +789,12 @@ def handle_any_complaints_near_sensitive_areas(radius_m=300, sensitive_type='sch
     return response, None, highlight_df
 
 # --- RAG Query Integration ---
-from rag_tool import query_table
+try:
+    from rag_tool import query_table
+    from saaf_handlers import try_handle_saaf_question
+except ModuleNotFoundError:
+    from .rag_tool import query_table
+    from .saaf_handlers import try_handle_saaf_question
 
 # Simple parser for street and year from user question
 def parse_rag_question(question):
@@ -833,6 +838,11 @@ def get_groq_response(prompt):
     highlight_data_df = pd.DataFrame() # Initialize empty DataFrame for map highlighting
 
     print(f"[DEBUG] Received prompt: {prompt}")
+
+    # --- SAAF 78207 governance-aware chatbot route ---
+    saaf_result = try_handle_saaf_question(prompt)
+    if saaf_result is not None:
+        return saaf_result
 
     # --- PCI in zip code ---
     match = re.search(r"what'?s? the pci in zip code (\d+)", prompt_lower)
@@ -1239,9 +1249,8 @@ def add_pothole_markers(df, folium_map, feature_group, color_column='color', mar
     return feature_group # Return the feature group
 
 # --- Load additional datasets for chatbot analysis ---
-# Define paths relative to the integrated.py file
-# PATCH: use '../Data' since we're in the backend/app directory
-data_folder_path = '../Data'
+# Define paths relative to this file for stable imports/tests
+data_folder_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Data'))
 
 pothole_cases_path = os.path.join(data_folder_path, '311_Pothole_Cases_18_24.csv')
 pavement_path = os.path.join(data_folder_path, 'COSA_Pavement.csv')
@@ -2119,4 +2128,5 @@ def load_survey_data(path):
         return pd.DataFrame()
 
 # Load survey data
-survey_df = load_survey_data("Data/Survey Data.csv")
+survey_path = os.path.join(data_folder_path, "Survey Data.csv")
+survey_df = load_survey_data(survey_path)
