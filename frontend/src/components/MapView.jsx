@@ -145,7 +145,7 @@ export default function ZipMap({ highlightData, viewMode }) {
   const geoJsonKey = md5(JSON.stringify({ zipCounts, viewMode }));
 
   return (
-    <MapContainer center={mapCenter} zoom={9} scrollWheelZoom={false} style={{ height: "100vh", width: "100%" }}>
+    <MapContainer center={mapCenter} zoom={9} scrollWheelZoom={false} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
       <TileLayer
         attribution='&copy; OpenStreetMap contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

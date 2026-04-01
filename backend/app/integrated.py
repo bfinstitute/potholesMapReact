@@ -13,6 +13,9 @@ import hashlib
 from functools import lru_cache
 import inspect
 import calendar
+from dotenv import load_dotenv
+
+load_dotenv()
 
 global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
 
@@ -387,21 +390,22 @@ def get_worst_pothole_streets():
         for rank, (street_name, score) in enumerate(top_worst_streets_data.items()):
             response += f"{rank + 1}. {street_name} (Deterioration Score: {score:.2f})\n"
 
-        # Create a bar chart for visualization
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(x=top_worst_streets_data.values, y=top_worst_streets_data.index, ax=ax, palette="viridis", hue=top_worst_streets_data.index, legend=False)
-        ax.set_title('Top 10 Streets with Worst Road Conditions')
-        ax.set_xlabel('Pavement Deterioration Score (100 - PCI)')
-        ax.set_ylabel('Street Name')
-        plt.tight_layout()
+        chart_data = {
+            "type": "bar",
+            "title": "Top 10 Streets — Worst Road Conditions",
+            "xKey": "score",
+            "yKey": "street",
+            "xLabel": "Deterioration Score (100 − PCI)",
+            "data": [{"street": name, "score": round(float(score), 1)} for name, score in top_worst_streets_data.items()]
+        }
 
         # Prepare highlight_data_df for map
         highlight_data_df = pavement_latlon_df[pavement_latlon_df['MSAG_Name'].isin(top_worst_streets_data.index)].copy()
         highlight_data_df = highlight_data_df.drop_duplicates(subset=['MSAG_Name'])
         highlight_data_df = highlight_data_df[['MSAG_Name', 'Latitude', 'Longitude']]
-        highlight_data_df['color'] = 'darkblue' # Assign darkblue color for worst streets
+        highlight_data_df['color'] = 'darkblue'
 
-        return response, fig, highlight_data_df
+        return response, chart_data, highlight_data_df
     else:
         return "No street-level road condition data available to identify worst streets.", None, pd.DataFrame()
 
@@ -419,24 +423,24 @@ def get_top_complaint_locations():
         for rank, (street_name, count) in enumerate(top_10_complaint_locations.items()):
             response += f"{rank + 1}. {street_name}: {count} total reports\n"
 
-        # Create a bar chart for visualization
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(x=top_10_complaint_locations.values, y=top_10_complaint_locations.index, ax=ax, palette="viridis", hue=top_10_complaint_locations.index, legend=False)
-        ax.set_title('Top 10 Most Frequently Reported Complaint Locations')
-        ax.set_xlabel('Number of Complaints')
-        ax.set_ylabel('Street Name')
-        plt.tight_layout()
+        chart_data = {
+            "type": "bar",
+            "title": "Top 10 Most Reported Complaint Locations",
+            "xKey": "count",
+            "yKey": "street",
+            "xLabel": "Number of Complaints",
+            "data": [{"street": name, "count": int(count)} for name, count in top_10_complaint_locations.items()]
+        }
 
-        # Prepare highlight_data_df for map: get lat/lon for top 10 complaint streets
-        # Merge with pavement_latlon_df to get coordinates
+        # Prepare highlight_data_df for map
         highlight_data_df = pd.DataFrame({'MSAG_Name': top_10_complaint_locations.index})
         highlight_data_df = pd.merge(highlight_data_df, pavement_latlon_df[['MSAG_Name', 'Latitude', 'Longitude']],
                                      on='MSAG_Name', how='left')
         highlight_data_df = highlight_data_df.drop_duplicates(subset=['MSAG_Name'])
         highlight_data_df = highlight_data_df.dropna(subset=['Latitude', 'Longitude'])
-        highlight_data_df['color'] = 'darkblue' # Assign darkblue color for top complaint locations
+        highlight_data_df['color'] = 'darkblue'
 
-        return response, fig, highlight_data_df
+        return response, chart_data, highlight_data_df
     else:
         return "No valid street names found in the complaint data after cleaning.", None, pd.DataFrame()
 
@@ -460,13 +464,24 @@ def get_unresolved_complaints_by_year():
 
         if not yearly_status.empty:
             response = "Complaint Status by Year:\n"
+            chart_rows = []
             for index, row in yearly_status.iterrows():
                 if row['TotalComplaints'] > 0:
                     percent_unresolved = (row['UnresolvedComplaints'] / row['TotalComplaints']) * 100
                     response += f"Year {int(row['OpenedYear'])}: Total = {int(row['TotalComplaints'])}, Unresolved = {int(row['UnresolvedComplaints'])} ({percent_unresolved:.2f}%)\n"
+                    chart_rows.append({"year": str(int(row['OpenedYear'])), "total": int(row['TotalComplaints']), "unresolved": int(row['UnresolvedComplaints'])})
                 else:
                     response += f"Year {int(row['OpenedYear'])}: No complaints reported.\n"
-            return response, None, pd.DataFrame()
+            chart_data = {
+                "type": "bar",
+                "title": "Complaints by Year",
+                "xKey": "year",
+                "yKey": "total",
+                "yKey2": "unresolved",
+                "xLabel": "Year",
+                "data": chart_rows
+            }
+            return response, chart_data, pd.DataFrame()
         else:
             return "No complaints found to summarize by year.", None, pd.DataFrame()
     else:
@@ -491,15 +506,17 @@ def get_seasonal_pothole_impact():
             response += f"{row['Month_Name']}: {row['Total_Complaints']} complaints\n"
         response += "\nTypically, increased precipitation and freeze-thaw cycles (large temperature differences) in winter/early spring contribute to more potholes."
         
-        # Create a line plot for seasonal trends
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.lineplot(x='Month_Name', y='Total_Complaints', data=monthly_complaints_potholes, marker='o', ax=ax)
-        ax.set_title('Seasonal Trend of Road-Related Complaints')
-        ax.set_xlabel('Month')
-        ax.set_ylabel('Total Complaints')
-        plt.tight_layout()
+        chart_data = {
+            "type": "line",
+            "title": "Monthly Road Complaints — Seasonal Trend",
+            "xKey": "month",
+            "yKey": "complaints",
+            "xLabel": "Month",
+            "yLabel": "Total Complaints",
+            "data": [{"month": row['Month_Name'], "complaints": int(row['Total_Complaints'])} for _, row in monthly_complaints_potholes.iterrows()]
+        }
 
-        return response, fig, pd.DataFrame() # No specific highlight data for this plot
+        return response, chart_data, pd.DataFrame()
     else:
         return "No road-related complaints found for seasonal analysis.", None, pd.DataFrame()
 
@@ -687,10 +704,18 @@ def handle_areas_with_most_potholes(top_n=5):
     response = "🔍 **Areas with the Highest Number of Potholes**\n\n"
     for i, (area, count) in enumerate(area_counts.items(), 1):
         response += f"**{i}.** {area}: **{count}** potholes\n"
+    chart_data = {
+        "type": "bar",
+        "title": f"Top {top_n} Areas with Most Potholes",
+        "xKey": "count",
+        "yKey": "area",
+        "xLabel": "Pothole Count",
+        "data": [{"area": area, "count": int(count)} for area, count in area_counts.items()]
+    }
     highlight_df = pavement_latlon_df[pavement_latlon_df['MSAG_Name'].isin(area_counts.index)][['MSAG_Name', 'Latitude', 'Longitude']].copy()
     highlight_df['color'] = 'red'
     highlight_df['marker_radius'] = 12
-    return response, None, highlight_df
+    return response, chart_data, highlight_df
 
 # --- Handler: How many potholes have been found this month? ---
 def handle_potholes_this_month():
