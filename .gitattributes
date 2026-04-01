@@ -1,0 +1,2 @@
+backend/Data/ZIPCODE[[:space:]]78207/311-reports-78207.csv/*.csv filter=lfs diff=lfs merge=lfs -text
+backend/Data/ZIPCODE[[:space:]]78207/clean/311-reports-78207.csv filter=lfs diff=lfs merge=lfs -text
