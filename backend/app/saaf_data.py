@@ -74,6 +74,15 @@ def _normalize_age_file(df: pd.DataFrame) -> pd.DataFrame:
 
 @lru_cache(maxsize=1)
 def load_clean_tables() -> Dict[str, pd.DataFrame]:
+    health_behavior_path = os.path.join(
+        _data_root(), "clean", "Health_and_Beauty_Market_Potential_78207",
+        "Health_and_Beauty_Market_Potential_78207_San_Antonio_Behavior.csv"
+    )
+    medical_spending_path = os.path.join(
+        _data_root(), "clean", "Medical_Expenditures_78207",
+        "Medical_Expenditures_78207_San_Antonio.csv"
+    )
+
     tables = {
         "master_dataset": _safe_read_csv(_clean_path("master_dataset.csv")),
         "service_requests": _safe_read_csv(_clean_path("service_requests_78207.csv")),
@@ -83,6 +92,8 @@ def load_clean_tables() -> Dict[str, pd.DataFrame]:
         "health_places": _safe_read_csv(_clean_path("health_places.csv")),
         "age_groups": _normalize_age_file(_safe_read_csv(_clean_path("age_groups.csv"))),
         "age_by_race": _normalize_age_file(_safe_read_csv(_clean_path("age_by_race.csv"))),
+        "health_behavior": _safe_read_csv(health_behavior_path),
+        "medical_spending": _safe_read_csv(medical_spending_path),
     }
     return tables
 
@@ -297,4 +308,76 @@ def get_available_data_sources() -> List[str]:
         "ZIP78207 rag/78207_metrics_rag.csv",
         "ZIP78207 rag/service_requests_78207_summary_rag.csv",
         "ZIP78207 rag/unemployment_rate_summary_rag.csv",
+        "Health_and_Beauty_Market_Potential_78207/Health_and_Beauty_Market_Potential_78207_San_Antonio_Behavior.csv",
+        "Medical_Expenditures_78207/Medical_Expenditures_78207_San_Antonio.csv",
     ]
+
+
+def get_health_behavior_summary() -> Optional[Dict[str, any]]:
+    """Extract key health behavior metrics from Health_and_Beauty_Market_Potential."""
+    df = load_clean_tables()["health_behavior"]
+    if df.empty or "Product/Consumer Behavior" not in df.columns:
+        return None
+
+    try:
+        # Find key metrics by pattern matching
+        exercise_1_3 = df[df["Product/Consumer Behavior"].str.contains("1-3 Hrs Exercising", na=False)]
+        exercise_home = df[df["Product/Consumer Behavior"].str.contains("Exercise at Home 2\\+ Times", na=False)]
+        glucose_monitor = df[df["Product/Consumer Behavior"].str.contains("Blood Glucose Monitor", na=False)]
+        bp_monitor = df[df["Product/Consumer Behavior"].str.contains("Blood Pressure Monitor", na=False)]
+        diet_sugar = df[df["Product/Consumer Behavior"].str.contains("Diet for Blood Sugar", na=False)]
+        diet_cholesterol = df[df["Product/Consumer Behavior"].str.contains("Diet for Cholesterol", na=False)]
+        low_sodium = df[df["Product/Consumer Behavior"].str.contains("Low-Sodium", na=False)]
+
+        result = {}
+        if not exercise_1_3.empty:
+            result["exercise_1_3_hrs_pct"] = float(exercise_1_3.iloc[0]["Percent"])
+        if not exercise_home.empty:
+            result["exercise_at_home_pct"] = float(exercise_home.iloc[0]["Percent"])
+        if not glucose_monitor.empty:
+            result["own_glucose_monitor_pct"] = float(glucose_monitor.iloc[0]["Percent"])
+        if not bp_monitor.empty:
+            result["own_bp_monitor_pct"] = float(bp_monitor.iloc[0]["Percent"])
+        if not diet_sugar.empty:
+            result["control_diet_blood_sugar_pct"] = float(diet_sugar.iloc[0]["Percent"])
+        if not diet_cholesterol.empty:
+            result["control_diet_cholesterol_pct"] = float(diet_cholesterol.iloc[0]["Percent"])
+        if not low_sodium.empty:
+            result["buy_low_sodium_pct"] = float(low_sodium.iloc[0]["Percent"])
+
+        return result if result else None
+    except Exception:
+        return None
+
+
+def get_medical_spending_summary() -> Optional[Dict[str, any]]:
+    """Extract key medical spending metrics."""
+    df = load_clean_tables()["medical_spending"]
+    if df.empty:
+        return None
+
+    try:
+        # Find key spending categories
+        health_insurance = df[df.iloc[:, 0].astype(str).str.contains("Health Insurance", na=False)]
+        prescription = df[df.iloc[:, 0].astype(str).str.contains("Prescription Drugs", na=False) &
+                         ~df.iloc[:, 0].astype(str).str.contains("Medicare|Insurance", na=False)]
+        dental = df[df.iloc[:, 0].astype(str).str.contains("Dental Services", na=False)]
+        physician = df[df.iloc[:, 0].astype(str).str.contains("Physician Services", na=False)]
+
+        result = {}
+        if not health_insurance.empty:
+            result["health_insurance_total"] = float(health_insurance.iloc[0]["Total"])
+            result["health_insurance_avg"] = float(health_insurance.iloc[0]["Average Amount Spent"])
+        if not prescription.empty:
+            result["prescription_drugs_total"] = float(prescription.iloc[0]["Total"])
+            result["prescription_drugs_avg"] = float(prescription.iloc[0]["Average Amount Spent"])
+        if not dental.empty:
+            result["dental_services_total"] = float(dental.iloc[0]["Total"])
+            result["dental_services_avg"] = float(dental.iloc[0]["Average Amount Spent"])
+        if not physician.empty:
+            result["physician_services_total"] = float(physician.iloc[0]["Total"])
+            result["physician_services_avg"] = float(physician.iloc[0]["Average Amount Spent"])
+
+        return result if result else None
+    except Exception:
+        return None

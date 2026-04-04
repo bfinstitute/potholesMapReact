@@ -1591,7 +1591,9 @@ def get_groq_response(prompt):
                     "demographics": "[U.S. Census Bureau - American Community Survey](https://data.census.gov/)",
                     "health": "[CDC PLACES - Local Health Data](https://www.cdc.gov/places/)",
                     "311": "[San Antonio 311 Service Requests](https://www.sanantonio.gov/311)",
-                    "unemployment": "[Bureau of Labor Statistics - Employment Data](https://www.bls.gov/)"
+                    "unemployment": "[Bureau of Labor Statistics - Employment Data](https://www.bls.gov/)",
+                    "health_behavior": "[ESRI Health & Beauty Market Potential](https://www.esri.com/en-us/arcgis/products/tapestry-segmentation)",
+                    "medical_spending": "[ESRI Medical Expenditure Data](https://www.esri.com/en-us/arcgis/products/tapestry-segmentation)"
                 }
 
                 try:
@@ -1599,7 +1601,8 @@ def get_groq_response(prompt):
                     from saaf_data import (
                         get_context_metrics, get_top_health_issues,
                         get_top_311_categories, get_unemployment_summary,
-                        get_service_landscape_summary
+                        get_service_landscape_summary, get_health_behavior_summary,
+                        get_medical_spending_summary
                     )
 
                     # Gather demographics for ZIP 78207
@@ -1635,6 +1638,32 @@ def get_groq_response(prompt):
                     if unemployment and unemployment.get("latest_rate"):
                         context_parts.append(f"Unemployment: {unemployment['latest_rate']:.2f}%")
                         sources_used.append(SOURCE_NAMES["unemployment"])
+
+                    # Gather health behavior data
+                    health_behavior = get_health_behavior_summary()
+                    if health_behavior:
+                        behavior_info = []
+                        if health_behavior.get("exercise_1_3_hrs_pct"):
+                            behavior_info.append(f"Exercise 1-3 hrs/wk: {health_behavior['exercise_1_3_hrs_pct']:.1f}%")
+                        if health_behavior.get("own_bp_monitor_pct"):
+                            behavior_info.append(f"Own BP monitor: {health_behavior['own_bp_monitor_pct']:.1f}%")
+                        if health_behavior.get("control_diet_blood_sugar_pct"):
+                            behavior_info.append(f"Control diet for blood sugar: {health_behavior['control_diet_blood_sugar_pct']:.1f}%")
+                        if behavior_info:
+                            context_parts.append(f"Health Behaviors: {'; '.join(behavior_info)}")
+                            sources_used.append(SOURCE_NAMES["health_behavior"])
+
+                    # Gather medical spending data
+                    medical_spending = get_medical_spending_summary()
+                    if medical_spending:
+                        spending_info = []
+                        if medical_spending.get("health_insurance_total"):
+                            spending_info.append(f"Health insurance: ${medical_spending['health_insurance_total']/1e6:.1f}M")
+                        if medical_spending.get("prescription_drugs_total"):
+                            spending_info.append(f"Prescription drugs: ${medical_spending['prescription_drugs_total']/1e6:.1f}M")
+                        if spending_info:
+                            context_parts.append(f"Medical Spending: {'; '.join(spending_info)}")
+                            sources_used.append(SOURCE_NAMES["medical_spending"])
 
                     print(f"[GROQ DEBUG] Gathered context from {len(context_parts)} sources")
                 except Exception as ctx_error:
