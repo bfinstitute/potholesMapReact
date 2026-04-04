@@ -66,10 +66,6 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 pothole_cases_df = pd.DataFrame()
 pavement_latlon_df = pd.DataFrame()
 complaint_df = pd.DataFrame()
-WEST_SIDE_ZIPS = {
-    "78207", "78228", "78237", "78201", "78227",
-    "78251", "78250", "78254", "78238", "78252", "78253",
-}
 
 # --- DATA STUBS FOR EXTERNAL DATASETS (replace with real data as available) ---
 # Example: schools_df = pd.read_csv('Data/schools.csv')
@@ -364,18 +360,6 @@ def load_complaint_data(path):
         return df
     except Exception as e:
         print(f"File not found or error loading {os.path.basename(path)}: {e}. Some chatbot features may be limited.")
-        return pd.DataFrame()
-
-@lru_cache(maxsize=1)
-def load_pothole_detail_data():
-    path = _resolve_data_path(
-        '311/potholes_cleaned.csv',
-        'potholes_cleaned.csv',
-    )
-    try:
-        return pd.read_csv(path, low_memory=False)
-    except Exception as e:
-        print(f"File not found or error loading potholes_cleaned.csv: {e}. Some chatbot features may be limited.")
         return pd.DataFrame()
 
 def get_pavement_condition_prediction(street_name):
@@ -730,119 +714,6 @@ def handle_areas_with_most_potholes(top_n=5):
     highlight_df['marker_radius'] = 12
     return response, None, highlight_df
 
-def handle_zipcodes_with_most_potholes(top_n=10):
-    pothole_detail_df = load_pothole_detail_data()
-    if pothole_detail_df.empty or 'zipcode' not in pothole_detail_df.columns:
-        return "I don't have ZIP-level pothole data to answer that question.", None, pd.DataFrame()
-
-    zip_counts = (
-        pothole_detail_df['zipcode']
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .value_counts()
-        .head(top_n)
-    )
-    if zip_counts.empty:
-        return "I don't have ZIP-level pothole data to answer that question.", None, pd.DataFrame()
-
-    response = "Pothole-prone ZIP codes based on the current pothole dataset:\n\n"
-    for i, (zipcode, count) in enumerate(zip_counts.items(), 1):
-        response += f"• {i}. ZIP code {zipcode}: {count} potholes\n"
-
-    highlight_df = pothole_detail_df[
-        pothole_detail_df['zipcode'].astype(str).isin(zip_counts.index)
-    ][['street_name', 'latitude', 'longitude', 'zipcode']].copy()
-    highlight_df = highlight_df.rename(columns={
-        'street_name': 'MSAG_Name',
-        'latitude': 'Latitude',
-        'longitude': 'Longitude',
-    })
-    highlight_df = highlight_df.dropna(subset=['Latitude', 'Longitude'])
-    highlight_df['color'] = 'red'
-    highlight_df['marker_radius'] = 10
-    return response, None, highlight_df
-
-def handle_west_side_potholes():
-    pothole_detail_df = load_pothole_detail_data()
-    if pothole_detail_df.empty or 'zipcode' not in pothole_detail_df.columns:
-        return "I don't have ZIP-level pothole data to answer that question.", None, pd.DataFrame()
-
-    west_side_df = pothole_detail_df[
-        pothole_detail_df['zipcode'].astype(str).isin(WEST_SIDE_ZIPS)
-    ].copy()
-    if west_side_df.empty:
-        return "I don't have pothole records for West Side ZIP codes in the current dataset.", None, pd.DataFrame()
-
-    west_zip_counts = west_side_df['zipcode'].astype(str).value_counts().head(10)
-    response = "West Side pothole hotspots based on current ZIP-level counts:\n\n"
-    for zipcode, count in west_zip_counts.items():
-        response += f"• ZIP code {zipcode}: {count} potholes\n"
-
-    top_zipcode = west_zip_counts.index[0]
-    response += f"\nHighest-count West Side hotspot: ZIP code {top_zipcode}."
-
-    highlight_df = west_side_df[['street_name', 'latitude', 'longitude', 'zipcode']].copy()
-    highlight_df = highlight_df.rename(columns={
-        'street_name': 'MSAG_Name',
-        'latitude': 'Latitude',
-        'longitude': 'Longitude',
-    })
-    highlight_df = highlight_df.dropna(subset=['Latitude', 'Longitude'])
-    highlight_df['color'] = 'red'
-    highlight_df['marker_radius'] = 10
-    return response, None, highlight_df
-
-def handle_potholes_in_zipcode(zipcode):
-    pothole_detail_df = load_pothole_detail_data()
-    if pothole_detail_df.empty or 'zipcode' not in pothole_detail_df.columns:
-        return "I don't have ZIP-level pothole data to answer that question.", None, pd.DataFrame()
-
-    zipcode_df = pothole_detail_df[
-        pothole_detail_df['zipcode'].astype(str).str.strip() == str(zipcode)
-    ].copy()
-    if zipcode_df.empty:
-        return f"No pothole records were found for zip code {zipcode}.", None, pd.DataFrame()
-
-    total_reports = len(zipcode_df)
-    top_streets = zipcode_df['street_name'].astype(str).value_counts().head(5)
-    top_districts = zipcode_df['council_district'].astype(str).value_counts().head(3)
-
-    response = f"There are {total_reports} pothole reports in zip code {zipcode}.\n\n"
-    response += "Breakdown:\n"
-    for street_name, count in top_streets.items():
-        report_word = "report" if count == 1 else "reports"
-        response += f"• {street_name}: {count} {report_word}\n"
-    for district, count in top_districts.items():
-        if district and district != "nan":
-            report_word = "report" if count == 1 else "reports"
-            response += f"• Council District {district}: {count} {report_word}\n"
-
-    years = pd.to_numeric(zipcode_df.get('year'), errors='coerce').dropna()
-    months = zipcode_df.get('month')
-    if not years.empty:
-        year_min = int(years.min())
-        year_max = int(years.max())
-        if year_min == year_max:
-            response += f"\nNotes:\n• Data includes {year_min} pothole reports in this ZIP code."
-        else:
-            response += f"\nNotes:\n• Data includes pothole reports from {year_min} to {year_max}."
-    elif months is not None:
-        month_values = pd.Series(months).dropna().astype(str).unique().tolist()
-        if month_values:
-            response += f"\nNotes:\n• Data includes records for months such as {', '.join(month_values[:3])}."
-
-    highlight_df = zipcode_df[['street_name', 'latitude', 'longitude', 'zipcode']].copy()
-    highlight_df = highlight_df.rename(columns={
-        'street_name': 'MSAG_Name',
-        'latitude': 'Latitude',
-        'longitude': 'Longitude',
-    })
-    highlight_df = highlight_df.dropna(subset=['Latitude', 'Longitude'])
-    highlight_df['color'] = 'red'
-    highlight_df['marker_radius'] = 10
-    return response, None, highlight_df
-
 # --- Handler: How many potholes have been found this month? ---
 def handle_potholes_this_month():
     if pothole_cases_df.empty or 'OpenDate' not in pothole_cases_df.columns:
@@ -1128,6 +999,7 @@ def get_groq_response(prompt):
 
     print(f"[DEBUG] Received prompt: {prompt}")
 
+<<<<<<< HEAD
     if re.fullmatch(r"\s*(hi+|hello+|hey+|hii+|hiya|sup+|yo+|wyd+|wydd+|wsp+|wassup+|what'?s up|whats up|good morning|good afternoon|good evening)(?:\s+\w+)?\s*[!. ]*\s*", prompt_lower):
         return (
             "Hi, I'm Buffi. I can help with San Antonio potholes, pavement conditions, ZIP-level counts, and road-condition questions.",
@@ -1152,6 +1024,8 @@ def get_groq_response(prompt):
     if match:
         return handle_potholes_in_zipcode(match.group(1))
 
+=======
+>>>>>>> dev
     rag_answer = get_rag_response(prompt)
     if rag_answer:
         return rag_answer, None, pd.DataFrame()

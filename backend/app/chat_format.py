@@ -147,15 +147,6 @@ def finalize_chat_response_text(text: Optional[str]) -> Optional[str]:
 def buffi_guardrail_reply(prompt: str) -> Optional[str]:
     p = (prompt or "").lower()
 
-    if re.fullmatch(r"\s*(hi+|hello+|hey+|hii+|hiya|good morning|good afternoon|good evening)\s*[!. ]*\s*", p):
-        return format_compact_response(
-            "Hi, I'm Buffi.",
-            breakdown=[
-                "I can answer questions about San Antonio potholes, ZIP-level pothole counts, and pavement conditions.",
-                "Try asking about ZIP codes with the most potholes, West Side hotspots, or the worst road conditions.",
-            ],
-        )
-
     if re.search(r"diagnos\w*\s+(?:my\s+)?(?:illness|condition|disease)", p) or "diagnose my" in p:
         return format_compact_response(
             "Medical diagnosis is not available in this assistant.",
