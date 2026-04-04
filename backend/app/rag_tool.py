@@ -1,25 +1,66 @@
 import os
-from typing import Optional
+import re
+from typing import List, Optional
 
 import duckdb
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "potholess.db")
-PARQUET_PATH = os.path.join(os.path.dirname(__file__), "potholes.parquet")
+APP_DIR = os.path.dirname(__file__)
+BACKEND_DIR = os.path.abspath(os.path.join(APP_DIR, ".."))
+
+DB_PATH = os.path.join(APP_DIR, "potholess.db")
+PARQUET_PATH = os.path.join(BACKEND_DIR, "potholes.parquet")
 
 
 def _get_connection():
     return duckdb.connect(DB_PATH)
 
 
-def _ensure_potholes_table(conn):
-    tables = conn.execute("SHOW TABLES").fetchall()
-    if any("potholes" in t for t in tables):
-        return
+def _street_variants(street: str) -> List[str]:
+    street = (street or "").strip().lower()
+    if not street:
+        return []
 
+    variants = {street}
+    replacements = [
+        (r"\bavenue\b", ["ave", "av"]),
+        (r"\bave\b", ["avenue", "av"]),
+        (r"\bav\b", ["avenue", "ave"]),
+        (r"\broad\b", ["rd"]),
+        (r"\brd\b", ["road"]),
+        (r"\bstreet\b", ["st"]),
+        (r"\bst\b", ["street"]),
+        (r"\bdrive\b", ["dr"]),
+        (r"\bdr\b", ["drive"]),
+        (r"\bboulevard\b", ["blvd"]),
+        (r"\bblvd\b", ["boulevard"]),
+    ]
+
+    changed = True
+    while changed:
+        changed = False
+        current = list(variants)
+        for value in current:
+            for pattern, replacements_list in replacements:
+                if re.search(pattern, value):
+                    for replacement in replacements_list:
+                        candidate = re.sub(pattern, replacement, value)
+                        if candidate not in variants:
+                            variants.add(candidate)
+                            changed = True
+
+    cleaned = []
+    for value in variants:
+        normalized = re.sub(r"\s+", " ", value).strip()
+        if normalized:
+            cleaned.append(normalized)
+    return sorted(set(cleaned))
+
+
+def _ensure_potholes_table(conn):
     if os.path.exists(PARQUET_PATH):
         conn.execute(
             """
-            CREATE TABLE potholes AS
+            CREATE OR REPLACE TABLE potholes AS
             SELECT * FROM read_parquet(?)
             """,
             [PARQUET_PATH],
@@ -49,8 +90,13 @@ def query_table(
     params = []
 
     if isinstance(street, str):
-        safe_street = street.replace("'", "''")
-        base_query += f" AND street_name ILIKE '%{safe_street}%'"
+        variants = _street_variants(street)
+        if variants:
+            clauses = []
+            for variant in variants:
+                safe_street = variant.replace("'", "''")
+                clauses.append(f"street_name ILIKE '%{safe_street}%'")
+            base_query += " AND (" + " OR ".join(clauses) + ")"
 
     if isinstance(year, int):
         base_query += " AND year = ?"

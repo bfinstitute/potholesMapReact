@@ -813,10 +813,14 @@ def handle_any_complaints_near_sensitive_areas(radius_m=300, sensitive_type='sch
 # --- RAG Query Integration ---
 try:
     from rag_tool import query_table
+    from rag_pipeline import get_rag_response
     from saaf_handlers import try_handle_saaf_question
+    from ai_agent import get_agent_response
 except ModuleNotFoundError:
     from .rag_tool import query_table
+    from .rag_pipeline import get_rag_response
     from .saaf_handlers import try_handle_saaf_question
+    from .ai_agent import get_agent_response
 
 # Simple parser for street and year from user question
 def parse_rag_question(question):
@@ -853,6 +857,132 @@ def parse_rag_question(question):
         print("[RAG DEBUG] No RAG pattern matched.")
     return street, year
 
+
+def _agent_sql_failed(agent_answer: str) -> bool:
+    """If True, treat agent output as a failed query and fall through to legacy handlers."""
+    s = (agent_answer or "").lower()
+    if "i could not run a safe query" in s:
+        return True
+    if "sql execution failed" in s:
+        return True
+    if "binder error" in s or "catalog error" in s:
+        return True
+    if "referenced column" in s and "not found" in s:
+        return True
+    return False
+
+
+def _load_78207_health_places():
+    path = _resolve_data_path("ZIPCODE 78207/clean/health_places.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+
+
+def _health_place_value(df, measure_id):
+    if df.empty or "measure_id" not in df.columns:
+        return None
+    rows = df[df["measure_id"].astype(str).str.upper() == str(measure_id).upper()].copy()
+    if rows.empty:
+        return None
+    if "year" in rows.columns:
+        rows["year_num"] = pd.to_numeric(rows["year"], errors="coerce")
+        rows = rows.sort_values("year_num", ascending=False)
+    row = rows.iloc[0]
+    value = pd.to_numeric(pd.Series([row.get("value")]), errors="coerce").iloc[0]
+    if pd.isna(value):
+        return None
+    low_ci = pd.to_numeric(pd.Series([row.get("low_ci")]), errors="coerce").iloc[0]
+    high_ci = pd.to_numeric(pd.Series([row.get("high_ci")]), errors="coerce").iloc[0]
+    return {
+        "year": int(row["year"]) if pd.notna(pd.to_numeric(pd.Series([row.get("year")]), errors="coerce").iloc[0]) else None,
+        "value": float(value),
+        "low_ci": None if pd.isna(low_ci) else float(low_ci),
+        "high_ci": None if pd.isna(high_ci) else float(high_ci),
+        "measure": row.get("measure"),
+    }
+
+
+def handle_78207_mental_health_medication_question():
+    df = _load_78207_health_places()
+    if df.empty:
+        return (
+            "I could not find the ZIP-level health file needed to answer that question.",
+            None,
+            pd.DataFrame(),
+        )
+
+    depression = _health_place_value(df, "DEPRESSION")
+    distress = _health_place_value(df, "MHLTH")
+    sleep = _health_place_value(df, "SLEEP")
+    bp_med = _health_place_value(df, "BPMED")
+
+    lines = [
+        "The available ZIP-level data for 78207 does not report the percentage of residents using anxiety, depression, or sleep medications.",
+        "",
+        "What the ZIP-level file does report:",
+    ]
+    if depression:
+        lines.append(f"- Depression among adults: {depression['value']:.1f}% ({depression['year']})")
+    if distress:
+        lines.append(f"- Frequent mental distress among adults: {distress['value']:.1f}% ({distress['year']})")
+    if sleep:
+        lines.append(f"- Short sleep duration among adults: {sleep['value']:.1f}% ({sleep['year']})")
+    if bp_med:
+        lines.append(
+            f"- The same file includes a medication-use measure for high blood pressure: {bp_med['value']:.1f}% ({bp_med['year']})"
+        )
+    lines.extend(
+        [
+            "",
+            "So based only on available ZIP-level data, no valid percentage can be given for anxiety, depression, or sleep medication use.",
+            "Source: ZIPCODE 78207/clean/health_places.csv",
+        ]
+    )
+    return "\n".join(lines), None, pd.DataFrame()
+
+
+def handle_78207_mental_health_national_comparison_question():
+    df = _load_78207_health_places()
+    if df.empty:
+        return (
+            "I could not find the ZIP-level health file needed to answer that question.",
+            None,
+            pd.DataFrame(),
+        )
+
+    depression = _health_place_value(df, "DEPRESSION")
+    distress = _health_place_value(df, "MHLTH")
+    sleep = _health_place_value(df, "SLEEP")
+
+    lines = [
+        "I can summarize the local ZIP-level estimates for 78207, but I cannot make a data-backed comparison to national averages from the files currently loaded.",
+        "",
+        "Available 78207 ZIP-level health estimates:",
+    ]
+    if depression:
+        lines.append(f"- Depression among adults: {depression['value']:.1f}% ({depression['year']})")
+    if distress:
+        lines.append(f"- Frequent mental distress among adults: {distress['value']:.1f}% ({distress['year']})")
+    if sleep:
+        lines.append(f"- Short sleep duration among adults: {sleep['value']:.1f}% ({sleep['year']})")
+    lines.extend(
+        [
+            "",
+            "Supporting source:",
+            "- ZIPCODE 78207/clean/health_places.csv",
+            "- Data source column in that file: BRFSS / PLACES",
+            "",
+            "Limitation:",
+            "- No national benchmark table is currently loaded, so I should not claim whether 78207 is above or below the national average.",
+        ]
+    )
+    return "\n".join(lines), None, pd.DataFrame()
+
+
 # --- Update get_groq_response to use RAG as fallback ---
 def get_groq_response(prompt):
     prompt_lower = prompt.lower()
@@ -861,12 +991,54 @@ def get_groq_response(prompt):
 
     print(f"[DEBUG] Received prompt: {prompt}")
 
+    rag_answer = get_rag_response(prompt)
+    if rag_answer:
+        return rag_answer, None, pd.DataFrame()
+
+    # --- Potholes on a street in a year: use curated query_table (correct schema), not agent SQL on 311 CSVs ---
+    match = re.search(r"how many potholes (were )?reported on ([^?]+) in (\d{4})", prompt_lower)
+    if match:
+        print("[DEBUG] Matched data-driven street/year pattern (before agent).")
+        street = match.group(2).strip()
+        year = int(match.group(3))
+        results = query_table(street=street, year=year)
+        if results:
+            df = pd.DataFrame(results, columns=["latitude", "longitude", "street_name", "year", "council_district"])
+            df = df.rename(columns={
+                'latitude': 'Latitude',
+                'longitude': 'Longitude',
+                'street_name': 'MSAG_Name'
+            })
+            total = len(df)
+            breakdown = df['MSAG_Name'].value_counts().to_dict()
+            breakdown_items = []
+            for street_name, count in breakdown.items():
+                display_name = re.sub(r"\sand\s", " & ", str(street_name), flags=re.IGNORECASE)
+                report_word = "report" if count == 1 else "reports"
+                breakdown_items.append(f"• {display_name}: **{count} {report_word}**")
+            breakdown_str = "\n".join(breakdown_items)
+            total_word = "report" if total == 1 else "reports"
+            response = (
+                f"🚧 Found **{total}** pothole {total_word} for streets containing '**{street}**' in **{year}**.\n\n"
+                f"Breakdown:\n{breakdown_str}"
+            )
+            print(f"[DEBUG] Data-driven response: {response}")
+            return response, None, df
+        print(f"[DEBUG] No records found for street='{street}', year={year}")
+        return f"No pothole records found for streets containing '{street}' in {year}.", None, pd.DataFrame()
+
     # --- SAAF 78207 governance-aware chatbot route ---
     saaf_result = try_handle_saaf_question(prompt)
     if saaf_result is not None:
         return saaf_result
 
     # --- PCI in zip code ---
+    match = re.search(r"pci\s+for\s+(?:zip\s*code|zipcode)\s*(\d{5})\b", prompt_lower)
+    if match:
+        print("[DEBUG] Matched PCI for zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+
     match = re.search(r"what'?s? the pci in zip code (\d+)", prompt_lower)
     if match:
         print("[DEBUG] Matched PCI in zip code pattern.")
@@ -896,42 +1068,6 @@ def get_groq_response(prompt):
     if re.search(r"how likely (will|could) potholes form( in san antonio)?", prompt_lower):
         print("[DEBUG] Matched city-wide pothole formation prediction pattern.")
         return get_pothole_formation_prediction()
-    # --- Data-driven: How many potholes were reported on [street] in [year]? ---
-    match = re.search(r"how many potholes (were )?reported on ([^?]+) in (\d{4})", prompt_lower)
-    if match:
-        print("[DEBUG] Matched data-driven street/year pattern.")
-        street = match.group(2).strip()
-        year = int(match.group(3))
-        results = query_table(street=street, year=year)
-        if results:
-            df = pd.DataFrame(results, columns=["latitude", "longitude", "street_name", "year", "council_district"])
-            df = df.rename(columns={
-                'latitude': 'Latitude',
-                'longitude': 'Longitude',
-                'street_name': 'MSAG_Name'
-            })
-            total = len(df)
-            breakdown = df['MSAG_Name'].value_counts().to_dict()
-            
-            # Create a more readable breakdown with better formatting
-            breakdown_items = []
-            for street_name, count in breakdown.items():
-                # Use ampersand for intersections and format counts with singular/plural
-                display_name = re.sub(r"\sand\s", " & ", str(street_name), flags=re.IGNORECASE)
-                report_word = "report" if count == 1 else "reports"
-                breakdown_items.append(f"• {display_name}: **{count} {report_word}**")
-            breakdown_str = "\n".join(breakdown_items)
-            
-            total_word = "report" if total == 1 else "reports"
-            response = (
-                f"🚧 Found **{total}** pothole {total_word} for streets containing '**{street}**' in **{year}**.\n\n"
-                f"Breakdown:\n{breakdown_str}"
-            )
-            print(f"[DEBUG] Data-driven response: {response}")
-            return response, None, df
-        else:
-            print(f"[DEBUG] No records found for street='{street}', year={year}")
-            return f"No pothole records found for streets containing '{street}' in {year}.", None, pd.DataFrame()
     # --- Optimized intent detection for all questions ---
     # 0. Most potholes / worst pothole locations / top pothole locations
     if re.search(r"(where (are|is) (the )?(most|worst) potholes|top (\d+ )?(worst|most) pothole|worst pothole locations|top pothole locations|most pothole complaints|most reported potholes|highest pothole count)", prompt_lower):
@@ -997,12 +1133,17 @@ def get_groq_response(prompt):
         return handle_intersections_via_pothole_injury()
     if re.search(r'preventative maintenance.*bus|damage|delay', prompt_lower):
         return handle_prioritize_maintenance_for_buses()
-    match = re.search(r'history of repeated pothole complaints.*along (.+)', prompt_lower)
+    match = re.search(
+        r"(?:history of repeated pothole complaints|repeated pothole complaints)\s+along\s+(.+?)(?:\?|$)",
+        prompt_lower,
+    )
     if match:
-        road = match.group(1).strip(' ?')
+        road = match.group(1).strip().rstrip("?.!").strip()
         return handle_repeated_complaints_on_road(road)
-    # Also match: 'Is there a history of repeated pothole complaints along the [road]?' (with [road] in brackets or as a phrase)
-    match = re.search(r'is there a history of repeated pothole complaints along (?:the )?\[?([\w\s\-\.]+)\]?', prompt_lower)
+    match = re.search(
+        r"is there a history of repeated pothole complaints along (?:the )?\[?([\w\s\-\.]+?)\]?(?:\?|$)",
+        prompt_lower,
+    )
     if match:
         road = match.group(1).strip()
         return handle_repeated_complaints_on_road(road)
@@ -1091,9 +1232,25 @@ def get_groq_response(prompt):
     # City satisfaction questions
     if re.search(r'do san antonians like the city', prompt_lower):
         return handle_city_satisfaction()
-    
+
     if re.search(r'is san antonio cool', prompt_lower):
         return handle_city_attitude()
+
+    # 78207 mental-health ZIP-level availability questions
+    if (
+        "78207" in prompt_lower
+        and any(term in prompt_lower for term in ["anxiety", "depression", "sleep medication", "sleep medications"])
+        and "zip-level" in prompt_lower
+        and any(term in prompt_lower for term in ["what percentage", "percent", "percentage"])
+    ):
+        return handle_78207_mental_health_medication_question()
+
+    if (
+        "78207" in prompt_lower
+        and any(term in prompt_lower for term in ["national average", "national averages", "compare to national"])
+        and any(term in prompt_lower for term in ["mental health", "depression", "anxiety", "sleep"])
+    ):
+        return handle_78207_mental_health_national_comparison_question()
     
     # Community spaces accessibility
     match = re.search(r'how accessible are public community spaces in (?:zip code )?(\d+)', prompt_lower)
@@ -1120,6 +1277,18 @@ def get_groq_response(prompt):
     # Living arrangements
     if re.search(r'do most people live by themselves or with others', prompt_lower):
         return handle_living_arrangements()
+
+    match = re.search(
+        r"what type(?:s)? of local businesses do citizens in (?:zip code )?(\d{5})\s+wish they had",
+        prompt_lower,
+    )
+    if match:
+        return handle_local_business_wishes_zipcode(match.group(1))
+    if re.search(
+        r"what type(?:s)? of local businesses do (?:citizens|people) in san antonio wish they had",
+        prompt_lower,
+    ):
+        return handle_local_business_wishes_city()
 
     # --- RAG fallback: try to parse and answer with query_table ---
     street, year = parse_rag_question(prompt)
@@ -1173,6 +1342,11 @@ def get_groq_response(prompt):
         response_text, plot_object, highlight_data_df = get_pothole_formation_prediction()
         return response_text, plot_object, highlight_data_df
 
+    # --- LLM agent over local datasets: only after dedicated handlers have had a chance ---
+    agent_answer = get_agent_response(prompt)
+    if agent_answer and not _agent_sql_failed(agent_answer):
+        return agent_answer, None, pd.DataFrame()
+
     # Keyword-based logic
     keyword_responses = {
         "how many potholes": f"There are {len(pothole_cases_df.index) if not pothole_cases_df.empty else 'no'} potholes recorded in the dataset.",
@@ -1209,7 +1383,18 @@ def get_groq_response(prompt):
             }
             data = {
                 "model": "llama-3.1-8b-instant",
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You answer like the Buffi city data chat: one clear title line (often ending with ':'), "
+                            "then a short list of bullet points with concrete facts. "
+                            "No small talk unless the user greets you. If you lack data, say so in one line and one bullet. "
+                            "No SQL or table names."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
                 "max_tokens": 4096,
             }
             groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
@@ -2064,9 +2249,60 @@ def handle_living_arrangements():
     
     return "Living arrangement data not available.", None, pd.DataFrame()
 
-    print("pothole_cases_df empty:", pothole_cases_df.empty)
-    print("pavement_latlon_df empty:", pavement_latlon_df.empty)
-    print("complaint_df empty:", complaint_df.empty)
+
+def _survey_local_business_wishes_column():
+    for c in survey_df.columns:
+        cl = str(c).lower()
+        if ("local business" in cl or "local businesses" in cl) and (
+            "wish" in cl or "existed" in cl or "neighborhood" in cl
+        ):
+            return c
+    return None
+
+
+def handle_local_business_wishes_zipcode(zipcode):
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    col = _survey_local_business_wishes_column()
+    if not col:
+        return "Survey data does not include a column on desired local businesses or services.", None, pd.DataFrame()
+    zipcode_str = str(zipcode)
+    zd = survey_df[survey_df["What ZIP code do you live in?"].astype(str) == zipcode_str]
+    if zd.empty:
+        return f"No survey responses found for zip code {zipcode}.", None, pd.DataFrame()
+    all_wishes = []
+    for cell in zd[col].dropna():
+        if isinstance(cell, str):
+            all_wishes.extend(p.strip() for p in cell.split(",") if p.strip())
+    if not all_wishes:
+        return f"No free-text business wishes were recorded for zip code {zipcode}.", None, pd.DataFrame()
+    wish_counts = pd.Series(all_wishes).value_counts()
+    total = len(zd)
+    lines = [f"Desired local businesses or services (zip code {zipcode}, survey counts):\n\n"]
+    for wish, count in wish_counts.head(15).items():
+        lines.append(f"• {wish}: {count} mention(s) ({100 * count / total:.1f}% of respondents in this ZIP)\n")
+    return "".join(lines), None, pd.DataFrame()
+
+
+def handle_local_business_wishes_city():
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    col = _survey_local_business_wishes_column()
+    if not col:
+        return "Survey data does not include a column on desired local businesses or services.", None, pd.DataFrame()
+    all_wishes = []
+    for cell in survey_df[col].dropna():
+        if isinstance(cell, str):
+            all_wishes.extend(p.strip() for p in cell.split(",") if p.strip())
+    if not all_wishes:
+        return "No responses were recorded for desired local businesses.", None, pd.DataFrame()
+    wish_counts = pd.Series(all_wishes).value_counts()
+    total = len(survey_df)
+    lines = ["Desired local businesses or services (citywide survey, counts):\n\n"]
+    for wish, count in wish_counts.head(15).items():
+        lines.append(f"• {wish}: {count} mention(s) ({100 * count / total:.1f}% of all respondents)\n")
+    return "".join(lines), None, pd.DataFrame()
+
 
 # --- Handler: PCI in zip code ---
 def handle_pci_in_zipcode(zipcode):
