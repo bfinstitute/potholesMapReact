@@ -1581,8 +1581,18 @@ def get_groq_response(prompt):
             else:
                 print(f"[GROQ DEBUG] Using API key: {GROQ_API_KEY[:10]}...")
 
-                # Gather multi-source context for RAG
+                # Gather multi-source context for RAG with source tracking
                 context_parts = []
+                sources_used = []
+
+                # Define user-friendly source names (no CSV file names)
+                SOURCE_NAMES = {
+                    "demographics": "U.S. Census Bureau - American Community Survey",
+                    "health": "CDC PLACES - Local Health Data",
+                    "311": "San Antonio 311 Service Requests",
+                    "unemployment": "Bureau of Labor Statistics - Employment Data"
+                }
+
                 try:
                     # Import context gathering functions
                     from saaf_data import (
@@ -1603,23 +1613,27 @@ def get_groq_response(prompt):
                             demo_info.append(f"Poverty rate: {float(demographics['poverty_rate']):.1f}%")
                         if demo_info:
                             context_parts.append(f"ZIP 78207 Demographics: {'; '.join(demo_info)}")
+                            sources_used.append(SOURCE_NAMES["demographics"])
 
                     # Gather top health issues
                     health = get_top_health_issues(limit=3)
                     if health:
                         health_info = [f"{name}: {value:.1f}%" for name, value in health]
                         context_parts.append(f"Top Health Issues: {'; '.join(health_info)}")
+                        sources_used.append(SOURCE_NAMES["health"])
 
                     # Gather top 311 categories
                     requests_311 = get_top_311_categories(limit=3)
                     if requests_311:
                         req_info = [f"{name}: {count} cases" for name, count in requests_311]
                         context_parts.append(f"Top 311 Requests: {'; '.join(req_info)}")
+                        sources_used.append(SOURCE_NAMES["311"])
 
                     # Gather unemployment data
                     unemployment = get_unemployment_summary()
                     if unemployment and unemployment.get("latest_rate"):
                         context_parts.append(f"Unemployment: {unemployment['latest_rate']:.2f}%")
+                        sources_used.append(SOURCE_NAMES["unemployment"])
 
                     print(f"[GROQ DEBUG] Gathered context from {len(context_parts)} sources")
                 except Exception as ctx_error:
@@ -1637,8 +1651,9 @@ def get_groq_response(prompt):
                     "• Use friendly but professional language\n"
                     "• If you greet users, keep it warm but brief\n"
                     "• When data is limited, acknowledge it honestly and suggest what you do know\n"
-                    "• Never mention SQL, table names, or technical database details\n"
-                    "• Connect data points to real community impact when relevant\n\n"
+                    "• Never mention SQL, table names, CSV files, or technical database details\n"
+                    "• Connect data points to real community impact when relevant\n"
+                    "• DO NOT add a 'Data Sources' or 'Sources' section to your response - this will be added automatically\n\n"
                     "Your goal: Help San Antonio residents make informed decisions about their neighborhood "
                     "and understand the challenges and resources in their community."
                 )
@@ -1663,6 +1678,18 @@ def get_groq_response(prompt):
                 groq_response.raise_for_status() # Raise an exception for HTTP errors
                 response_data = groq_response.json()
                 response_text = response_data["choices"][0]["message"]["content"]
+
+                # Add source attribution if sources were used
+                if sources_used:
+                    # Remove duplicates while preserving order
+                    unique_sources = []
+                    for source in sources_used:
+                        if source not in unique_sources:
+                            unique_sources.append(source)
+
+                    sources_section = "\n\n**Data Sources:**\n" + "\n".join([f"• {source}" for source in unique_sources])
+                    response_text += sources_section
+
                 response_text = _append_groq_note(response_text)
         except requests.exceptions.RequestException as e:
             print(f"[GROQ ERROR] Error communicating with Groq API: {e}")
