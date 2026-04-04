@@ -149,7 +149,7 @@ def log_query(
 ) -> bool:
     """Log a query to MongoDB for analytics."""
     client = get_mongo_client()
-    if not client.enabled or not client.queries:
+    if not client.enabled or client.queries is None:
         return False
 
     try:
@@ -173,7 +173,7 @@ def log_query(
 def get_cached_response(question: str, context_signature: str) -> Optional[Dict[str, Any]]:
     """Get a cached response if available."""
     client = get_mongo_client()
-    if not client.enabled or not client.response_cache:
+    if not client.enabled or client.response_cache is None:
         return None
 
     try:
@@ -203,7 +203,7 @@ def cache_response(
 ) -> bool:
     """Cache a response for future use."""
     client = get_mongo_client()
-    if not client.enabled or not client.response_cache:
+    if not client.enabled or client.response_cache is None:
         return False
 
     try:
@@ -239,7 +239,7 @@ def log_groq_response(
 ) -> bool:
     """Log a Groq API response for quality monitoring."""
     client = get_mongo_client()
-    if not client.enabled or not client.groq_responses:
+    if not client.enabled or client.groq_responses is None:
         return False
 
     try:
@@ -266,7 +266,7 @@ def log_groq_response(
 def get_query_analytics(days: int = 7) -> Dict[str, Any]:
     """Get query analytics for the last N days."""
     client = get_mongo_client()
-    if not client.enabled or not client.queries:
+    if not client.enabled or client.queries is None:
         return {}
 
     try:
