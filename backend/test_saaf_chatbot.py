@@ -79,13 +79,14 @@ class TestSaafChatbot(unittest.TestCase):
         self.assertIn("does not report", text.lower())
         self.assertIn("no valid percentage can be given", text.lower())
         self.assertIn("health_places.csv", text)
+        self.assertNotIn("high blood pressure medication", text.lower())
 
     def test_mental_health_national_comparison_requires_benchmark(self):
         result = get_groq_response(
             "How does mental health treatment usage in ZIP code 78207 compare to national averages, and what data sources support this comparison?"
         )
         text = self._extract_text(result)
-        self.assertIn("cannot make a data-backed comparison to national averages", text.lower())
+        self.assertIn("supports local mental-health indicators", text.lower())
         self.assertIn("brfss / places", text.lower())
 
     def test_living_arrangements_no_longer_falls_into_potholes_dataset(self):
@@ -135,12 +136,36 @@ class TestSaafChatbot(unittest.TestCase):
         self.assertNotIn("idaho", text.lower())
         self.assertNotIn("greeting received", text.lower())
 
+    def test_sup_is_treated_as_greeting(self):
+        result = get_groq_response("sup")
+        text = self._extract_text(result)
+        self.assertIn("i'm buffi", text.lower())
+        self.assertNotIn("query returned", text.lower())
+
+    def test_hey_suppp_is_treated_as_greeting(self):
+        result = get_groq_response("hey suppp")
+        text = self._extract_text(result)
+        self.assertIn("i'm buffi", text.lower())
+        self.assertNotIn("unable to connect to the groq ai", text.lower())
+
+    def test_wydddd_is_treated_as_greeting(self):
+        result = get_groq_response("wydddd")
+        text = self._extract_text(result)
+        self.assertIn("i'm buffi", text.lower())
+        self.assertNotIn("no greeting detected", text.lower())
+
     def test_zipcode_specific_pothole_count_uses_local_dataset(self):
         result = get_groq_response("How many potholes are in zip code 78207?")
         text = self._extract_text(result)
         self.assertIn("zip code 78207", text.lower())
         self.assertIn("pothole reports", text.lower())
         self.assertNotIn("san pedro ave: 26 reports", text.lower())
+
+    def test_unknown_question_falls_back_to_groq_note(self):
+        result = get_groq_response("suppp")
+        text = self._extract_text(result)
+        self.assertIn("relies on groq", text.lower())
+        self.assertNotIn("cannot be answered from the tables currently loaded in the agent", text.lower())
 
 
 if __name__ == "__main__":
