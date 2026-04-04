@@ -67,6 +67,8 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
         body: JSON.stringify({ message: trimmed }),
       });
       const data = await res.json();
+      const structured = data.structured || null;
+      const answerText = structured?.answer ?? data.response ?? '';
       const hasMap = !!(data.highlight_data && data.highlight_data.length > 0);
       const hasChart = !!(data.chart_data);
 
@@ -74,7 +76,8 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
         ...prev,
         {
           from: 'bot',
-          text: data.response,
+          text: answerText,
+          structured,
           mapTag: hasMap && !hasChart ? title : null,
           chartTag: hasChart ? data.chart_data.title : null,
           chips: (hasMap || hasChart) ? QUICK_CHIPS : null,
@@ -174,6 +177,40 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
                     {String(msg.text).replace(/\n/g, '  \n')}
                   </Markdown>
                 </div>
+                {msg.structured?.reasoning_summary && (
+                  <div className="structured-panel structured-reasoning">
+                    <div className="structured-label">Reasoning</div>
+                    <Markdown options={{ forceBlock: true }}>
+                      {String(msg.structured.reasoning_summary).replace(/\n/g, '  \n')}
+                    </Markdown>
+                  </div>
+                )}
+                {msg.structured?.recommendations?.length > 0 && (
+                  <div className="structured-panel structured-recs">
+                    <div className="structured-label">Recommendations</div>
+                    <ul>
+                      {msg.structured.recommendations.map((line, ri) => (
+                        <li key={ri}>{line}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {msg.structured?.limitations?.length > 0 && (
+                  <div className="structured-panel structured-limits">
+                    <div className="structured-label">Limitations</div>
+                    <ul>
+                      {msg.structured.limitations.map((line, ix) => (
+                        <li key={ix}>{line}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {msg.structured?.follow_up_question && (
+                  <div className="structured-followup">
+                    <span className="structured-label">Try asking</span>
+                    <span className="structured-followup-q">{msg.structured.follow_up_question}</span>
+                  </div>
+                )}
                 {/* Chart type toggle — only on the most recent chart response */}
                 {msg.chartTag && idx === lastChartIdx && (
                   <div className="chart-type-row">
