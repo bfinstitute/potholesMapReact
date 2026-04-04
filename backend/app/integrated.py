@@ -20,12 +20,14 @@ try:
         san_antonio_center_marker,
         zip_centroid_marker,
     )
+    from .mongodb_client import log_groq_response, get_mongo_client
 except ImportError:
     from map_highlights import (
         rag_map_highlight_for_prompt,
         san_antonio_center_marker,
         zip_centroid_marker,
     )
+    from mongodb_client import log_groq_response, get_mongo_client
 
 global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
 
@@ -1726,11 +1728,20 @@ def get_groq_response(prompt):
                     "top_p": 0.9,        # Nucleus sampling for quality
                     "seed": 42,          # Fixed seed for reproducibility
                 }
+
+                # Time the Groq API call for MongoDB logging
+                import time
+                groq_start_time = time.time()
                 groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
+                groq_elapsed_ms = int((time.time() - groq_start_time) * 1000)
+
                 print(f"[GROQ DEBUG] Response status: {groq_response.status_code}")
                 groq_response.raise_for_status() # Raise an exception for HTTP errors
                 response_data = groq_response.json()
                 response_text = response_data["choices"][0]["message"]["content"]
+
+                # Extract token usage if available
+                tokens_used = response_data.get("usage", {}).get("total_tokens")
 
                 # Add source attribution if sources were used
                 if sources_used:
@@ -1743,6 +1754,28 @@ def get_groq_response(prompt):
                     # Format sources with markdown links (clickable in the chatbox)
                     sources_section = "\n\n---\n\n**Data Sources:**\n" + "\n".join([f"• {source}" for source in unique_sources])
                     response_text += sources_section
+
+                # Log Groq API response to MongoDB for quality monitoring
+                mongo_client = get_mongo_client()
+                if mongo_client.enabled:
+                    # Build context summary for logging
+                    context_summary = {}
+                    if context_parts:
+                        for part in context_parts[:5]:  # First 5 context items
+                            key = part.split(":")[0] if ":" in part else "context"
+                            context_summary[key] = part[:200]  # Truncate to 200 chars
+
+                    log_groq_response(
+                        question=prompt,
+                        context_provided=context_summary,
+                        groq_response=response_text[:500],  # Truncate response for storage
+                        temperature=0.3,
+                        seed=42,
+                        model="llama-3.1-8b-instant",
+                        response_time_ms=groq_elapsed_ms,
+                        tokens_used=tokens_used,
+                        grounded_correctly=None,  # Could add validation later
+                    )
 
                 response_text = _append_groq_note(response_text)
         except requests.exceptions.RequestException as e:
