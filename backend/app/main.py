@@ -44,6 +44,21 @@ except ImportError:
         log_groq_response,
     )
 
+try:
+    from .disk_cache import (
+        get_chat_response as disk_get,
+        set_chat_response as disk_set,
+        reset_cache as disk_reset,
+        cache_stats as disk_cache_stats,
+    )
+except ImportError:
+    from disk_cache import (
+        get_chat_response as disk_get,
+        set_chat_response as disk_set,
+        reset_cache as disk_reset,
+        cache_stats as disk_cache_stats,
+    )
+
 
 def _geography_hint_from_message(text: str) -> Optional[str]:
     """Lightweight hint for synthesis (Phase 2 will replace with real geo resolution)."""
@@ -88,7 +103,13 @@ async def chat(request: Request):
     # Generate context signature for MongoDB caching
     context_sig = _get_context_signature()
 
-    # Try to get cached response from MongoDB
+    # --- Cache layer 1: DiskCache (zero-config, no login required) ---
+    disk_cached = disk_get(user_message)
+    if disk_cached:
+        print(f"[DiskCache] Hit for: {user_message[:60]}")
+        return disk_cached
+
+    # --- Cache layer 2: MongoDB (if configured) ---
     mongo_client = get_mongo_client()
     cached = None
     if mongo_client.enabled:
@@ -108,11 +129,14 @@ async def chat(request: Request):
                 groq_called=False,
             )
 
-        return {
+        result = {
             "response": cached["response"],
             "structured": cached.get("structured"),
             "highlight_data": cached.get("highlight_data"),
         }
+        # Also write to disk cache so next hit is local
+        disk_set(user_message, result)
+        return result
 
     # No cache hit - proceed with full pipeline:
     # 1) Deterministic retrieval + handlers (facts embedded in response text / highlight_df)
@@ -170,10 +194,81 @@ async def chat(request: Request):
         # Note: We could also cache the structured payload separately if needed
         # For now, we're just caching the answer text and highlight_data
 
-    return {
+    final_response = {
         "response": structured.answer,
         "structured": payload,
         "highlight_data": highlight_data,
+    }
+
+    # Write to disk cache (always, no login needed)
+    disk_set(user_message, final_response)
+
+    return final_response
+
+
+# ---------------------------------------------------------------------------
+# Cache management endpoints (no auth — dev/testing only)
+# ---------------------------------------------------------------------------
+
+@app.get("/cache/stats")
+async def cache_stats_endpoint():
+    """Return stats for disk cache and MongoDB cache. No login required."""
+    disk = disk_cache_stats()
+    mongo_client = get_mongo_client()
+    mongo_info: dict = {"enabled": mongo_client.enabled}
+    if mongo_client.enabled and mongo_client._db is not None:
+        try:
+            mongo_info["response_cache_count"] = mongo_client._db.response_cache.count_documents({})
+            mongo_info["query_count"] = mongo_client._db.queries.count_documents({})
+            mongo_info["civic_data_count"] = mongo_client._db.civic_data.count_documents({})
+        except Exception as e:
+            mongo_info["error"] = str(e)
+    return {
+        "disk_cache": disk,
+        "mongodb": mongo_info,
+    }
+
+
+@app.post("/cache/reset")
+async def cache_reset_endpoint():
+    """
+    Wipe the disk cache entirely. No login required.
+    Use this during testing to force fresh responses.
+
+    Also clears MongoDB response_cache if MongoDB is connected.
+    """
+    disk_result = disk_reset()
+
+    mongo_result = {"enabled": False}
+    mongo_client = get_mongo_client()
+    if mongo_client.enabled and mongo_client._db is not None:
+        try:
+            before = mongo_client._db.response_cache.count_documents({})
+            mongo_client._db.response_cache.delete_many({})
+            mongo_result = {
+                "enabled": True,
+                "response_cache_cleared": before,
+            }
+        except Exception as e:
+            mongo_result = {"enabled": True, "error": str(e)}
+
+    return {
+        "success": True,
+        "disk_cache": disk_result,
+        "mongodb": mongo_result,
+        "message": "Cache cleared. Next requests will hit the LLM fresh.",
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Quick health check — returns status of all services."""
+    mongo_client = get_mongo_client()
+    disk = disk_cache_stats()
+    return {
+        "status": "ok",
+        "mongodb": {"connected": mongo_client.enabled},
+        "disk_cache": {"available": disk.get("available"), "entries": disk.get("entry_count", 0)},
     }
 
 

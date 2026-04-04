@@ -9,6 +9,7 @@ Provides collections for:
 """
 
 import os
+import certifi
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from pymongo import MongoClient, ASCENDING, DESCENDING
@@ -40,6 +41,7 @@ class MongoDBClient:
                 mongodb_uri,
                 serverSelectionTimeoutMS=5000,  # 5 second timeout
                 connectTimeoutMS=5000,
+                tlsCAFile=certifi.where(),       # Fix macOS SSL certificate verification
             )
             # Test connection
             self._client.server_info()
@@ -60,7 +62,7 @@ class MongoDBClient:
 
     def _create_indexes(self):
         """Create indexes for better query performance."""
-        if not self._db:
+        if self._db is None:
             return
 
         try:
@@ -94,22 +96,22 @@ class MongoDBClient:
     @property
     def queries(self) -> Optional[Collection]:
         """Get queries collection for tracking all chat queries."""
-        return self._db.queries if self._db else None
+        return self._db.queries if self._db is not None else None
 
     @property
     def response_cache(self) -> Optional[Collection]:
         """Get response cache collection."""
-        return self._db.response_cache if self._db else None
+        return self._db.response_cache if self._db is not None else None
 
     @property
     def groq_responses(self) -> Optional[Collection]:
         """Get Groq API response monitoring collection."""
-        return self._db.groq_responses if self._db else None
+        return self._db.groq_responses if self._db is not None else None
 
     @property
     def data_sources(self) -> Optional[Collection]:
         """Get data source freshness tracking collection."""
-        return self._db.data_sources if self._db else None
+        return self._db.data_sources if self._db is not None else None
 
     def close(self):
         """Close MongoDB connection."""
