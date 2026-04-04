@@ -14,6 +14,19 @@ from functools import lru_cache
 import inspect
 import calendar
 
+try:
+    from .map_highlights import (
+        rag_map_highlight_for_prompt,
+        san_antonio_center_marker,
+        zip_centroid_marker,
+    )
+except ImportError:
+    from map_highlights import (
+        rag_map_highlight_for_prompt,
+        san_antonio_center_marker,
+        zip_centroid_marker,
+    )
+
 global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
 
 DATA_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Data"))
@@ -242,7 +255,21 @@ def handle_repeated_complaints_on_road(road):
         lines.append("")
 
     response = "\n".join(lines).strip()
-    return response, None, pd.DataFrame()
+    hdf = pd.DataFrame()
+    if "Latitude" in road_complaints.columns and "Longitude" in road_complaints.columns:
+        pts = road_complaints.dropna(subset=["Latitude", "Longitude"]).copy()
+        pts = pts.head(450)
+        if not pts.empty:
+            hdf = pd.DataFrame(
+                {
+                    "Latitude": pts["Latitude"].astype(float),
+                    "Longitude": pts["Longitude"].astype(float),
+                    "MSAG_Name": pts["MSAG_Name"].fillna(road).astype(str),
+                }
+            )
+            hdf["color"] = "#DC143C"
+            hdf["marker_radius"] = 9
+    return response, None, hdf
 
 # --- Handler: Bus stops near high-risk pavement ---
 def handle_bus_stops_near_high_risk_pavement(pci_threshold=50, radius_m=100):
@@ -930,7 +957,7 @@ def handle_78207_mental_health_medication_question():
         return (
             "I could not find the ZIP-level health file needed to answer that question.",
             None,
-            pd.DataFrame(),
+            zip_centroid_marker("78207", label="ZIP 78207 (context)", color="#9370DB"),
         )
 
     depression = _health_place_value(df, "DEPRESSION")
@@ -955,7 +982,7 @@ def handle_78207_mental_health_medication_question():
             "Source: ZIPCODE 78207/clean/health_places.csv",
         ]
     )
-    return "\n".join(lines), None, pd.DataFrame()
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 health context", color="#9370DB")
 
 
 def handle_78207_mental_health_national_comparison_question():
@@ -964,7 +991,7 @@ def handle_78207_mental_health_national_comparison_question():
         return (
             "I could not find the ZIP-level health file needed to answer that question.",
             None,
-            pd.DataFrame(),
+            zip_centroid_marker("78207", label="ZIP 78207 (context)", color="#9370DB"),
         )
 
     depression = _health_place_value(df, "DEPRESSION")
@@ -994,11 +1021,48 @@ def handle_78207_mental_health_national_comparison_question():
             "- I should not claim whether 78207 is above or below the U.S. average from the loaded data alone.",
         ]
     )
-    return "\n".join(lines), None, pd.DataFrame()
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 health context", color="#9370DB")
 
 
 def _potholes_parquet_path():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "potholes.parquet"))
+
+
+def _sample_pothole_rows(rows, n):
+    """Subsample row tuples from query_table without loading huge ZIPs into the map payload."""
+    if not rows or n <= 0:
+        return []
+    rows = list(rows)
+    if len(rows) <= n:
+        return rows
+    idx = np.random.default_rng(42).permutation(len(rows))[:n]
+    return [rows[i] for i in idx]
+
+
+def _highlight_df_from_pothole_rows(rows, color="#FF4500", marker_radius=12, max_points=500):
+    """
+    Build a DataFrame the React map expects: Latitude, Longitude, optional MSAG_Name, color, marker_radius.
+    """
+    if not rows:
+        return pd.DataFrame()
+    sampled = _sample_pothole_rows(rows, min(len(rows), max_points))
+    df = pd.DataFrame(
+        sampled,
+        columns=["latitude", "longitude", "street_name", "year", "council_district"],
+    )
+    df = df.rename(
+        columns={
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "street_name": "MSAG_Name",
+        }
+    )
+    df = df.dropna(subset=["Latitude", "Longitude"])
+    if df.empty:
+        return pd.DataFrame()
+    df["color"] = color
+    df["marker_radius"] = marker_radius
+    return df
 
 
 # Approximate west-side San Antonio ZIPs used for "west side" hotspot summaries (local dataset).
@@ -1036,7 +1100,13 @@ def handle_zipcodes_with_most_potholes():
     ]
     for _, row in df.iterrows():
         lines.append(f"• ZIP {row['z']}: **{int(row['c'])}** pothole reports")
-    return "\n".join(lines), None, pd.DataFrame()
+    combined_rows = []
+    per_zip_cap = max(40, min(120, 600 // max(len(df), 1)))
+    for _, row in df.iterrows():
+        z = int(row["z"])
+        combined_rows.extend(_sample_pothole_rows(query_table(zipcode=z), per_zip_cap))
+    highlight = _highlight_df_from_pothole_rows(combined_rows, color="#FF4500", marker_radius=11, max_points=600)
+    return "\n".join(lines), None, highlight
 
 
 def handle_west_side_potholes():
@@ -1065,7 +1135,13 @@ def handle_west_side_potholes():
     ]
     for _, row in df.iterrows():
         lines.append(f"• ZIP **{int(row['zipcode'])}**: **{int(row['c'])}** pothole reports")
-    return "\n".join(lines), None, pd.DataFrame()
+    combined_rows = []
+    per_zip_cap = max(50, min(150, 600 // max(len(df), 1)))
+    for _, row in df.iterrows():
+        z = int(row["zipcode"])
+        combined_rows.extend(_sample_pothole_rows(query_table(zipcode=z), per_zip_cap))
+    highlight = _highlight_df_from_pothole_rows(combined_rows, color="#FF8C00", marker_radius=12, max_points=600)
+    return "\n".join(lines), None, highlight
 
 
 def handle_potholes_in_zipcode(zipcode_str):
@@ -1077,7 +1153,8 @@ def handle_potholes_in_zipcode(zipcode_str):
         f"For **zip code {zc}**, the local dataset lists **{n}** pothole {rw}.\n\n"
         f"Source: `potholes.parquet` (ZIP-filtered via the chatbot query layer)."
     )
-    return text, None, pd.DataFrame()
+    highlight = _highlight_df_from_pothole_rows(rows, color="#1E90FF", marker_radius=11, max_points=500)
+    return text, None, highlight
 
 
 # --- Update get_groq_response to use RAG as fallback ---
@@ -1155,7 +1232,7 @@ def get_groq_response(prompt):
 
     rag_answer = get_rag_response(prompt)
     if rag_answer:
-        return rag_answer, None, pd.DataFrame()
+        return rag_answer, None, rag_map_highlight_for_prompt(prompt)
 
     # --- Potholes on a street in a year: use curated query_table (correct schema), not agent SQL on 311 CSVs ---
     match = re.search(r"how many potholes (were )?reported on ([^?]+) in (\d{4})", prompt_lower)
@@ -1713,6 +1790,25 @@ def handle_via_route_analytics():
         pd.DataFrame(),
     )
 
+def _via_route_matches_street(route_name_lower: str, street_name_lower: str, street_variations: dict) -> bool:
+    """Same matching rules as the VIA vs pavement analysis (single place for text logic)."""
+    if (any(word in route_name_lower for word in street_name_lower.split()) or
+            any(word in street_name_lower for word in route_name_lower.split())):
+        return True
+    for key, variations in street_variations.items():
+        if key in route_name_lower:
+            for variation in variations:
+                if variation in street_name_lower:
+                    return True
+    if 'st ' in route_name_lower and 'street' in street_name_lower:
+        return True
+    if 'ave ' in route_name_lower and 'avenue' in street_name_lower:
+        return True
+    if 'rd ' in route_name_lower and 'road' in street_name_lower:
+        return True
+    return False
+
+
 # --- Handler: Which VIA buses travel most often on pothole-prone streets? ---
 def handle_via_buses_on_pothole_prone_streets():
     """Analyze which VIA bus routes travel most often on streets with poor pavement conditions."""
@@ -1783,33 +1879,7 @@ def handle_via_buses_on_pothole_prone_streets():
             
             for _, pavement in poor_pavement.iterrows():
                 street_name = str(pavement.get('MSAG_Name', '')).lower()
-                
-                # Enhanced matching logic
-                matched = False
-                
-                # Direct name matching
-                if (any(word in route_name for word in street_name.split()) or 
-                    any(word in street_name for word in route_name.split())):
-                    matched = True
-                
-                # Check against street variations
-                for key, variations in street_variations.items():
-                    if key in route_name:
-                        for variation in variations:
-                            if variation in street_name:
-                                matched = True
-                                break
-                    if matched:
-                        break
-                
-                # Check for common abbreviations
-                if 'st ' in route_name and 'street' in street_name:
-                    matched = True
-                elif 'ave ' in route_name and 'avenue' in street_name:
-                    matched = True
-                elif 'rd ' in route_name and 'road' in street_name:
-                    matched = True
-                
+                matched = _via_route_matches_street(route_name, street_name, street_variations)
                 if matched:
                     matching_streets += 1
                     total_pci += pavement['PCI']
@@ -1840,76 +1910,59 @@ def handle_via_buses_on_pothole_prone_streets():
         
         response += f"\n📊 **Summary:** {len(route_analysis)} total routes affected"
         
-        # Create highlight data for map visualization
-        highlight_data = []
-        for route in route_analysis[:5]:  # Top 5 for visualization
-            # Get coordinates for the matching streets
-            for _, pavement in poor_pavement.iterrows():
-                street_name = str(pavement.get('MSAG_Name', '')).lower()
-                route_name = route['route_name'].lower()
-                
-                # Use the same matching logic as above
-                matched = False
-                if (any(word in route_name for word in street_name.split()) or 
-                    any(word in street_name for word in route_name.split())):
-                    matched = True
-                
-                for key, variations in street_variations.items():
-                    if key in route_name:
-                        for variation in variations:
-                            if variation in street_name:
-                                matched = True
-                                break
-                    if matched:
-                        break
-                
-                if matched:
-                    # Get coordinates and handle NaN values
-                    lat = pavement.get('Latitude')
-                    lon = pavement.get('Longitude')
-                    pci = pavement.get('PCI')
-                    
-                    # Skip if coordinates are NaN or None
-                    if pd.isna(lat) or pd.isna(lon) or lat is None or lon is None:
-                        continue
-                    
-                    highlight_data.append({
-                        'Latitude': float(lat),
-                        'Longitude': float(lon),
-                        'MSAG_Name': pavement.get('MSAG_Name') if not pd.isna(pavement.get('MSAG_Name')) else 'Unknown Street',
-                        'PCI': float(pci) if not pd.isna(pci) else 0.0,
-                        'Route': f"Route {route['route_id']}",
-                        'color': 'red' if (not pd.isna(pci) and pci < 30) else 'orange',
-                        'marker_radius': 8
-                    })
-        
-        highlight_df = pd.DataFrame(highlight_data)
-        
-        # Debug: Check for NaN values before conversion
+        # Map: one pass over poor pavement × top routes (avoid O(routes × N) nested loops).
+        # Dedupe by segment (OBJECTID or rounded lat/lon), then cap for payload — show spread citywide.
+        top_routes = route_analysis[:5]
+        highlight_rows = []
+        seen_keys = set()
+        max_points = 500
+        # Randomize row order so the cap picks segments across the city, not only the first rows of the CSV.
+        pp_for_map = poor_pavement.sample(frac=1.0, random_state=42).reset_index(drop=True)
+
+        for _, pavement in pp_for_map.iterrows():
+            street_name = str(pavement.get("MSAG_Name", "")).lower()
+            lat = pavement.get("Latitude")
+            lon = pavement.get("Longitude")
+            if pd.isna(lat) or pd.isna(lon) or lat is None or lon is None:
+                continue
+            matched_route = None
+            for route in top_routes:
+                rn = route["route_name"].lower()
+                if _via_route_matches_street(rn, street_name, street_variations):
+                    matched_route = route
+                    break
+            if matched_route is None:
+                continue
+            oid = pavement.get("OBJECTID")
+            lat_f, lon_f = float(lat), float(lon)
+            key = (
+                (int(oid), round(lat_f, 5), round(lon_f, 5))
+                if pd.notna(oid)
+                else (round(lat_f, 5), round(lon_f, 5))
+            )
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+            pci = pavement.get("PCI")
+            pci_f = float(pci) if pd.notna(pci) else 0.0
+            highlight_rows.append(
+                {
+                    "Latitude": lat_f,
+                    "Longitude": lon_f,
+                    "MSAG_Name": str(pavement.get("MSAG_Name") or "Unknown Street"),
+                    "PCI": pci_f,
+                    "Route": f"Route {matched_route['route_id']}",
+                    "color": "red" if pci_f < 30 else "orange",
+                    "marker_radius": 8,
+                }
+            )
+            if len(highlight_rows) >= max_points:
+                break
+
+        highlight_df = pd.DataFrame(highlight_rows)
         if not highlight_df.empty:
-            print(f"DEBUG: highlight_df shape before conversion: {highlight_df.shape}")
-            print(f"DEBUG: highlight_df columns: {highlight_df.columns.tolist()}")
-            print(f"DEBUG: highlight_df dtypes: {highlight_df.dtypes}")
-            
-            # Check for NaN values in each column
-            for col in highlight_df.columns:
-                nan_count = highlight_df[col].isna().sum()
-                if nan_count > 0:
-                    print(f"DEBUG: Column '{col}' has {nan_count} NaN values")
-            
-            # Apply NaN handling to ensure JSON serialization
             highlight_df = _convert_dataframe_numerics_to_native_types(highlight_df)
-            
-            # Debug: Check for NaN values after conversion
-            print(f"DEBUG: highlight_df shape after conversion: {highlight_df.shape}")
-            for col in highlight_df.columns:
-                nan_count = highlight_df[col].isna().sum()
-                if nan_count > 0:
-                    print(f"DEBUG: Column '{col}' still has {nan_count} NaN values after conversion")
-            
-            # Additional safety check: replace any remaining NaN with None
-            highlight_df = highlight_df.where(pd.notna(highlight_df), None)
-        
+
         return response, None, highlight_df
         
     except Exception as e:
@@ -2004,7 +2057,7 @@ def handle_public_transportation_sentiment_zipcode(zipcode):
                 percentage = (count / total_responses) * 100
                 response += f"• {satisfaction}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Public transportation satisfaction data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -2041,7 +2094,7 @@ def handle_investment_opportunities():
                 if pd.notna(row[investment_col]) and 'Other' in str(row[investment_col]):
                     response += f"• {str(row[investment_col]).replace('Other', '').strip()}\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: citywide investment", color="#2E8B57")
     
     return "Investment opportunity data not available.", None, pd.DataFrame()
 
@@ -2071,7 +2124,7 @@ def handle_transportation_mode_zipcode(zipcode):
         most_common_mode = mode_counts.index[0] if not mode_counts.empty else "No data"
         response += f"\nMost common mode: {most_common_mode}"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Transportation mode data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -2098,7 +2151,7 @@ def handle_transportation_improvements():
             percentage = (count / total_responses) * 100
             response += f"• {improvement}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: transportation priorities", color="#2E8B57")
     
     return "Transportation improvement data not available.", None, pd.DataFrame()
 
@@ -2131,7 +2184,7 @@ def handle_missing_services_zipcode(zipcode):
             percentage = (count / total_responses) * 100
             response += f"• {service}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Missing services data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -2175,7 +2228,7 @@ def handle_city_satisfaction():
             percentage = (count / len(survey_df)) * 100
             response += f"  - {connection}: {percentage:.1f}%\n"
     
-    return response, None, pd.DataFrame()
+    return response, None, san_antonio_center_marker(label="Survey: city satisfaction", color="#2E8B57")
 
 def handle_city_attitude():
     """Handle questions about whether San Antonio is 'cool'."""
@@ -2219,7 +2272,7 @@ def handle_city_attitude():
             else:
                 response += f"\nOverall assessment: Mixed feelings about San Antonio among residents."
             
-            return response, None, pd.DataFrame()
+            return response, None, san_antonio_center_marker(label="Survey: city sentiment", color="#2E8B57")
     
     return "Sentiment data not available for this question.", None, pd.DataFrame()
 
@@ -2258,7 +2311,7 @@ def handle_community_spaces_accessibility_zipcode(zipcode):
             else:
                 response += "• Assessment: Community spaces have limited accessibility"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Community spaces accessibility data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -2291,7 +2344,7 @@ def handle_community_spaces_accessibility_city():
             else:
                 response += "• Assessment: Community spaces have limited accessibility across the city"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: community spaces", color="#2E8B57")
     
     return "Community spaces accessibility data not available.", None, pd.DataFrame()
 
@@ -2330,7 +2383,7 @@ def handle_housing_affordability_zipcode(zipcode):
             else:
                 response += "• Assessment: Housing is generally unaffordable"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Housing affordability data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -2363,7 +2416,7 @@ def handle_housing_affordability_city():
             else:
                 response += "• Assessment: Housing is generally unaffordable across the city"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: housing affordability", color="#2E8B57")
     
     return "Housing affordability data not available.", None, pd.DataFrame()
 
@@ -2390,7 +2443,7 @@ def handle_housing_types():
             percentage = (count / total_responses) * 100
             response += f"• {dwelling}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: housing types", color="#2E8B57")
     
     return "Housing type data not available.", None, pd.DataFrame()
 
@@ -2442,7 +2495,7 @@ def handle_living_arrangements():
         else:
             response += f"\nMost people in San Antonio live alone or independently."
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: living arrangements", color="#2E8B57")
     
     return "Living arrangement data not available.", None, pd.DataFrame()
 
@@ -2478,7 +2531,7 @@ def handle_local_business_wishes_zipcode(zipcode):
     lines = [f"Desired local businesses or services (zip code {zipcode}, survey counts):\n\n"]
     for wish, count in wish_counts.head(15).items():
         lines.append(f"• {wish}: {count} mention(s) ({100 * count / total:.1f}% of respondents in this ZIP)\n")
-    return "".join(lines), None, pd.DataFrame()
+    return "".join(lines), None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
 
 
 def handle_local_business_wishes_city():
@@ -2498,7 +2551,7 @@ def handle_local_business_wishes_city():
     lines = ["Desired local businesses or services (citywide survey, counts):\n\n"]
     for wish, count in wish_counts.head(15).items():
         lines.append(f"• {wish}: {count} mention(s) ({100 * count / total:.1f}% of all respondents)\n")
-    return "".join(lines), None, pd.DataFrame()
+    return "".join(lines), None, san_antonio_center_marker(label="Survey: local business wishes", color="#2E8B57")
 
 
 # --- Handler: PCI in zip code ---
@@ -2511,7 +2564,7 @@ def handle_pci_in_zipcode(zipcode):
     header = _pci_zip_response_header(zipcode)
     if pavement_latlon_df.empty:
         detail = "No pavement table is loaded. Please ensure the COSA pavement CSV is available."
-        return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+        return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
 
     # Check if zipcode column exists
     if 'zipcode' not in pavement_latlon_df.columns and 'ZipCode' not in pavement_latlon_df.columns:
@@ -2521,7 +2574,7 @@ def handle_pci_in_zipcode(zipcode):
             zipcode_center = geocode_address(f"{zipcode}, San Antonio, TX")
             if zipcode_center[0] is None:
                 detail = "Could not geocode this ZIP; check that it is a valid San Antonio area code."
-                return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+                return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
 
             lat, lon = zipcode_center
 
@@ -2531,7 +2584,7 @@ def handle_pci_in_zipcode(zipcode):
             gdf = get_pavement_gdf()
             if gdf.empty:
                 detail = "No pavement location coordinates are available in the loaded dataset."
-                return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+                return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
 
             gdf_proj = gdf.to_crs(epsg=3857)
             point = gpd.GeoSeries([gpd.points_from_xy([lon], [lat])[0]], crs="EPSG:4326").to_crs(epsg=3857)
@@ -2540,14 +2593,14 @@ def handle_pci_in_zipcode(zipcode):
 
             if nearby_data.empty:
                 detail = f"No pavement condition records were found for zip code {zipcode}."
-                return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+                return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
 
             # Use the nearby data as if it were for the zip code
             zipcode_data = nearby_data.to_crs(epsg=4326)
 
         except Exception as e:
             detail = f"Could not derive PCI near zip code {zipcode}. ({str(e)})"
-            return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+            return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
     else:
         # Use direct zip code column if available
         zip_col = 'zipcode' if 'zipcode' in pavement_latlon_df.columns else 'ZipCode'
@@ -2556,7 +2609,7 @@ def handle_pci_in_zipcode(zipcode):
 
         if zipcode_data.empty:
             detail = f"No pavement condition records were found for zip code {zipcode}."
-            return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+            return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
 
     # Calculate PCI statistics
     avg_pci = zipcode_data['PCI'].mean()
