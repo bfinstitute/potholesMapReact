@@ -62,6 +62,12 @@ def _convert_dataframe_numerics_to_native_types(df):
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
+# Debug: Print if API key is loaded (first 10 chars only for security)
+if GROQ_API_KEY:
+    print(f"[GROQ] API Key loaded: {GROQ_API_KEY[:10]}...")
+else:
+    print("[GROQ] WARNING: No API key found in environment!")
+
 # Initialize global DataFrames
 pothole_cases_df = pd.DataFrame()
 pavement_latlon_df = pd.DataFrame()
@@ -1491,33 +1497,98 @@ def get_groq_response(prompt):
 
     if response_text is None:
         try:
-            headers = {
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json",
-            }
-            data = {
-                "model": "llama-3.1-8b-instant",
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": (
-                            "You answer like the Buffi city data chat: one clear title line (often ending with ':'), "
-                            "then a short list of bullet points with concrete facts. "
-                            "No small talk unless the user greets you. If you lack data, say so in one line and one bullet. "
-                            "No SQL or table names."
-                        ),
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                "max_tokens": 4096,
-            }
-            groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
-            groq_response.raise_for_status() # Raise an exception for HTTP errors
-            response_data = groq_response.json()
-            response_text = response_data["choices"][0]["message"]["content"]
-            response_text = _append_groq_note(response_text)
+            # Debug: Check if API key exists
+            if not GROQ_API_KEY:
+                print("[GROQ ERROR] No API key available!")
+                response_text = _append_groq_note("Groq API key is not configured. Please set GROQ_API_KEY in the .env file.")
+            else:
+                print(f"[GROQ DEBUG] Using API key: {GROQ_API_KEY[:10]}...")
+
+                # Gather multi-source context for RAG
+                context_parts = []
+                try:
+                    # Import context gathering functions
+                    from saaf_data import (
+                        get_context_metrics, get_top_health_issues,
+                        get_top_311_categories, get_unemployment_summary,
+                        get_service_landscape_summary
+                    )
+
+                    # Gather demographics for ZIP 78207
+                    demographics = get_context_metrics()
+                    if demographics:
+                        demo_info = []
+                        if demographics.get("population"):
+                            demo_info.append(f"Population: {int(demographics['population']):,}")
+                        if demographics.get("median_income"):
+                            demo_info.append(f"Median income: ${int(demographics['median_income']):,}")
+                        if demographics.get("poverty_rate"):
+                            demo_info.append(f"Poverty rate: {float(demographics['poverty_rate']):.1f}%")
+                        if demo_info:
+                            context_parts.append(f"ZIP 78207 Demographics: {'; '.join(demo_info)}")
+
+                    # Gather top health issues
+                    health = get_top_health_issues(limit=3)
+                    if health:
+                        health_info = [f"{name}: {value:.1f}%" for name, value in health]
+                        context_parts.append(f"Top Health Issues: {'; '.join(health_info)}")
+
+                    # Gather top 311 categories
+                    requests_311 = get_top_311_categories(limit=3)
+                    if requests_311:
+                        req_info = [f"{name}: {count} cases" for name, count in requests_311]
+                        context_parts.append(f"Top 311 Requests: {'; '.join(req_info)}")
+
+                    # Gather unemployment data
+                    unemployment = get_unemployment_summary()
+                    if unemployment and unemployment.get("latest_rate"):
+                        context_parts.append(f"Unemployment: {unemployment['latest_rate']:.2f}%")
+
+                    print(f"[GROQ DEBUG] Gathered context from {len(context_parts)} sources")
+                except Exception as ctx_error:
+                    print(f"[GROQ DEBUG] Could not gather all context: {ctx_error}")
+
+                # Build context-aware system message with Buffi's personality
+                system_content = (
+                    "You are Buffi, a friendly and knowledgeable assistant for San Antonio city data, "
+                    "with a focus on ZIP code 78207 and community well-being. "
+                    "You help residents understand their neighborhood through data about potholes, road conditions, "
+                    "health indicators, 311 service requests, demographics, and community needs.\n\n"
+                    "Response Style:\n"
+                    "• Start with a clear, descriptive title ending with ':'\n"
+                    "• Follow with 3-6 bullet points of concrete, actionable facts\n"
+                    "• Use friendly but professional language\n"
+                    "• If you greet users, keep it warm but brief\n"
+                    "• When data is limited, acknowledge it honestly and suggest what you do know\n"
+                    "• Never mention SQL, table names, or technical database details\n"
+                    "• Connect data points to real community impact when relevant\n\n"
+                    "Your goal: Help San Antonio residents make informed decisions about their neighborhood "
+                    "and understand the challenges and resources in their community."
+                )
+
+                if context_parts:
+                    system_content += "\n\nAvailable Data Context:\n" + "\n".join(context_parts)
+
+                headers = {
+                    "Authorization": f"Bearer {GROQ_API_KEY}",
+                    "Content-Type": "application/json",
+                }
+                data = {
+                    "model": "llama-3.1-8b-instant",
+                    "messages": [
+                        {"role": "system", "content": system_content},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "max_tokens": 4096,
+                }
+                groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
+                print(f"[GROQ DEBUG] Response status: {groq_response.status_code}")
+                groq_response.raise_for_status() # Raise an exception for HTTP errors
+                response_data = groq_response.json()
+                response_text = response_data["choices"][0]["message"]["content"]
+                response_text = _append_groq_note(response_text)
         except requests.exceptions.RequestException as e:
-            print(f"Error communicating with Groq API: {e}")
+            print(f"[GROQ ERROR] Error communicating with Groq API: {e}")
             response_text = _append_groq_note("I am currently unable to connect to the Groq AI. Please try again later.")
         except KeyError:
             response_text = _append_groq_note("I received an unexpected response from the Groq AI. Please try rephrasing your question.")
