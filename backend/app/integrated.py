@@ -1585,12 +1585,13 @@ def get_groq_response(prompt):
                 context_parts = []
                 sources_used = []
 
-                # Define user-friendly source names (no CSV file names)
+                # Define user-friendly source names with links (placeholder URLs for now)
+                # TODO: Replace placeholder URLs with actual data source links
                 SOURCE_NAMES = {
-                    "demographics": "U.S. Census Bureau - American Community Survey",
-                    "health": "CDC PLACES - Local Health Data",
-                    "311": "San Antonio 311 Service Requests",
-                    "unemployment": "Bureau of Labor Statistics - Employment Data"
+                    "demographics": "[U.S. Census Bureau - American Community Survey](https://data.census.gov/)",
+                    "health": "[CDC PLACES - Local Health Data](https://www.cdc.gov/places/)",
+                    "311": "[San Antonio 311 Service Requests](https://www.sanantonio.gov/311)",
+                    "unemployment": "[Bureau of Labor Statistics - Employment Data](https://www.bls.gov/)"
                 }
 
                 try:
@@ -1687,7 +1688,8 @@ def get_groq_response(prompt):
                         if source not in unique_sources:
                             unique_sources.append(source)
 
-                    sources_section = "\n\n**Data Sources:**\n" + "\n".join([f"• {source}" for source in unique_sources])
+                    # Format sources with markdown links (clickable in the chatbox)
+                    sources_section = "\n\n---\n\n**Data Sources:**\n" + "\n".join([f"• {source}" for source in unique_sources])
                     response_text += sources_section
 
                 response_text = _append_groq_note(response_text)
