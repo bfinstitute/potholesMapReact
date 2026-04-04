@@ -990,6 +990,8 @@ def parse_rag_question(question):
 def _agent_sql_failed(agent_answer: str) -> bool:
     """If True, treat agent output as a failed query and fall through to legacy handlers."""
     s = (agent_answer or "").lower()
+    if "cannot be answered from the tables currently loaded in the agent" in s:
+        return True
     if "i could not run a safe query" in s:
         return True
     if "sql execution failed" in s:
@@ -999,6 +1001,16 @@ def _agent_sql_failed(agent_answer: str) -> bool:
     if "referenced column" in s and "not found" in s:
         return True
     return False
+
+
+def _append_groq_note(response_text: str) -> str:
+    note = "Note: This reply relies on Groq because the requested data is not available in the loaded local datasets."
+    text = (response_text or "").strip()
+    if not text:
+        return note
+    if note.lower() in text.lower():
+        return text
+    return f"{text}\n\n{note}"
 
 
 def _load_78207_health_places():
@@ -1047,12 +1059,11 @@ def handle_78207_mental_health_medication_question():
     depression = _health_place_value(df, "DEPRESSION")
     distress = _health_place_value(df, "MHLTH")
     sleep = _health_place_value(df, "SLEEP")
-    bp_med = _health_place_value(df, "BPMED")
 
     lines = [
         "The available ZIP-level data for 78207 does not report the percentage of residents using anxiety, depression, or sleep medications.",
         "",
-        "What the ZIP-level file does report:",
+        "What the ZIP-level file does report instead are related health indicators:",
     ]
     if depression:
         lines.append(f"- Depression among adults: {depression['value']:.1f}% ({depression['year']})")
@@ -1060,10 +1071,6 @@ def handle_78207_mental_health_medication_question():
         lines.append(f"- Frequent mental distress among adults: {distress['value']:.1f}% ({distress['year']})")
     if sleep:
         lines.append(f"- Short sleep duration among adults: {sleep['value']:.1f}% ({sleep['year']})")
-    if bp_med:
-        lines.append(
-            f"- The same file includes a medication-use measure for high blood pressure: {bp_med['value']:.1f}% ({bp_med['year']})"
-        )
     lines.extend(
         [
             "",
@@ -1088,9 +1095,9 @@ def handle_78207_mental_health_national_comparison_question():
     sleep = _health_place_value(df, "SLEEP")
 
     lines = [
-        "I can summarize the local ZIP-level estimates for 78207, but I cannot make a data-backed comparison to national averages from the files currently loaded.",
+        "The loaded 78207 data supports local mental-health indicators, but not a true comparison to national averages for treatment usage.",
         "",
-        "Available 78207 ZIP-level health estimates:",
+        "From the ZIP 78207 health dataset, the available local measures include:",
     ]
     if depression:
         lines.append(f"- Depression among adults: {depression['value']:.1f}% ({depression['year']})")
@@ -1103,10 +1110,11 @@ def handle_78207_mental_health_national_comparison_question():
             "",
             "Supporting source:",
             "- ZIPCODE 78207/clean/health_places.csv",
-            "- Data source column in that file: BRFSS / PLACES",
+            "- Data source column in that file: BRFSS / PLACES local estimates",
             "",
             "Limitation:",
-            "- No national benchmark table is currently loaded, so I should not claim whether 78207 is above or below the national average.",
+            "- The current files do not include a national benchmark table or a direct mental health treatment usage measure.",
+            "- I should not claim whether 78207 is above or below the U.S. average from the loaded data alone.",
         ]
     )
     return "\n".join(lines), None, pd.DataFrame()
@@ -1120,7 +1128,7 @@ def get_groq_response(prompt):
 
     print(f"[DEBUG] Received prompt: {prompt}")
 
-    if re.fullmatch(r"\s*(hi+|hello+|hey+|hii+|hiya|good morning|good afternoon|good evening)\s*[!. ]*\s*", prompt_lower):
+    if re.fullmatch(r"\s*(hi+|hello+|hey+|hii+|hiya|sup+|yo+|wyd+|wydd+|wsp+|wassup+|what'?s up|whats up|good morning|good afternoon|good evening)(?:\s+\w+)?\s*[!. ]*\s*", prompt_lower):
         return (
             "Hi, I'm Buffi. I can help with San Antonio potholes, pavement conditions, ZIP-level counts, and road-condition questions.",
             None,
@@ -1554,11 +1562,12 @@ def get_groq_response(prompt):
             groq_response.raise_for_status() # Raise an exception for HTTP errors
             response_data = groq_response.json()
             response_text = response_data["choices"][0]["message"]["content"]
+            response_text = _append_groq_note(response_text)
         except requests.exceptions.RequestException as e:
             print(f"Error communicating with Groq API: {e}")
-            response_text = "I am currently unable to connect to the Groq AI. Please try again later."
+            response_text = _append_groq_note("I am currently unable to connect to the Groq AI. Please try again later.")
         except KeyError:
-            response_text = "I received an unexpected response from the Groq AI. Please try rephrasing your question."
+            response_text = _append_groq_note("I received an unexpected response from the Groq AI. Please try rephrasing your question.")
 
     # Convert numeric types in highlight_data_df to native Python types for JSON serialization
     if not highlight_data_df.empty:
@@ -1617,22 +1626,33 @@ pothole_cases_path = _resolve_data_path(
     '311/311_Pothole_Cases_18_24.csv',
 )
 pavement_path = _resolve_data_path(
+    'COSA_Infrastructure/cleaned_COSA_Pavement_latlon.csv',
+    'COSA_Infrastructure/cleaned_COSA_Pavement.csv',
     'COSA_Pavement.csv',
     'COSA_Infrastructure/COSA_Pavement.csv',
 )
 complaint_full_path = _resolve_data_path(
+    'COSA_Infrastructure/cleaned_COSA_pavement_311.csv',
     'COSA_pavement_311.csv',
     'COSA_Infrastructure/COSA_pavement_311.csv',
 )
 
 try:
     pothole_cases_df = pd.read_csv(pothole_cases_path)
+except Exception as e:
+    print(f"Error loading pothole cases data: {e}")
+    pothole_cases_df = pd.DataFrame()
+
+try:
     pavement_latlon_df = pd.read_csv(pavement_path)
+except Exception as e:
+    print(f"Error loading pavement data: {e}")
+    pavement_latlon_df = pd.DataFrame()
+
+try:
     complaint_df = pd.read_csv(complaint_full_path)
 except Exception as e:
-    print(f"Error loading data files: {e}")
-    pothole_cases_df = pd.DataFrame()
-    pavement_latlon_df = pd.DataFrame()
+    print(f"Error loading complaint data: {e}")
     complaint_df = pd.DataFrame()
 
 # After loading DataFrames, ensure correct dtypes and column names

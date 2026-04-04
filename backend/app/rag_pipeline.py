@@ -98,8 +98,8 @@ class DatasetSpec:
 
 DATASET_REGISTRY: List[DatasetSpec] = [
     DatasetSpec("survey", "Survey Data.csv", "response", "survey"),
-    DatasetSpec("pci", "COSA_Infrastructure/COSA_Pavement.csv", "segment", "pavement"),
-    DatasetSpec("complaints", "COSA_Infrastructure/COSA_pavement_311.csv", "request", "complaints"),
+    DatasetSpec("pci", "COSA_Infrastructure/cleaned_COSA_Pavement_latlon.csv", "segment", "pavement"),
+    DatasetSpec("complaints", "COSA_Infrastructure/cleaned_COSA_pavement_311.csv", "request", "complaints"),
     DatasetSpec("via_routes", "VIA/via_routes_cleaned.csv", "route", "transit"),
     DatasetSpec("health_places_78207", "ZIPCODE 78207/clean/health_places.csv", "zip", "health"),
     DatasetSpec("service_requests_78207", "ZIPCODE 78207/clean/service_requests_78207.csv", "zip", "service"),
@@ -117,7 +117,27 @@ def load_survey() -> pd.DataFrame:
 @lru_cache(maxsize=1)
 def load_pci() -> pd.DataFrame:
     try:
-        return pd.read_csv(_resolve_data_path("COSA_Infrastructure/COSA_Pavement.csv", "COSA_Pavement.csv"))
+        df = pd.read_csv(
+            _resolve_data_path(
+                "COSA_Infrastructure/cleaned_COSA_Pavement_latlon.csv",
+                "COSA_Infrastructure/cleaned_COSA_Pavement.csv",
+                "COSA_Infrastructure/COSA_Pavement.csv",
+                "COSA_Pavement.csv",
+            )
+        )
+        if "GoogleMapView" in df.columns and ("Latitude" not in df.columns or "Longitude" not in df.columns):
+            def extract_lat_lon(url: str) -> Tuple[Optional[float], Optional[float]]:
+                if pd.isna(url):
+                    return None, None
+                match = re.search(r"place/([0-9.]+)N\s+([0-9.]+)W", str(url))
+                if not match:
+                    return None, None
+                return float(match.group(1)), -float(match.group(2))
+
+            df[["Latitude", "Longitude"]] = df["GoogleMapView"].apply(
+                lambda value: pd.Series(extract_lat_lon(value))
+            )
+        return df
     except Exception:
         return pd.DataFrame()
 
@@ -125,7 +145,14 @@ def load_pci() -> pd.DataFrame:
 @lru_cache(maxsize=1)
 def load_complaints() -> pd.DataFrame:
     try:
-        df = pd.read_csv(_resolve_data_path("COSA_Infrastructure/COSA_pavement_311.csv", "COSA_pavement_311.csv"), low_memory=False)
+        df = pd.read_csv(
+            _resolve_data_path(
+                "COSA_Infrastructure/cleaned_COSA_pavement_311.csv",
+                "COSA_Infrastructure/COSA_pavement_311.csv",
+                "COSA_pavement_311.csv",
+            ),
+            low_memory=False,
+        )
         if "OPENEDDATETIME" in df.columns:
             df["OPENEDDATETIME"] = pd.to_datetime(df["OPENEDDATETIME"], errors="coerce")
         return df
@@ -147,6 +174,37 @@ def load_health_places_78207() -> pd.DataFrame:
         return pd.read_csv(_resolve_data_path("ZIPCODE 78207/clean/health_places.csv"))
     except Exception:
         return pd.DataFrame()
+
+
+def _local_zip_center(zipcode: str) -> Optional[Tuple[float, float]]:
+    if str(zipcode) != "78207":
+        return None
+    # Local ZCTA file only covers 78207 and gives a stable center point.
+    return 29.422124, -98.5259784
+
+
+def _subset_pci_for_zip(df: pd.DataFrame, zipcode: str) -> pd.DataFrame:
+    zip_col = "zipcode" if "zipcode" in df.columns else "ZipCode" if "ZipCode" in df.columns else None
+    if zip_col:
+        return df[df[zip_col].astype(str) == str(zipcode)].copy()
+
+    center = _local_zip_center(zipcode)
+    if center is None or "Latitude" not in df.columns or "Longitude" not in df.columns:
+        return pd.DataFrame()
+
+    working = df.copy()
+    working["Latitude"] = pd.to_numeric(working["Latitude"], errors="coerce")
+    working["Longitude"] = pd.to_numeric(working["Longitude"], errors="coerce")
+    working = working.dropna(subset=["Latitude", "Longitude"])
+    if working.empty:
+        return pd.DataFrame()
+
+    lat, lon = center
+    radius_deg = 2000 / 111320.0
+    nearby = working[
+        ((working["Latitude"] - lat) ** 2 + (working["Longitude"] - lon) ** 2) ** 0.5 <= radius_deg
+    ].copy()
+    return nearby
 
 
 def _load_sacrd_pageview(month_key: str) -> pd.DataFrame:
@@ -249,10 +307,7 @@ def _handle_pci_zip(question: str) -> Optional[str]:
     df = load_pci()
     if df.empty:
         return "Pavement condition data is not available."
-    zip_col = "zipcode" if "zipcode" in df.columns else "ZipCode" if "ZipCode" in df.columns else None
-    if not zip_col:
-        return None
-    subset = df[df[zip_col].astype(str) == zipcode].copy()
+    subset = _subset_pci_for_zip(df, zipcode)
     if subset.empty or "PCI" not in subset.columns:
         return f"No pavement condition records were found for zip code {zipcode}."
     pci_num = pd.to_numeric(subset["PCI"], errors="coerce").dropna()
@@ -609,7 +664,6 @@ def _handle_78207_health_medications(question: str) -> Optional[str]:
     depression = _latest_health_measure("DEPRESSION")
     distress = _latest_health_measure("MHLTH")
     sleep = _latest_health_measure("SLEEP")
-    bp_med = _latest_health_measure("BPMED")
     bullets: List[str] = []
     if depression:
         bullets.append(f"Depression among adults: {depression['value']:.1f}% ({depression['year']})")
@@ -617,9 +671,11 @@ def _handle_78207_health_medications(question: str) -> Optional[str]:
         bullets.append(f"Frequent mental distress among adults: {distress['value']:.1f}% ({distress['year']})")
     if sleep:
         bullets.append(f"Short sleep duration among adults: {sleep['value']:.1f}% ({sleep['year']})")
-    if bp_med:
-        bullets.append(f"High blood pressure medication use: {bp_med['value']:.1f}% ({bp_med['year']})")
-    return _render("The available ZIP-level data for 78207 does not report anxiety, depression, or sleep medication usage.", bullets)
+    bullets.append("Source: ZIPCODE 78207/clean/health_places.csv")
+    return _render(
+        "The available ZIP-level data for 78207 does not report anxiety, depression, or sleep medication usage. It only includes related health indicators.",
+        bullets,
+    )
 
 
 def _handle_78207_health_national(question: str) -> Optional[str]:
@@ -636,8 +692,13 @@ def _handle_78207_health_national(question: str) -> Optional[str]:
         bullets.append(f"Frequent mental distress among adults: {distress['value']:.1f}% ({distress['year']})")
     if sleep:
         bullets.append(f"Short sleep duration among adults: {sleep['value']:.1f}% ({sleep['year']})")
-    bullets.append("No national benchmark table is loaded for a valid comparison.")
-    return _render("A data-backed comparison to national averages is not available from the loaded 78207 datasets.", bullets)
+    bullets.append("Supporting source: ZIPCODE 78207/clean/health_places.csv")
+    bullets.append("Data source label: BRFSS / PLACES local estimates")
+    bullets.append("Limitation: no national benchmark table or direct treatment-usage measure is loaded.")
+    return _render(
+        "The loaded 78207 data supports local mental-health indicators, but not a true comparison to national averages for treatment usage.",
+        bullets,
+    )
 
 
 def _handle_sacrd_pageview(question: str) -> Optional[str]:

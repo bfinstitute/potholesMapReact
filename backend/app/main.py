@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from chat_format import formal_guardrail_reply
 from integrated import get_groq_response
 
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
