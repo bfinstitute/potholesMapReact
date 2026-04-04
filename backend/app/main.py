@@ -1,8 +1,13 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from chat_format import formal_guardrail_reply
-from integrated import get_groq_response
+try:
+    from .chat_format import formal_guardrail_reply
+    from .integrated import get_groq_response
+except ImportError:
+    # Running as `uvicorn main:app` from `backend/app` (not as package `app.main`)
+    from chat_format import formal_guardrail_reply
+    from integrated import get_groq_response
 
 
 app = FastAPI()

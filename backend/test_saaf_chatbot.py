@@ -109,7 +109,6 @@ class TestSaafChatbot(unittest.TestCase):
         self.assertIn("2022", text)
         self.assertNotIn("Notes:", text)
 
-<<<<<<< HEAD
     def test_zipcodes_with_most_potholes_uses_local_data(self):
         result = get_groq_response("Which ZIP codes have the most potholes?")
         text = self._extract_text(result)
@@ -168,8 +167,6 @@ class TestSaafChatbot(unittest.TestCase):
         self.assertIn("relies on groq", text.lower())
         self.assertNotIn("cannot be answered from the tables currently loaded in the agent", text.lower())
 
-=======
->>>>>>> dev
 
 if __name__ == "__main__":
     unittest.main()

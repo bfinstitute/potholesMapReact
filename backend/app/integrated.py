@@ -991,6 +991,89 @@ def handle_78207_mental_health_national_comparison_question():
     return "\n".join(lines), None, pd.DataFrame()
 
 
+def _potholes_parquet_path():
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "potholes.parquet"))
+
+
+# Approximate west-side San Antonio ZIPs used for "west side" hotspot summaries (local dataset).
+_WEST_SIDE_SA_ZIPS = (
+    78207, 78228, 78237, 78201, 78227, 78211, 78226, 78204, 78205, 78210,
+)
+
+
+def handle_zipcodes_with_most_potholes():
+    import duckdb
+
+    path = _potholes_parquet_path()
+    if not os.path.exists(path):
+        return (
+            "Pothole-prone zip codes:\n\n(Could not find potholes.parquet.)",
+            None,
+            pd.DataFrame(),
+        )
+    try:
+        df = duckdb.sql(
+            """
+            SELECT CAST(zipcode AS VARCHAR) AS z, COUNT(*) AS c
+            FROM read_parquet(?)
+            GROUP BY zipcode
+            ORDER BY c DESC
+            LIMIT 10
+            """,
+            params=[path],
+        ).fetchdf()
+    except Exception as exc:
+        return f"Pothole-prone zip codes: could not summarize ({exc}).", None, pd.DataFrame()
+    lines = [
+        "Here are pothole-prone zip codes from the local pothole dataset (top ZIPs by report count):",
+        "",
+    ]
+    for _, row in df.iterrows():
+        lines.append(f"• ZIP {row['z']}: **{int(row['c'])}** pothole reports")
+    return "\n".join(lines), None, pd.DataFrame()
+
+
+def handle_west_side_potholes():
+    import duckdb
+
+    path = _potholes_parquet_path()
+    if not os.path.exists(path):
+        return "West side pothole hotspots: potholes.parquet not found.", None, pd.DataFrame()
+    zlist = ",".join(str(z) for z in _WEST_SIDE_SA_ZIPS)
+    try:
+        df = duckdb.sql(
+            f"""
+            SELECT zipcode, COUNT(*) AS c
+            FROM read_parquet(?)
+            WHERE zipcode IN ({zlist})
+            GROUP BY zipcode
+            ORDER BY c DESC
+            """,
+            params=[path],
+        ).fetchdf()
+    except Exception as exc:
+        return f"West side pothole hotspots: could not query ({exc}).", None, pd.DataFrame()
+    lines = [
+        "West side pothole hotspots (western San Antonio ZIPs in the local dataset):",
+        "",
+    ]
+    for _, row in df.iterrows():
+        lines.append(f"• ZIP **{int(row['zipcode'])}**: **{int(row['c'])}** pothole reports")
+    return "\n".join(lines), None, pd.DataFrame()
+
+
+def handle_potholes_in_zipcode(zipcode_str):
+    zc = int(str(zipcode_str).strip())
+    rows = query_table(zipcode=zc)
+    n = len(rows)
+    rw = "report" if n == 1 else "reports"
+    text = (
+        f"For **zip code {zc}**, the local dataset lists **{n}** pothole {rw}.\n\n"
+        f"Source: `potholes.parquet` (ZIP-filtered via the chatbot query layer)."
+    )
+    return text, None, pd.DataFrame()
+
+
 # --- Update get_groq_response to use RAG as fallback ---
 def get_groq_response(prompt):
     prompt_lower = prompt.lower()
@@ -999,8 +1082,7 @@ def get_groq_response(prompt):
 
     print(f"[DEBUG] Received prompt: {prompt}")
 
-<<<<<<< HEAD
-    if re.fullmatch(r"\s*(hi+|hello+|hey+|hii+|hiya|sup+|yo+|wyd+|wydd+|wsp+|wassup+|what'?s up|whats up|good morning|good afternoon|good evening)(?:\s+\w+)?\s*[!. ]*\s*", prompt_lower):
+    if re.fullmatch(r"\s*(hi+|hello+|hey+|hii+|hiya|sup\b|yo+|wyd+|wydd+|wsp+|wassup+|what'?s up|whats up|good morning|good afternoon|good evening)(?:\s+\w+)?\s*[!. ]*\s*", prompt_lower):
         return (
             "Hi, I'm Buffi. I can help with San Antonio potholes, pavement conditions, ZIP-level counts, and road-condition questions.",
             None,
@@ -1024,8 +1106,47 @@ def get_groq_response(prompt):
     if match:
         return handle_potholes_in_zipcode(match.group(1))
 
-=======
->>>>>>> dev
+    # 78207 mental-health ZIP-level availability (must run before RAG so strict wording wins)
+    if (
+        "78207" in prompt_lower
+        and any(term in prompt_lower for term in ["anxiety", "depression", "sleep medication", "sleep medications"])
+        and "zip-level" in prompt_lower
+        and any(term in prompt_lower for term in ["what percentage", "percent", "percentage"])
+    ):
+        return handle_78207_mental_health_medication_question()
+
+    if (
+        "78207" in prompt_lower
+        and any(term in prompt_lower for term in ["national average", "national averages", "compare to national"])
+        and any(term in prompt_lower for term in ["mental health", "depression", "anxiety", "sleep"])
+    ):
+        return handle_78207_mental_health_national_comparison_question()
+
+    # --- PCI in zip code (before RAG — RAG used to return a short PCI string) ---
+    match = re.search(r"pci\s+for\s+(?:zip\s*code|zipcode)\s*(\d{5})\b", prompt_lower)
+    if match:
+        print("[DEBUG] Matched PCI for zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+
+    match = re.search(r"what'?s? the pci in zip code (\d+)", prompt_lower)
+    if match:
+        print("[DEBUG] Matched PCI in zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+
+    match = re.search(r"pci.*zip code (\d+)", prompt_lower)
+    if match:
+        print("[DEBUG] Matched alternative PCI zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+
+    match = re.search(r"zip code (\d+).*pci", prompt_lower)
+    if match:
+        print("[DEBUG] Matched reverse PCI zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+
     rag_answer = get_rag_response(prompt)
     if rag_answer:
         return rag_answer, None, pd.DataFrame()
@@ -1066,32 +1187,6 @@ def get_groq_response(prompt):
     saaf_result = try_handle_saaf_question(prompt)
     if saaf_result is not None:
         return saaf_result
-
-    # --- PCI in zip code ---
-    match = re.search(r"pci\s+for\s+(?:zip\s*code|zipcode)\s*(\d{5})\b", prompt_lower)
-    if match:
-        print("[DEBUG] Matched PCI for zip code pattern.")
-        zipcode = match.group(1)
-        return handle_pci_in_zipcode(zipcode)
-
-    match = re.search(r"what'?s? the pci in zip code (\d+)", prompt_lower)
-    if match:
-        print("[DEBUG] Matched PCI in zip code pattern.")
-        zipcode = match.group(1)
-        return handle_pci_in_zipcode(zipcode)
-    
-    # Alternative patterns for PCI zip code queries
-    match = re.search(r"pci.*zip code (\d+)", prompt_lower)
-    if match:
-        print("[DEBUG] Matched alternative PCI zip code pattern.")
-        zipcode = match.group(1)
-        return handle_pci_in_zipcode(zipcode)
-    
-    match = re.search(r"zip code (\d+).*pci", prompt_lower)
-    if match:
-        print("[DEBUG] Matched reverse PCI zip code pattern.")
-        zipcode = match.group(1)
-        return handle_pci_in_zipcode(zipcode)
 
     # --- Area-specific pothole formation prediction ---
     match = re.search(r"how likely (will|could) potholes form (on|in|along|at) ([^?]+)", prompt_lower)
@@ -1271,22 +1366,6 @@ def get_groq_response(prompt):
     if re.search(r'is san antonio cool', prompt_lower):
         return handle_city_attitude()
 
-    # 78207 mental-health ZIP-level availability questions
-    if (
-        "78207" in prompt_lower
-        and any(term in prompt_lower for term in ["anxiety", "depression", "sleep medication", "sleep medications"])
-        and "zip-level" in prompt_lower
-        and any(term in prompt_lower for term in ["what percentage", "percent", "percentage"])
-    ):
-        return handle_78207_mental_health_medication_question()
-
-    if (
-        "78207" in prompt_lower
-        and any(term in prompt_lower for term in ["national average", "national averages", "compare to national"])
-        and any(term in prompt_lower for term in ["mental health", "depression", "anxiety", "sleep"])
-    ):
-        return handle_78207_mental_health_national_comparison_question()
-    
     # Community spaces accessibility
     match = re.search(r'how accessible are public community spaces in (?:zip code )?(\d+)', prompt_lower)
     if match:
@@ -2352,11 +2431,17 @@ def handle_local_business_wishes_city():
 
 
 # --- Handler: PCI in zip code ---
+def _pci_zip_response_header(zipcode):
+    return f"Pavement Condition Index (PCI) for zip code {zipcode}:\n\n"
+
+
 def handle_pci_in_zipcode(zipcode):
     """Handle queries about PCI (Pavement Condition Index) in a specific zip code."""
+    header = _pci_zip_response_header(zipcode)
     if pavement_latlon_df.empty:
-        return "I don't have pavement condition data to answer that question. Please ensure the 'COSA_Pavement.csv' file is loaded correctly.", None, pd.DataFrame()
-    
+        detail = "No pavement table is loaded. Please ensure the COSA pavement CSV is available."
+        return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+
     # Check if zipcode column exists
     if 'zipcode' not in pavement_latlon_df.columns and 'ZipCode' not in pavement_latlon_df.columns:
         # Try to use geocoding to get zip code boundaries and find nearby pavement data
@@ -2364,45 +2449,50 @@ def handle_pci_in_zipcode(zipcode):
             # Get a representative point for the zip code (center of zip code area)
             zipcode_center = geocode_address(f"{zipcode}, San Antonio, TX")
             if zipcode_center[0] is None:
-                return f"I couldn't find location information for zip code {zipcode}. Please check if this is a valid San Antonio zip code.", None, pd.DataFrame()
-            
+                detail = "Could not geocode this ZIP; check that it is a valid San Antonio area code."
+                return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+
             lat, lon = zipcode_center
-            
+
             # Find pavement data within a reasonable radius of the zip code center
             # Use a larger radius since zip codes can be quite large
             radius_m = 2000  # 2km radius
             gdf = get_pavement_gdf()
             if gdf.empty:
-                return "No pavement location data available.", None, pd.DataFrame()
-            
+                detail = "No pavement location coordinates are available in the loaded dataset."
+                return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+
             gdf_proj = gdf.to_crs(epsg=3857)
             point = gpd.GeoSeries([gpd.points_from_xy([lon], [lat])[0]], crs="EPSG:4326").to_crs(epsg=3857)
             buffer = point.buffer(radius_m)
             nearby_data = gdf_proj[gdf_proj.geometry.within(buffer.iloc[0])]
-            
+
             if nearby_data.empty:
-                return f"No pavement data found near zip code {zipcode}. This area may not have pavement condition records.", None, pd.DataFrame()
-            
+                detail = f"No pavement condition records were found for zip code {zipcode}."
+                return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+
             # Use the nearby data as if it were for the zip code
             zipcode_data = nearby_data.to_crs(epsg=4326)
-            
+
         except Exception as e:
-            return f"I don't have zip code information in the pavement data and couldn't find nearby data for zip code {zipcode}. Error: {str(e)}", None, pd.DataFrame()
+            detail = f"Could not derive PCI near zip code {zipcode}. ({str(e)})"
+            return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
     else:
         # Use direct zip code column if available
         zip_col = 'zipcode' if 'zipcode' in pavement_latlon_df.columns else 'ZipCode'
         zipcode_str = str(zipcode)
         zipcode_data = pavement_latlon_df[pavement_latlon_df[zip_col].astype(str) == zipcode_str]
-        
+
         if zipcode_data.empty:
-            return f"No pavement data found for zip code {zipcode}. This zip code may not be in our dataset or may not have pavement condition records.", None, pd.DataFrame()
-    
+            detail = f"No pavement condition records were found for zip code {zipcode}."
+            return header + f"Breakdown:\n{detail}", None, pd.DataFrame()
+
     # Calculate PCI statistics
     avg_pci = zipcode_data['PCI'].mean()
     min_pci = zipcode_data['PCI'].min()
     max_pci = zipcode_data['PCI'].max()
     count_segments = len(zipcode_data)
-    
+
     # Determine overall condition
     if avg_pci >= 70:
         condition = "Good"
@@ -2413,8 +2503,9 @@ def handle_pci_in_zipcode(zipcode):
     else:
         condition = "Poor"
         description = "Poor pavement conditions with high pothole risk."
-    
-    response = f"Pavement Condition Index (PCI) for zip code {zipcode}:\n\n"
+
+    response = header
+    response += "Breakdown:\n"
     response += f"• Average PCI: {avg_pci:.1f}\n"
     response += f"• Range: {min_pci:.1f} - {max_pci:.1f}\n"
     response += f"• Number of road segments: {count_segments}\n"

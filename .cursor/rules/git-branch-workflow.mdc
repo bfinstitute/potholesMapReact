@@ -1,0 +1,15 @@
+---
+description: Default branch dev; push to dev first, then merge to main, return to dev
+alwaysApply: true
+---
+
+# Git branch workflow
+
+- **Default branch:** Do day-to-day work on **`dev`**. Prefer staying on `dev` unless a task explicitly requires another branch.
+- **When pushing changes:** Do not push straight to `main` as the first step.
+  1. Commit on **`dev`** (while checked out on `dev`).
+  2. **`git push origin dev`**
+  3. Merge **`dev` → `main`** (e.g. `git checkout main`, `git merge dev`, `git push origin main`, or an equivalent PR merge on the host).
+  4. **`git checkout dev`** so the working copy is back on **`dev`**.
+
+After any merge or push workflow that touched `main`, end on **`dev`** unless the user asked otherwise.
