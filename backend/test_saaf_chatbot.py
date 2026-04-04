@@ -71,6 +71,43 @@ class TestSaafChatbot(unittest.TestCase):
         text = self._extract_text(result)
         self.assertTrue(isinstance(text, str) and len(text) > 0)
 
+    def test_mental_health_medication_question_is_strict(self):
+        result = get_groq_response(
+            "What percentage of residents in ZIP code 78207 use anxiety, depression, or sleep medications based only on available ZIP-level data?"
+        )
+        text = self._extract_text(result)
+        self.assertIn("does not report", text.lower())
+        self.assertIn("no valid percentage can be given", text.lower())
+        self.assertIn("health_places.csv", text)
+
+    def test_mental_health_national_comparison_requires_benchmark(self):
+        result = get_groq_response(
+            "How does mental health treatment usage in ZIP code 78207 compare to national averages, and what data sources support this comparison?"
+        )
+        text = self._extract_text(result)
+        self.assertIn("cannot make a data-backed comparison to national averages", text.lower())
+        self.assertIn("brfss / places", text.lower())
+
+    def test_living_arrangements_no_longer_falls_into_potholes_dataset(self):
+        result = get_groq_response("Do most people live by themselves or with others?")
+        text = self._extract_text(result)
+        self.assertIn("living arrangements in san antonio", text.lower())
+        self.assertNotIn("311/potholes_cleaned.csv", text.lower())
+
+    def test_pci_response_keeps_demo_style(self):
+        result = get_groq_response("PCI for Zip code 78259?")
+        text = self._extract_text(result)
+        self.assertIn("Pavement Condition Index (PCI) for zip code 78259:", text)
+        self.assertIn("Breakdown:", text)
+        self.assertNotIn("Notes:", text)
+
+    def test_history_response_keeps_year_groups(self):
+        result = get_groq_response("History of repeated pothole complaints along San Pedro Ave?")
+        text = self._extract_text(result)
+        self.assertIn("Complaint History for San Pedro Ave", text)
+        self.assertIn("2022", text)
+        self.assertNotIn("Notes:", text)
+
 
 if __name__ == "__main__":
     unittest.main()

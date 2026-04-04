@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+from chat_format import formal_guardrail_reply
 from integrated import get_groq_response
 
 app = FastAPI()
@@ -14,6 +16,9 @@ app.add_middleware(
 async def chat(request: Request):
     data = await request.json()
     user_message = data.get("message", "")
+    blocked = formal_guardrail_reply(user_message)
+    if blocked:
+        return {"response": blocked, "highlight_data": None}
     response_tuple = get_groq_response(user_message)
     # get_groq_response returns (response, plot_object, highlight_data_df)
     if isinstance(response_tuple, tuple):
