@@ -3,6 +3,11 @@ from typing import Optional, Tuple
 import pandas as pd
 
 try:
+    from .map_highlights import zip_centroid_marker
+except ImportError:
+    from map_highlights import zip_centroid_marker
+
+try:
     from saaf_data import (
         get_available_data_sources,
         get_context_metrics,
@@ -42,7 +47,7 @@ def _strict_not_available_response(topic: str) -> Tuple[str, None, pd.DataFrame]
         f"Currently available datasets I can use are:\n{sources}\n\n"
         "If you want this answered, we need to ingest that source first."
     )
-    return text, None, pd.DataFrame()
+    return text, None, zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
 
 
 def _community_need_response() -> Tuple[str, None, pd.DataFrame]:
@@ -82,7 +87,7 @@ def _community_need_response() -> Tuple[str, None, pd.DataFrame]:
 
     lines.append("Ask a follow-up for detailed breakdown by indicator.")
 
-    return "\n".join(lines), None, pd.DataFrame()
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
 
 
 def _community_conditions_311_response() -> Tuple[str, None, pd.DataFrame]:
@@ -104,7 +109,7 @@ def _community_conditions_311_response() -> Tuple[str, None, pd.DataFrame]:
 
     lines.append("Ask a follow-up for month-wise or neighborhood-level summary.")
 
-    return "\n".join(lines), None, pd.DataFrame()
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
 
 
 def _service_landscape_response() -> Tuple[str, None, pd.DataFrame]:
@@ -120,7 +125,7 @@ def _service_landscape_response() -> Tuple[str, None, pd.DataFrame]:
     lines.append(
         "Note: this is operational service-request activity, not a complete provider capacity inventory."
     )
-    return "\n".join(lines), None, pd.DataFrame()
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
 
 
 def _need_service_gap_response() -> Tuple[str, None, pd.DataFrame]:
@@ -139,7 +144,7 @@ def _need_service_gap_response() -> Tuple[str, None, pd.DataFrame]:
     for item in gap["service_evidence"][:3]:
         lines.append(f"- {item}")
     lines.append("Interpretation: higher positive gap score means stronger unmet need signal.")
-    return "\n".join(lines), None, pd.DataFrame()
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
 
 
 def _context_demographics_response() -> Tuple[str, None, pd.DataFrame]:
@@ -163,7 +168,7 @@ def _context_demographics_response() -> Tuple[str, None, pd.DataFrame]:
     if context["persons_per_household"] is not None:
         lines.append(f"- Persons per household: {float(context['persons_per_household']):.2f}")
     lines.append("Ask a follow-up for deeper context on age/race/economic metrics.")
-    return "\n".join(lines), None, pd.DataFrame()
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
 
 
 def try_handle_saaf_question(prompt: str) -> Optional[Tuple[str, None, pd.DataFrame]]:
