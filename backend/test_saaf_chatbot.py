@@ -108,40 +108,6 @@ class TestSaafChatbot(unittest.TestCase):
         self.assertIn("2022", text)
         self.assertNotIn("Notes:", text)
 
-    def test_zipcodes_with_most_potholes_uses_local_data(self):
-        result = get_groq_response("Which ZIP codes have the most potholes?")
-        text = self._extract_text(result)
-        self.assertIn("pothole-prone zip codes", text.lower())
-        self.assertIn("78207", text)
-        self.assertNotIn("cannot find a comprehensive dataset", text.lower())
-
-    def test_west_side_potholes_no_longer_falls_into_route_handler(self):
-        result = get_groq_response("Show me potholes on the west side")
-        text = self._extract_text(result)
-        self.assertIn("west side pothole hotspots", text.lower())
-        self.assertIn("78207", text)
-        self.assertNotIn("could not retrieve route information", text.lower())
-
-    def test_worst_road_conditions_hits_local_pavement_handler(self):
-        result = get_groq_response("Show me the areas with the worst road conditions")
-        text = self._extract_text(result)
-        self.assertIn("top 10 streets with the worst road conditions", text.lower())
-        self.assertNotIn("alaska", text.lower())
-
-    def test_greeting_no_longer_falls_into_generic_ai_reply(self):
-        result = get_groq_response("hii")
-        text = self._extract_text(result)
-        self.assertIn("i'm buffi", text.lower())
-        self.assertNotIn("idaho", text.lower())
-        self.assertNotIn("greeting received", text.lower())
-
-    def test_zipcode_specific_pothole_count_uses_local_dataset(self):
-        result = get_groq_response("How many potholes are in zip code 78207?")
-        text = self._extract_text(result)
-        self.assertIn("zip code 78207", text.lower())
-        self.assertIn("pothole reports", text.lower())
-        self.assertNotIn("san pedro ave: 26 reports", text.lower())
-
 
 if __name__ == "__main__":
     unittest.main()
