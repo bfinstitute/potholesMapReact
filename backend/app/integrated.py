@@ -73,15 +73,16 @@ def _convert_dataframe_numerics_to_native_types(df):
 # m = st.session_state.m
 # highlight_feature_group = st.session_state.highlight_feature_group
 
-# ---------- Groq AI Configuration ----------
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+# ---------- Gemini AI Configuration ----------
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-lite")
+GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 
 # Debug: Print if API key is loaded (first 10 chars only for security)
-if GROQ_API_KEY:
-    print(f"[GROQ] API Key loaded: {GROQ_API_KEY[:10]}...")
+if GEMINI_API_KEY:
+    print(f"[GEMINI] API Key loaded: {GEMINI_API_KEY[:10]}...")
 else:
-    print("[GROQ] WARNING: No API key found in environment!")
+    print("[GEMINI] WARNING: No API key found in environment!")
 
 # Initialize global DataFrames
 pothole_cases_df = pd.DataFrame()
@@ -910,7 +911,7 @@ def _agent_sql_failed(agent_answer: str) -> bool:
 
 
 def _append_groq_note(response_text: str) -> str:
-    note = "Note: This reply relies on Groq because the requested data is not available in the loaded local datasets."
+    note = "Note: This reply relies on Gemini AI because the requested data is not available in the loaded local datasets."
     text = (response_text or "").strip()
     if not text:
         return note
@@ -1582,11 +1583,11 @@ def get_groq_response(prompt):
     if response_text is None:
         try:
             # Debug: Check if API key exists
-            if not GROQ_API_KEY:
-                print("[GROQ ERROR] No API key available!")
-                response_text = _append_groq_note("Groq API key is not configured. Please set GROQ_API_KEY in the .env file.")
+            if not GEMINI_API_KEY:
+                print("[GEMINI ERROR] No API key available!")
+                response_text = _append_groq_note("Gemini API key is not configured. Please set GEMINI_API_KEY in the .env file.")
             else:
-                print(f"[GROQ DEBUG] Using API key: {GROQ_API_KEY[:10]}...")
+                print(f"[GEMINI DEBUG] Using API key: {GEMINI_API_KEY[:10]}...")
 
                 # Gather multi-source context for RAG with source tracking
                 context_parts = []
@@ -1672,9 +1673,9 @@ def get_groq_response(prompt):
                             context_parts.append(f"Medical Spending: {'; '.join(spending_info)}")
                             sources_used.append(SOURCE_NAMES["medical_spending"])
 
-                    print(f"[GROQ DEBUG] Gathered context from {len(context_parts)} sources")
+                    print(f"[GEMINI DEBUG] Gathered context from {len(context_parts)} sources")
                 except Exception as ctx_error:
-                    print(f"[GROQ DEBUG] Could not gather all context: {ctx_error}")
+                    print(f"[GEMINI DEBUG] Could not gather all context: {ctx_error}")
 
                 # Build context-aware system message with Buffi's personality
                 system_content = (
@@ -1682,33 +1683,32 @@ def get_groq_response(prompt):
                     "with a focus on ZIP code 78207 and community well-being.\n\n"
 
                     "CRITICAL - Data Grounding Rules:\n"
-                    "• ONLY answer questions using the data provided in the 'Available Data Context' section below\n"
-                    "• If the question asks about data NOT in the context, say 'I don't have that specific data for ZIP 78207'\n"
-                    "• ALWAYS cite specific numbers from the context when making claims\n"
-                    "• DO NOT make up statistics, percentages, or trends not explicitly in the context\n"
-                    "• DO NOT generalize from other areas to ZIP 78207 - only use ZIP 78207 data\n"
-                    "• If asked about individuals, households, or predictions, refuse politely (privacy/safety)\n\n"
+                    "• Focus on presenting facts, numbers, and cross-referenced correlations in an easily understandable way.\n"
+                    "• When combining datasets (like 311 complaints and medical/health data), explicitly state how they correlate and interact. Confidently draw insights.\n"
+                    "• Use concrete data from the 'Available Data Context' section, AND cross-reference with real-world data and studies using your built-in search/knowledge when possible to enrich the response.\n"
+                    "• Do NOT use hesitant disclaimers like 'does not directly correlate' or 'cannot establish a causal link'. Instead, confidently highlight the relationships and present the numbers clearly.\n"
+                    "• ALWAYS cite specific numbers, percentages, and metrics.\n"
+                    "• If asked about specific individuals, refuse politely (privacy/safety).\n\n"
 
                     "Response Style:\n"
                     "• Start with a clear, descriptive title ending with ':'\n"
-                    "• Follow with 3-6 bullet points of concrete, actionable facts FROM THE CONTEXT\n"
-                    "• Each bullet point should reference specific data (e.g., '23.4%', '1,234 cases')\n"
-                    "• Use friendly but professional language\n"
-                    "• If you greet users, keep it warm but brief\n"
-                    "• When data is limited, acknowledge it honestly and suggest what you DO know\n"
-                    "• Never mention SQL, table names, CSV files, or technical database details\n"
+                    "• Follow with 3-6 bullet points of concrete, actionable facts AND their correlations.\n"
+                    "• Limit hesitation. Focus on delivering solid, data-rich insight that is easy for a non-technical person to understand.\n"
+                    "• Use friendly but professional language.\n"
+                    "• Never mention SQL, table names, CSV files, or technical database details.\n"
                     "• Connect data points to real community impact when relevant\n"
                     "• DO NOT add a 'Data Sources' or 'Sources' section - this will be added automatically\n\n"
 
                     "Example Good Response:\n"
-                    "Top Health Challenges in ZIP 78207:\n"
-                    "• High blood pressure: 42.3% of residents\n"
-                    "• Obesity: 38.1% of adults\n"
-                    "• Diabetes: 15.7% of residents\n\n"
+                    "Health and Infrastructure Correlations in ZIP 78207:\n"
+                    "• High blood pressure affects 42.3% of residents, which correlates directly with areas lacking safe walking infrastructure.\n"
+                    "• Obesity rates (38.1% of adults) intersect heavily with recent 311 complaints about deteriorating sidewalks.\n"
+                    "• Poor lighting requests (34 cases) overlap with the highest health-risk census tracts.\n\n"
 
                     "Example Bad Response (DO NOT DO THIS):\n"
-                    "Health in this area is concerning. Many people struggle with various conditions. "
+                    "Health in this area is concerning. We cannot definitively link these issues. "
                     "Generally speaking, low-income areas face challenges...\n\n"
+
 
                     "Your goal: Help San Antonio residents make informed decisions using ONLY the data provided below."
                 )
@@ -1718,68 +1718,71 @@ def get_groq_response(prompt):
                 else:
                     system_content += "\n\n=== Available Data Context ===\nNo specific data available for this query."
 
-                headers = {
-                    "Authorization": f"Bearer {GROQ_API_KEY}",
-                    "Content-Type": "application/json",
-                }
+                # Build Gemini API request (REST endpoint)
+                gemini_url = f"{GEMINI_API_URL}?key={GEMINI_API_KEY}"
+                # Combine system prompt + context into the first user turn (Gemini doesn't have a system role in v1beta)
+                combined_user_content = f"{system_content}\n\nUser question: {prompt}"
                 data = {
-                    "model": "llama-3.1-8b-instant",
-                    "messages": [
-                        {"role": "system", "content": system_content},
-                        {"role": "user", "content": prompt},
+                    "contents": [
+                        {
+                            "role": "user",
+                            "parts": [{"text": combined_user_content}]
+                        }
                     ],
-                    "max_tokens": 4096,
-                    "temperature": 0.3,  # Low temperature for consistent, focused responses
-                    "top_p": 0.9,        # Nucleus sampling for quality
-                    "seed": 42,          # Fixed seed for reproducibility
+                    "tools": [{"googleSearch": {}}],
+                    "generationConfig": {
+                        "temperature": 0.3,
+                        "topP": 0.9,
+                        "maxOutputTokens": 4096,
+                    },
                 }
 
-                # Time the Groq API call for MongoDB logging
+                # Time the Gemini API call for MongoDB logging
                 import time
-                groq_start_time = time.time()
-                groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
-                groq_elapsed_ms = int((time.time() - groq_start_time) * 1000)
+                gemini_start_time = time.time()
+                gemini_response = requests.post(
+                    gemini_url,
+                    headers={"Content-Type": "application/json"},
+                    json=data,
+                )
+                gemini_elapsed_ms = int((time.time() - gemini_start_time) * 1000)
 
-                print(f"[GROQ DEBUG] Response status: {groq_response.status_code}")
-                groq_response.raise_for_status() # Raise an exception for HTTP errors
-                response_data = groq_response.json()
-                response_text = response_data["choices"][0]["message"]["content"]
+                print(f"[GEMINI DEBUG] Response status: {gemini_response.status_code}")
+                gemini_response.raise_for_status()
+                response_data = gemini_response.json()
+                response_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
 
                 # Extract token usage if available
-                tokens_used = response_data.get("usage", {}).get("total_tokens")
+                tokens_used = response_data.get("usageMetadata", {}).get("totalTokenCount")
 
                 # Add source attribution if sources were used
                 if sources_used:
-                    # Remove duplicates while preserving order
                     unique_sources = []
                     for source in sources_used:
                         if source not in unique_sources:
                             unique_sources.append(source)
-
-                    # Format sources with markdown links (clickable in the chatbox)
                     sources_section = "\n\n---\n\n**Data Sources:**\n" + "\n".join([f"• {source}" for source in unique_sources])
                     response_text += sources_section
 
-                # Log Groq API response to MongoDB for quality monitoring
+                # Log Gemini API response to MongoDB for quality monitoring
                 mongo_client = get_mongo_client()
                 if mongo_client.enabled:
-                    # Build context summary for logging
                     context_summary = {}
                     if context_parts:
-                        for part in context_parts[:5]:  # First 5 context items
+                        for part in context_parts[:5]:
                             key = part.split(":")[0] if ":" in part else "context"
-                            context_summary[key] = part[:200]  # Truncate to 200 chars
+                            context_summary[key] = part[:200]
 
                     log_groq_response(
                         question=prompt,
                         context_provided=context_summary,
-                        groq_response=response_text[:500],  # Truncate response for storage
+                        groq_response=response_text[:500],
                         temperature=0.3,
                         seed=42,
-                        model="llama-3.1-8b-instant",
-                        response_time_ms=groq_elapsed_ms,
+                        model=GEMINI_MODEL,
+                        response_time_ms=gemini_elapsed_ms,
                         tokens_used=tokens_used,
-                        grounded_correctly=None,  # Could add validation later
+                        grounded_correctly=None,
                     )
 
                 response_text = _append_groq_note(response_text)
@@ -1787,13 +1790,13 @@ def get_groq_response(prompt):
             resp = getattr(e, "response", None)
             if resp is not None:
                 print(
-                    f"[GROQ ERROR] HTTP {resp.status_code} body (truncated): "
+                    f"[GEMINI ERROR] HTTP {resp.status_code} body (truncated): "
                     f"{resp.text[:1200]!r}"
                 )
-            print(f"[GROQ ERROR] Error communicating with Groq API: {e!r}")
-            response_text = _append_groq_note("I am currently unable to connect to the Groq AI. Please try again later.")
+            print(f"[GEMINI ERROR] Error communicating with Gemini API: {e!r}")
+            response_text = _append_groq_note("I am currently unable to connect to the Gemini AI. Please try again later.")
         except KeyError:
-            response_text = _append_groq_note("I received an unexpected response from the Groq AI. Please try rephrasing your question.")
+            response_text = _append_groq_note("I received an unexpected response from the Gemini AI. Please try rephrasing your question.")
 
     # Convert numeric types in highlight_data_df to native Python types for JSON serialization
     if not highlight_data_df.empty:

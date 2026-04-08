@@ -47,6 +47,9 @@ INTENT_PATTERNS = {
         r"philanthropic",
         r"who funds what",
         r"funding opportunity",
+        r"bond",
+        r"interventions?",
+        r"prioritize(d)? for funding",
     ],
     "context_demographics": [
         r"demographics?",
@@ -72,10 +75,10 @@ def detect_intent(prompt: str) -> Optional[str]:
     prompt_lower = prompt.lower()
     priority_order = [
         "missing_sensitive_data",
-        "funding_intelligence",
         "need_service_gap",
         "community_conditions_311",
         "service_landscape",
+        "funding_intelligence",
         "context_demographics",
         "community_need",
     ]

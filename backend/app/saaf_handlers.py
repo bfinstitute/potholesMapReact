@@ -19,6 +19,8 @@ try:
         get_top_311_categories,
         get_top_health_issues,
         get_unemployment_summary,
+        get_citations_mapping,
+        get_funding_summary_and_map_data,
     )
     from saaf_gap_engine import get_gap_summary
     from saaf_intents import detect_intent
@@ -34,6 +36,8 @@ except ModuleNotFoundError:
         get_top_311_categories,
         get_top_health_issues,
         get_unemployment_summary,
+        get_citations_mapping,
+        get_funding_summary_and_map_data,
     )
     from .saaf_gap_engine import get_gap_summary
     from .saaf_intents import detect_intent
@@ -47,6 +51,22 @@ SOURCE_NAMES = {
     "311": "[San Antonio 311 Service Requests](https://www.sanantonio.gov/311)",
     "unemployment": "[Bureau of Labor Statistics - Employment Data](https://www.bls.gov/)"
 }
+
+def _get_source(key: str) -> str:
+    mapping = get_citations_mapping()
+    # Map old hardcoded keys to new dynamic names as fallback bridging
+    if key == "demographics":
+        return mapping.get("Census Demographics", mapping.get("78207_Master_Dataset_Percentage", SOURCE_NAMES.get(key, key)))
+    if key == "health":
+        return mapping.get("Health Places", mapping.get("Health_Places", SOURCE_NAMES.get(key, key)))
+    if key == "311":
+        return mapping.get("311 Service Request", SOURCE_NAMES.get(key, key))
+    if key == "unemployment":
+        return mapping.get("Unemployment Rate", mapping.get("Unemployment_Rate", SOURCE_NAMES.get(key, key)))
+    if key == "funding":
+        return mapping.get("San Antonio 78207", "[City of San Antonio Bond Projects](https://data.sanantonio.gov/)")
+    
+    return mapping.get(key, key)
 
 
 def _append_sources(text: str, sources: List[str]) -> str:
@@ -91,7 +111,7 @@ def _community_need_response() -> Tuple[str, None, pd.DataFrame]:
     lines.append("Top public health burdens from `clean/health_places.csv`:")
     for name, val in top_health:
         lines.append(f"- {name}: {val:.1f}%")
-    sources_used.append(SOURCE_NAMES["health"])
+    sources_used.append(_get_source("health"))
 
     if mh:
         lines.append(
@@ -99,14 +119,14 @@ def _community_need_response() -> Tuple[str, None, pd.DataFrame]:
         )
     if unemployment:
         lines.append(f"- Unemployment (latest): {unemployment['latest_rate']:.2f}%")
-        sources_used.append(SOURCE_NAMES["unemployment"])
+        sources_used.append(_get_source("unemployment"))
     if context.get("poverty_rate") is not None:
         lines.append(f"- Poverty rate from `clean/master_dataset.csv`: {float(context['poverty_rate']):.1f}%")
-        sources_used.append(SOURCE_NAMES["demographics"])
+        sources_used.append(_get_source("demographics"))
     if context.get("uninsured_rate") is not None:
         lines.append(f"- Uninsured rate proxy from `clean/master_dataset.csv`: {float(context['uninsured_rate']):.1f}%")
-        if SOURCE_NAMES["demographics"] not in sources_used:
-            sources_used.append(SOURCE_NAMES["demographics"])
+        if _get_source("demographics") not in sources_used:
+            sources_used.append(_get_source("demographics"))
     mh_signal = domain_signals.get("mental_health", {}).get("signal")
     if mh_signal is not None:
         lines.append(f"- Domain signal (mental health): {float(mh_signal):.1f}")
@@ -129,7 +149,7 @@ def _community_conditions_311_response() -> Tuple[str, None, pd.DataFrame]:
     if not top_types:
         return _strict_not_available_response("311 conditions")
 
-    sources_used = [SOURCE_NAMES["311"]]
+    sources_used = [_get_source("311")]
     lines = ["ZIP 78207 community conditions (311 health-related signals):"]
     lines.append("Most common request types from `clean/service_requests_78207.csv`:")
     for name, count in top_types:
@@ -152,7 +172,7 @@ def _service_landscape_response() -> Tuple[str, None, pd.DataFrame]:
     if not service_summary:
         return _strict_not_available_response("service landscape")
 
-    sources_used = [SOURCE_NAMES["311"]]
+    sources_used = [_get_source("311")]
     lines = [
         "Service landscape proxy for ZIP 78207 (from 311 departmental activity in `clean/service_requests_78207.csv`):"
     ]
@@ -168,7 +188,7 @@ def _service_landscape_response() -> Tuple[str, None, pd.DataFrame]:
 def _need_service_gap_response() -> Tuple[str, None, pd.DataFrame]:
     gap = get_gap_summary()
     # Gap analysis uses health, 311, and demographics data
-    sources_used = [SOURCE_NAMES["health"], SOURCE_NAMES["311"], SOURCE_NAMES["demographics"]]
+    sources_used = [_get_source("health"), _get_source("311"), _get_source("demographics")]
     lines = [
         "Need-vs-service gap assessment for ZIP 78207 (rule-based, explainable):",
         f"- Need score: {gap['need_score']}",
@@ -192,7 +212,7 @@ def _context_demographics_response() -> Tuple[str, None, pd.DataFrame]:
     if all(v is None for v in context.values()):
         return _strict_not_available_response("context demographics")
 
-    sources_used = [SOURCE_NAMES["demographics"]]
+    sources_used = [_get_source("demographics")]
     lines = ["ZIP 78207 context metrics (from `clean/master_dataset.csv`):"]
     if context["population"] is not None:
         lines.append(f"- Population: {int(context['population']):,}")
@@ -213,6 +233,28 @@ def _context_demographics_response() -> Tuple[str, None, pd.DataFrame]:
     return text, None, zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
 
 
+def _funding_intelligence_response() -> Tuple[str, None, pd.DataFrame]:
+    summary, map_df = get_funding_summary_and_map_data()
+    if not summary:
+        return _strict_not_available_response("funding/investment")
+    
+    sources = [_get_source("funding")]
+    lines = ["ZIP 78207 funding and intervention intelligence (data-backed):"]
+    lines.append(f"Total Bond Budget Investment: ${summary['total_budget']:,.2f}")
+    lines.append(f"Number of Active Projects: {summary['project_count']}")
+    
+    lines.append("\nInvestment by Category (Bond Propositions):")
+    for cat, amount in summary["by_category"].items():
+        if amount > 0:
+            lines.append(f"- {cat}: ${amount:,.2f}")
+    
+    lines.append("\nThe attached map layer highlights precise geographical points for these funded interventions.")
+    
+    output_df = map_df if map_df is not None else zip_centroid_marker("78207", label="ZIP 78207 (SAAF)", color="#9370DB")
+    
+    text = _append_sources("\n".join(lines), sources)
+    return text, None, output_df
+
 def try_handle_saaf_question(prompt: str) -> Optional[Tuple[str, None, pd.DataFrame]]:
     intent = detect_intent(prompt)
     if intent is None:
@@ -221,7 +263,7 @@ def try_handle_saaf_question(prompt: str) -> Optional[Tuple[str, None, pd.DataFr
     if intent == "missing_sensitive_data":
         return _strict_not_available_response("ER/crisis/substance-use")
     if intent == "funding_intelligence":
-        return _strict_not_available_response("funding/investment")
+        return _funding_intelligence_response()
     if intent == "community_need":
         return _community_need_response()
     if intent == "community_conditions_311":

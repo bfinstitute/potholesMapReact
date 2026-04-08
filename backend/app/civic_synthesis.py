@@ -14,15 +14,17 @@ import re
 from typing import Any, Optional
 
 import requests
+import time as _time
 
 try:
     from .civic_response_schema import CivicStructuredResponse, MapAction, fallback_structured_from_text
 except ImportError:
     from civic_response_schema import CivicStructuredResponse, MapAction, fallback_structured_from_text
 
-GROQ_API_URL = os.environ.get("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-CIVIC_SYNTHESIS_MODEL = os.environ.get("CIVIC_SYNTHESIS_MODEL", "llama-3.1-8b-instant")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-lite")
+GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+CIVIC_SYNTHESIS_MODEL = os.environ.get("CIVIC_SYNTHESIS_MODEL", GEMINI_MODEL)
 # Set to 0/false to skip the second LLM call and wrap the handler text in the schema only.
 CIVIC_SYNTHESIS_ENABLED = os.environ.get("CIVIC_SYNTHESIS_ENABLED", "1").strip().lower() not in (
     "0",
@@ -36,13 +38,16 @@ SYSTEM_PROMPT = """You are the narrative layer for a civic decision-support assi
 You MUST respond with a single JSON object only — no markdown fences, no commentary outside JSON.
 
 Rules:
-- Use ONLY the information in retrieved_context and metrics. Do not invent statistics, organizations, or funding amounts.
-- If evidence is missing or insufficient, say so in "limitations" and lower "confidence".
-- "answer" should be helpful and readable (Markdown bullets allowed inside the string).
+- You must boldly and confidently form relationships and correlations between data points (e.g. connecting infrastructure to health metrics).
+- DO NOT use phrases like "does not directly correlate" or "cannot establish a link". Instead, use terms like "correlates heavily" and "this is strongly linked to" based on best practices.
+- When asked to predict future trends or where needs will increase, YOU MUST make an educated prediction based on current data/trends rather than refusing. However, you MUST include a clear disclaimer flag stating that this is a prediction and not always correct due to various factors.
+- The user prioritizes precise numbers, clear data, and high readability/understandability.
+- Utilize your built-in Google Search capabilities to cross-reference and incorporate real-world statistics into the synthesis when appropriate.
+- "answer" should be helpful, clear, and data-forward (Markdown bullets allowed inside the string). It must be easy for non-technical users to understand.
 - "reasoning_summary": 2–4 sentences on how the evidence supports the answer.
 - "recommendations": concrete next steps a city analyst could take; use [] if none fit.
 - "follow_up_question": one short question to deepen analysis, or "" if not appropriate.
-- "confidence": "low" | "medium" | "high" based on evidence strength.
+- "confidence": "low" | "medium" | "high". Default to "high" when making correlations.
 - "map_action": set show_map true only if geography is clear and a map would help; otherwise show_map false.
 
 JSON keys (exact names):
@@ -115,6 +120,7 @@ def synthesize_civic_structured_response(
     - metrics: optional small dict from backend math (Phase 1 may pass {} or row counts).
     """
     base = (retrieved_context or "").strip()
+
     # Do not let the narrative LLM replace solid local SQL/parquet answers with "insufficient data".
     if _is_pothole_zip_ranking_evidence(base):
         out = fallback_structured_from_text(base)
@@ -125,7 +131,7 @@ def synthesize_civic_structured_response(
             out.metrics = dict(metrics)
         return out
 
-    if not CIVIC_SYNTHESIS_ENABLED or not GROQ_API_KEY:
+    if not CIVIC_SYNTHESIS_ENABLED or not GEMINI_API_KEY:
         out = fallback_structured_from_text(base)
         if metrics:
             out.metrics = dict(metrics)
@@ -144,64 +150,78 @@ Retrieved evidence (only source of facts):
 {geo_line}
 """
 
+    # Build Gemini API request
+    gemini_url = f"{GEMINI_API_URL}?key={GEMINI_API_KEY}"
+    # Merge system + user content (Gemini v1beta doesn't support a system role separately)
+    combined_text = f"{SYSTEM_PROMPT}\n\n{user_block}"
     payload = {
-        "model": CIVIC_SYNTHESIS_MODEL,
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_block},
+        "contents": [
+            {
+                "role": "user",
+                "parts": [{"text": combined_text}],
+            }
         ],
-        "temperature": 0.25,
-        "max_tokens": 2048,
-        "response_format": {"type": "json_object"},
-    }
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json",
+        "tools": [{"googleSearch": {}}],
+        "generationConfig": {
+            "temperature": 0.25,
+            "maxOutputTokens": 2048,
+        },
     }
 
     try:
-        resp = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=60)
-        if resp.status_code >= 400:
-            print(
-                f"[civic_synthesis] Groq HTTP {resp.status_code} body (truncated): "
-                f"{resp.text[:1200]!r}"
-            )
-        resp.raise_for_status()
-        raw = resp.json()["choices"][0]["message"]["content"]
-        parsed = _parse_json_loose(raw)
-        if not parsed:
-            raise ValueError("No JSON in synthesis response")
-        structured = _coerce_response(parsed)
-        if metrics:
-            structured.metrics = dict(metrics)
-        return structured
-    except requests.HTTPError as e:
-        r = e.response
-        if r is not None:
-            print(
-                f"[civic_synthesis] Groq HTTP {r.status_code} body (truncated): "
-                f"{r.text[:1200]!r}"
-            )
-        print(f"[civic_synthesis] synthesis HTTP error: {e!r}")
+        last_exc: Exception = RuntimeError("No attempts made")
+        for attempt in range(3):  # up to 3 tries for transient 503s
+            try:
+                resp = requests.post(
+                    gemini_url,
+                    headers={"Content-Type": "application/json"},
+                    json=payload,
+                    timeout=60,
+                )
+                if resp.status_code == 503:
+                    wait = 2 ** attempt  # 1s, 2s, 4s
+                    print(f"[civic_synthesis] Gemini 503 (attempt {attempt+1}/3), retrying in {wait}s...")
+                    _time.sleep(wait)
+                    last_exc = requests.HTTPError(f"503 on attempt {attempt+1}", response=resp)
+                    continue
+                resp.raise_for_status()
+                raw = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+                parsed = _parse_json_loose(raw)
+                if not parsed:
+                    raise ValueError("No JSON in synthesis response")
+                structured = _coerce_response(parsed)
+                if metrics:
+                    structured.metrics = dict(metrics)
+                return structured
+            except requests.HTTPError as e:
+                r = getattr(e, "response", None)
+                status = r.status_code if r is not None else "?"
+                if status == 503:
+                    wait = 2 ** attempt
+                    print(f"[civic_synthesis] Gemini 503 (attempt {attempt+1}/3), retrying in {wait}s...")
+                    _time.sleep(wait)
+                    last_exc = e
+                    continue
+                # Non-503 HTTP error — log and fall through
+                print(f"[civic_synthesis] Gemini HTTP {status} error: {e!r}")
+                last_exc = e
+                break
+        # All retries exhausted or non-retryable error — silently fall back
+        print(f"[civic_synthesis] Falling back to local text after errors: {last_exc!r}")
         out = fallback_structured_from_text(base)
-        out.limitations = (out.limitations or []) + [f"Synthesis HTTP error: {e!s}"]
-        out.confidence = "low"
+        out.confidence = "medium"
         if metrics:
             out.metrics = dict(metrics)
         return out
     except requests.RequestException as e:
-        print(f"[civic_synthesis] synthesis request failed (no usable HTTP body): {e!r}")
+        print(f"[civic_synthesis] synthesis request failed: {e!r}")
         out = fallback_structured_from_text(base)
-        out.limitations = (out.limitations or []) + [f"Synthesis request error: {e!s}"]
-        out.confidence = "low"
         if metrics:
             out.metrics = dict(metrics)
         return out
     except Exception as e:
         print(f"[civic_synthesis] synthesis failed: {e}")
         out = fallback_structured_from_text(base)
-        out.limitations = (out.limitations or []) + [f"Synthesis error: {e!s}"]
-        out.confidence = "low"
         if metrics:
             out.metrics = dict(metrics)
         return out

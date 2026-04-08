@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
+import geopandas as gpd
 
 
 def _data_root() -> str:
@@ -381,3 +382,69 @@ def get_medical_spending_summary() -> Optional[Dict[str, any]]:
         return result if result else None
     except Exception:
         return None
+
+@lru_cache(maxsize=1)
+def get_citations_mapping() -> Dict[str, str]:
+    path = os.path.join(os.path.dirname(__file__), "..", "Data", "Citations.csv")
+    df = _safe_read_csv(path)
+    if df.empty:
+        return {}
+    mapping = {}
+    for _, row in df.iterrows():
+        source = str(row.get("Sources", "")).strip()
+        link = str(row.get("Data Link", "")).strip()
+        if source and link and pd.notna(link):
+            mapping[source] = f"[{source}]({link})"
+    return mapping
+
+def get_funding_summary_and_map_data() -> Tuple[Optional[Dict[str, any]], Optional[pd.DataFrame]]:
+    path = os.path.join(os.path.dirname(__file__), "..", "Data", "san_antonio_78207_filtered.csv")
+    df = _safe_read_csv(path)
+    if df.empty:
+        return None, None
+    
+    # Ensure numeric types
+    df["Total Budget"] = pd.to_numeric(df["Total Budget"], errors="coerce").fillna(0)
+    
+    # Filter out cancelled projects
+    active = df[~df["Current Status"].astype(str).str.contains("Cancelled", case=False, na=False)].copy()
+    if active.empty:
+        return None, None
+    
+    total_budget = active["Total Budget"].sum()
+    prop_groups = active.groupby("Proposition")["Total Budget"].sum().sort_values(ascending=False)
+    
+    summary = {
+        "total_budget": float(total_budget),
+        "project_count": len(active),
+        "by_category": prop_groups.to_dict()
+    }
+    
+    # Geospatial transformation from EPSG:2278 (Texas South Central) to WGS84
+    try:
+        points = active.dropna(subset=["x", "y"]).copy()
+        if not points.empty:
+            gdf = gpd.GeoDataFrame(
+                points, 
+                geometry=gpd.points_from_xy(points.x, points.y), 
+                crs="EPSG:2278"
+            )
+            gdf = gdf.to_crs("EPSG:4326")
+            
+            highlight_df = pd.DataFrame({
+                "ProjectName": gdf["Project Name"],
+                "Proposition": gdf["Proposition"],
+                "Budget": gdf["Total Budget"],
+                "CurrentStatus": gdf["Current Status"],
+                "ConstructionEnd": gdf["Construction End Date"],
+                "Latitude": gdf.geometry.y,
+                "Longitude": gdf.geometry.x,
+                "color": "#1E90FF", # Azure blue
+                "marker_radius": 12
+            })
+            return summary, highlight_df
+    except Exception as e:
+        print(f"Error projecting coordinates: {e}")
+        pass
+    
+    return summary, None
