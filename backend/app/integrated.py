@@ -1174,7 +1174,12 @@ def get_groq_response(prompt):
             pd.DataFrame(),
         )
 
-    if re.search(r"(which )?zip codes? (have|has) (the )?(most|highest number of) potholes", prompt_lower):
+    # Top ZIPs by pothole count: allow words between "zip code(s)" and "has/have"
+    # (e.g. "What zip code in San Antonio has the most potholes?").
+    if re.search(
+        r"(?:what|which)\s+zip\s*codes?\b.*\b(?:have|has)\b.*\b(?:most|highest\s+number\s+of|many)\b.*\bpotholes\b",
+        prompt_lower,
+    ):
         return handle_zipcodes_with_most_potholes()
 
     if re.search(r"(show|display).*(potholes?).*(west side)", prompt_lower):
@@ -1779,7 +1784,13 @@ def get_groq_response(prompt):
 
                 response_text = _append_groq_note(response_text)
         except requests.exceptions.RequestException as e:
-            print(f"[GROQ ERROR] Error communicating with Groq API: {e}")
+            resp = getattr(e, "response", None)
+            if resp is not None:
+                print(
+                    f"[GROQ ERROR] HTTP {resp.status_code} body (truncated): "
+                    f"{resp.text[:1200]!r}"
+                )
+            print(f"[GROQ ERROR] Error communicating with Groq API: {e!r}")
             response_text = _append_groq_note("I am currently unable to connect to the Groq AI. Please try again later.")
         except KeyError:
             response_text = _append_groq_note("I received an unexpected response from the Groq AI. Please try rephrasing your question.")

@@ -76,6 +76,12 @@ def _parse_json_loose(text: str) -> Optional[dict]:
     return None
 
 
+def _is_pothole_zip_ranking_evidence(text: str) -> bool:
+    """True when deterministic handler returned grouped ZIP counts from potholes.parquet."""
+    t = (text or "").lower()
+    return "pothole-prone zip codes" in t and "local pothole dataset" in t
+
+
 def _coerce_response(data: dict) -> CivicStructuredResponse:
     ma = data.get("map_action") or {}
     if not isinstance(ma, dict):
@@ -109,6 +115,16 @@ def synthesize_civic_structured_response(
     - metrics: optional small dict from backend math (Phase 1 may pass {} or row counts).
     """
     base = (retrieved_context or "").strip()
+    # Do not let the narrative LLM replace solid local SQL/parquet answers with "insufficient data".
+    if _is_pothole_zip_ranking_evidence(base):
+        out = fallback_structured_from_text(base)
+        out.limitations = []
+        out.confidence = "high"
+        out.reasoning_summary = "ZIP counts are taken directly from the local pothole dataset (aggregated by zipcode)."
+        if metrics:
+            out.metrics = dict(metrics)
+        return out
+
     if not CIVIC_SYNTHESIS_ENABLED or not GROQ_API_KEY:
         out = fallback_structured_from_text(base)
         if metrics:
@@ -145,6 +161,11 @@ Retrieved evidence (only source of facts):
 
     try:
         resp = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=60)
+        if resp.status_code >= 400:
+            print(
+                f"[civic_synthesis] Groq HTTP {resp.status_code} body (truncated): "
+                f"{resp.text[:1200]!r}"
+            )
         resp.raise_for_status()
         raw = resp.json()["choices"][0]["message"]["content"]
         parsed = _parse_json_loose(raw)
@@ -154,6 +175,28 @@ Retrieved evidence (only source of facts):
         if metrics:
             structured.metrics = dict(metrics)
         return structured
+    except requests.HTTPError as e:
+        r = e.response
+        if r is not None:
+            print(
+                f"[civic_synthesis] Groq HTTP {r.status_code} body (truncated): "
+                f"{r.text[:1200]!r}"
+            )
+        print(f"[civic_synthesis] synthesis HTTP error: {e!r}")
+        out = fallback_structured_from_text(base)
+        out.limitations = (out.limitations or []) + [f"Synthesis HTTP error: {e!s}"]
+        out.confidence = "low"
+        if metrics:
+            out.metrics = dict(metrics)
+        return out
+    except requests.RequestException as e:
+        print(f"[civic_synthesis] synthesis request failed (no usable HTTP body): {e!r}")
+        out = fallback_structured_from_text(base)
+        out.limitations = (out.limitations or []) + [f"Synthesis request error: {e!s}"]
+        out.confidence = "low"
+        if metrics:
+            out.metrics = dict(metrics)
+        return out
     except Exception as e:
         print(f"[civic_synthesis] synthesis failed: {e}")
         out = fallback_structured_from_text(base)
