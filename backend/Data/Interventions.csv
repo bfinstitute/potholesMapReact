@@ -1,0 +1,18 @@
+issue,threshold,intervention
+depression,>0.20,Expand community mental health clinics
+poverty,>0.30,Financial assistance and job programs
+rent_burden,>0.45,Housing subsidy programs
+noise_complaints,>70,Community noise regulation enforcement
+depression,>0.20,Expand community mental health clinics
+depression,>0.23,Mobile mental health outreach units
+depression,>0.25,Crisis intervention programs
+poverty,>0.30,Financial assistance and job programs
+poverty,>0.35,Workforce training programs
+poverty,>0.40,Long-term economic development initiatives
+rent_burden,>0.45,Housing subsidy programs
+rent_burden,>0.50,Emergency rental assistance
+rent_burden,>0.55,Affordable housing expansion
+noise_complaints,>70,Community noise regulation enforcement
+housing_complaints,>120,Code enforcement and housing repair grants
+trash_issues,>60,Neighborhood cleanup programs
+requests_count,>350,Targeted municipal intervention programs
