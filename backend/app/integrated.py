@@ -17,7 +17,38 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+try:
+    from .map_highlights import (
+        rag_map_highlight_for_prompt,
+        san_antonio_center_marker,
+        zip_centroid_marker,
+    )
+    from .mongodb_client import log_groq_response, get_mongo_client
+except ImportError:
+    from map_highlights import (
+        rag_map_highlight_for_prompt,
+        san_antonio_center_marker,
+        zip_centroid_marker,
+    )
+    from mongodb_client import log_groq_response, get_mongo_client
+
 global pothole_cases_df, pavement_latlon_df, complaint_df # Declare globals here
+
+DATA_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Data"))
+
+
+def _resolve_data_path(*candidates):
+    """
+    Resolve a data file path across possible legacy/new folder layouts.
+    Returns the first existing match; falls back to the first candidate path.
+    """
+    if not candidates:
+        return DATA_ROOT
+    for rel_path in candidates:
+        candidate_abs = os.path.join(DATA_ROOT, rel_path)
+        if os.path.exists(candidate_abs):
+            return candidate_abs
+    return os.path.join(DATA_ROOT, candidates[0])
 
 # Helper function to convert numeric types in DataFrame to native Python types
 def _convert_dataframe_numerics_to_native_types(df):
@@ -45,9 +76,16 @@ def _convert_dataframe_numerics_to_native_types(df):
 # m = st.session_state.m
 # highlight_feature_group = st.session_state.highlight_feature_group
 
-# ---------- Groq AI Configuration ----------
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+# ---------- Gemini AI Configuration ----------
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash-lite")
+GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+
+# Debug: Print if API key is loaded (first 10 chars only for security)
+if GEMINI_API_KEY:
+    print(f"[GEMINI] API Key loaded: {GEMINI_API_KEY[:10]}...")
+else:
+    print("[GEMINI] WARNING: No API key found in environment!")
 
 # Initialize global DataFrames
 pothole_cases_df = pd.DataFrame()
@@ -62,19 +100,25 @@ senior_centers_df = pd.DataFrame(columns=['name', 'lat', 'lon'])  # TODO: Replac
 injuries_df = pd.DataFrame(columns=['intersection', 'lat', 'lon', 'injury_count'])  # TODO: Replace with real injury data
 
 # --- Load VIA stops and routes ---
-if os.path.exists('../Data/VIA/stops_cleaned.csv'):
-    via_stops_df = pd.read_csv('../Data/VIA/stops_cleaned.csv')
+via_stops_path = _resolve_data_path('VIA/stops_cleaned.csv')
+if os.path.exists(via_stops_path):
+    via_stops_df = pd.read_csv(via_stops_path)
 else:
     via_stops_df = pd.DataFrame()
-if os.path.exists('../Data/VIA/via_routes_cleaned.csv'):
-    via_routes_df = pd.read_csv('../Data/VIA/via_routes_cleaned.csv')
+via_routes_path = _resolve_data_path('VIA/via_routes_cleaned.csv')
+if os.path.exists(via_routes_path):
+    via_routes_df = pd.read_csv(via_routes_path)
 else:
     via_routes_df = pd.DataFrame()
 
 # --- Load sensitive locations from extracted CSV ---
 import re
 try:
-    sensitive_locations_df = pd.read_csv('../Data/possible_sensitive_locations.csv')
+    sensitive_locations_path = _resolve_data_path(
+        'possible_sensitive_locations.csv',
+        '311/possible_sensitive_locations.csv',
+    )
+    sensitive_locations_df = pd.read_csv(sensitive_locations_path)
     # Extract lat/lon from GoogleMapView column
     def extract_lat_lon(url):
         if pd.isna(url) or url == 'Not Available':
@@ -217,7 +261,21 @@ def handle_repeated_complaints_on_road(road):
         lines.append("")
 
     response = "\n".join(lines).strip()
-    return response, None, pd.DataFrame()
+    hdf = pd.DataFrame()
+    if "Latitude" in road_complaints.columns and "Longitude" in road_complaints.columns:
+        pts = road_complaints.dropna(subset=["Latitude", "Longitude"]).copy()
+        pts = pts.head(450)
+        if not pts.empty:
+            hdf = pd.DataFrame(
+                {
+                    "Latitude": pts["Latitude"].astype(float),
+                    "Longitude": pts["Longitude"].astype(float),
+                    "MSAG_Name": pts["MSAG_Name"].fillna(road).astype(str),
+                }
+            )
+            hdf["color"] = "#DC143C"
+            hdf["marker_radius"] = 9
+    return response, None, hdf
 
 # --- Handler: Bus stops near high-risk pavement ---
 def handle_bus_stops_near_high_risk_pavement(pci_threshold=50, radius_m=100):
@@ -814,7 +872,16 @@ def handle_any_complaints_near_sensitive_areas(radius_m=300, sensitive_type='sch
     return response, None, highlight_df
 
 # --- RAG Query Integration ---
-from rag_tool import query_table
+try:
+    from rag_tool import query_table
+    from rag_pipeline import get_rag_response
+    from saaf_handlers import try_handle_saaf_question
+    from ai_agent import get_agent_response
+except ModuleNotFoundError:
+    from .rag_tool import query_table
+    from .rag_pipeline import get_rag_response
+    from .saaf_handlers import try_handle_saaf_question
+    from .ai_agent import get_agent_response
 
 # Simple parser for street and year from user question
 def parse_rag_question(question):
@@ -851,6 +918,273 @@ def parse_rag_question(question):
         print("[RAG DEBUG] No RAG pattern matched.")
     return street, year
 
+
+def _agent_sql_failed(agent_answer: str) -> bool:
+    """If True, treat agent output as a failed query and fall through to legacy handlers."""
+    s = (agent_answer or "").lower()
+    if "cannot be answered from the tables currently loaded in the agent" in s:
+        return True
+    if "i could not run a safe query" in s:
+        return True
+    if "sql execution failed" in s:
+        return True
+    if "binder error" in s or "catalog error" in s:
+        return True
+    if "referenced column" in s and "not found" in s:
+        return True
+    return False
+
+
+def _append_groq_note(response_text: str) -> str:
+    note = "Note: This reply relies on Gemini AI because the requested data is not available in the loaded local datasets."
+    text = (response_text or "").strip()
+    if not text:
+        return note
+    if note.lower() in text.lower():
+        return text
+    return f"{text}\n\n{note}"
+
+
+def _load_78207_health_places():
+    path = _resolve_data_path("ZIPCODE 78207/clean/health_places.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+
+
+def _health_place_value(df, measure_id):
+    if df.empty or "measure_id" not in df.columns:
+        return None
+    rows = df[df["measure_id"].astype(str).str.upper() == str(measure_id).upper()].copy()
+    if rows.empty:
+        return None
+    if "year" in rows.columns:
+        rows["year_num"] = pd.to_numeric(rows["year"], errors="coerce")
+        rows = rows.sort_values("year_num", ascending=False)
+    row = rows.iloc[0]
+    value = pd.to_numeric(pd.Series([row.get("value")]), errors="coerce").iloc[0]
+    if pd.isna(value):
+        return None
+    low_ci = pd.to_numeric(pd.Series([row.get("low_ci")]), errors="coerce").iloc[0]
+    high_ci = pd.to_numeric(pd.Series([row.get("high_ci")]), errors="coerce").iloc[0]
+    return {
+        "year": int(row["year"]) if pd.notna(pd.to_numeric(pd.Series([row.get("year")]), errors="coerce").iloc[0]) else None,
+        "value": float(value),
+        "low_ci": None if pd.isna(low_ci) else float(low_ci),
+        "high_ci": None if pd.isna(high_ci) else float(high_ci),
+        "measure": row.get("measure"),
+    }
+
+
+def handle_78207_mental_health_medication_question():
+    df = _load_78207_health_places()
+    if df.empty:
+        return (
+            "I could not find the ZIP-level health file needed to answer that question.",
+            None,
+            zip_centroid_marker("78207", label="ZIP 78207 (context)", color="#9370DB"),
+        )
+
+    depression = _health_place_value(df, "DEPRESSION")
+    distress = _health_place_value(df, "MHLTH")
+    sleep = _health_place_value(df, "SLEEP")
+
+    lines = [
+        "The available ZIP-level data for 78207 does not report the percentage of residents using anxiety, depression, or sleep medications.",
+        "",
+        "What the ZIP-level file does report instead are related health indicators:",
+    ]
+    if depression:
+        lines.append(f"- Depression among adults: {depression['value']:.1f}% ({depression['year']})")
+    if distress:
+        lines.append(f"- Frequent mental distress among adults: {distress['value']:.1f}% ({distress['year']})")
+    if sleep:
+        lines.append(f"- Short sleep duration among adults: {sleep['value']:.1f}% ({sleep['year']})")
+    lines.extend(
+        [
+            "",
+            "So based only on available ZIP-level data, no valid percentage can be given for anxiety, depression, or sleep medication use.",
+            "Source: ZIPCODE 78207/clean/health_places.csv",
+        ]
+    )
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 health context", color="#9370DB")
+
+
+def handle_78207_mental_health_national_comparison_question():
+    df = _load_78207_health_places()
+    if df.empty:
+        return (
+            "I could not find the ZIP-level health file needed to answer that question.",
+            None,
+            zip_centroid_marker("78207", label="ZIP 78207 (context)", color="#9370DB"),
+        )
+
+    depression = _health_place_value(df, "DEPRESSION")
+    distress = _health_place_value(df, "MHLTH")
+    sleep = _health_place_value(df, "SLEEP")
+
+    lines = [
+        "The loaded 78207 data supports local mental-health indicators, but not a true comparison to national averages for treatment usage.",
+        "",
+        "From the ZIP 78207 health dataset, the available local measures include:",
+    ]
+    if depression:
+        lines.append(f"- Depression among adults: {depression['value']:.1f}% ({depression['year']})")
+    if distress:
+        lines.append(f"- Frequent mental distress among adults: {distress['value']:.1f}% ({distress['year']})")
+    if sleep:
+        lines.append(f"- Short sleep duration among adults: {sleep['value']:.1f}% ({sleep['year']})")
+    lines.extend(
+        [
+            "",
+            "Supporting source:",
+            "- ZIPCODE 78207/clean/health_places.csv",
+            "- Data source column in that file: BRFSS / PLACES local estimates",
+            "",
+            "Limitation:",
+            "- The current files do not include a national benchmark table or a direct mental health treatment usage measure.",
+            "- I should not claim whether 78207 is above or below the U.S. average from the loaded data alone.",
+        ]
+    )
+    return "\n".join(lines), None, zip_centroid_marker("78207", label="ZIP 78207 health context", color="#9370DB")
+
+
+def _potholes_parquet_path():
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "potholes.parquet"))
+
+
+def _sample_pothole_rows(rows, n):
+    """Subsample row tuples from query_table without loading huge ZIPs into the map payload."""
+    if not rows or n <= 0:
+        return []
+    rows = list(rows)
+    if len(rows) <= n:
+        return rows
+    idx = np.random.default_rng(42).permutation(len(rows))[:n]
+    return [rows[i] for i in idx]
+
+
+def _highlight_df_from_pothole_rows(rows, color="#FF4500", marker_radius=12, max_points=500):
+    """
+    Build a DataFrame the React map expects: Latitude, Longitude, optional MSAG_Name, color, marker_radius.
+    """
+    if not rows:
+        return pd.DataFrame()
+    sampled = _sample_pothole_rows(rows, min(len(rows), max_points))
+    df = pd.DataFrame(
+        sampled,
+        columns=["latitude", "longitude", "street_name", "year", "council_district"],
+    )
+    df = df.rename(
+        columns={
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "street_name": "MSAG_Name",
+        }
+    )
+    df = df.dropna(subset=["Latitude", "Longitude"])
+    if df.empty:
+        return pd.DataFrame()
+    df["color"] = color
+    df["marker_radius"] = marker_radius
+    return df
+
+
+# Approximate west-side San Antonio ZIPs used for "west side" hotspot summaries (local dataset).
+_WEST_SIDE_SA_ZIPS = (
+    78207, 78228, 78237, 78201, 78227, 78211, 78226, 78204, 78205, 78210,
+)
+
+
+def handle_zipcodes_with_most_potholes():
+    import duckdb
+
+    path = _potholes_parquet_path()
+    if not os.path.exists(path):
+        return (
+            "Pothole-prone zip codes:\n\n(Could not find potholes.parquet.)",
+            None,
+            pd.DataFrame(),
+        )
+    try:
+        df = duckdb.sql(
+            """
+            SELECT CAST(zipcode AS VARCHAR) AS z, COUNT(*) AS c
+            FROM read_parquet(?)
+            GROUP BY zipcode
+            ORDER BY c DESC
+            LIMIT 10
+            """,
+            params=[path],
+        ).fetchdf()
+    except Exception as exc:
+        return f"Pothole-prone zip codes: could not summarize ({exc}).", None, pd.DataFrame()
+    lines = [
+        "Here are pothole-prone zip codes from the local pothole dataset (top ZIPs by report count):",
+        "",
+    ]
+    for _, row in df.iterrows():
+        lines.append(f"• ZIP {row['z']}: **{int(row['c'])}** pothole reports")
+    combined_rows = []
+    per_zip_cap = max(40, min(120, 600 // max(len(df), 1)))
+    for _, row in df.iterrows():
+        z = int(row["z"])
+        combined_rows.extend(_sample_pothole_rows(query_table(zipcode=z), per_zip_cap))
+    highlight = _highlight_df_from_pothole_rows(combined_rows, color="#FF4500", marker_radius=11, max_points=600)
+    return "\n".join(lines), None, highlight
+
+
+def handle_west_side_potholes():
+    import duckdb
+
+    path = _potholes_parquet_path()
+    if not os.path.exists(path):
+        return "West side pothole hotspots: potholes.parquet not found.", None, pd.DataFrame()
+    zlist = ",".join(str(z) for z in _WEST_SIDE_SA_ZIPS)
+    try:
+        df = duckdb.sql(
+            f"""
+            SELECT zipcode, COUNT(*) AS c
+            FROM read_parquet(?)
+            WHERE zipcode IN ({zlist})
+            GROUP BY zipcode
+            ORDER BY c DESC
+            """,
+            params=[path],
+        ).fetchdf()
+    except Exception as exc:
+        return f"West side pothole hotspots: could not query ({exc}).", None, pd.DataFrame()
+    lines = [
+        "West side pothole hotspots (western San Antonio ZIPs in the local dataset):",
+        "",
+    ]
+    for _, row in df.iterrows():
+        lines.append(f"• ZIP **{int(row['zipcode'])}**: **{int(row['c'])}** pothole reports")
+    combined_rows = []
+    per_zip_cap = max(50, min(150, 600 // max(len(df), 1)))
+    for _, row in df.iterrows():
+        z = int(row["zipcode"])
+        combined_rows.extend(_sample_pothole_rows(query_table(zipcode=z), per_zip_cap))
+    highlight = _highlight_df_from_pothole_rows(combined_rows, color="#FF8C00", marker_radius=12, max_points=600)
+    return "\n".join(lines), None, highlight
+
+
+def handle_potholes_in_zipcode(zipcode_str):
+    zc = int(str(zipcode_str).strip())
+    rows = query_table(zipcode=zc)
+    n = len(rows)
+    rw = "report" if n == 1 else "reports"
+    text = (
+        f"For **zip code {zc}**, the local dataset lists **{n}** pothole {rw}.\n\n"
+        f"Source: `potholes.parquet` (ZIP-filtered via the chatbot query layer)."
+    )
+    highlight = _highlight_df_from_pothole_rows(rows, color="#1E90FF", marker_radius=11, max_points=500)
+    return text, None, highlight
+
+
 # --- Update get_groq_response to use RAG as fallback ---
 def get_groq_response(prompt):
     prompt_lower = prompt.lower()
@@ -859,40 +1193,84 @@ def get_groq_response(prompt):
 
     print(f"[DEBUG] Received prompt: {prompt}")
 
-    # --- PCI in zip code ---
+    if re.fullmatch(r"\s*(hi+|hello+|hey+|hii+|hiya|sup\b|yo+|wyd+|wydd+|wsp+|wassup+|what'?s up|whats up|good morning|good afternoon|good evening)(?:\s+\w+)?\s*[!. ]*\s*", prompt_lower):
+        return (
+            "Hi, I'm Buffi. I can help with San Antonio potholes, pavement conditions, ZIP-level counts, and road-condition questions.",
+            None,
+            pd.DataFrame(),
+        )
+
+    # Top ZIPs by pothole count: allow words between "zip code(s)" and "has/have"
+    # (e.g. "What zip code in San Antonio has the most potholes?").
+    if re.search(
+        r"(?:what|which)\s+zip\s*codes?\b.*\b(?:have|has)\b.*\b(?:most|highest\s+number\s+of|many)\b.*\bpotholes\b",
+        prompt_lower,
+    ):
+        return handle_zipcodes_with_most_potholes()
+
+    if re.search(r"(show|display).*(potholes?).*(west side)", prompt_lower):
+        return handle_west_side_potholes()
+
+    if re.search(r"(show|display).*(areas?|streets?).*(worst road conditions|bad roads|worst roads)", prompt_lower):
+        return get_worst_pothole_streets()
+
+    match = re.search(r"(how many|number of)\s+potholes.*(?:in|for)\s+(?:the\s+)?(?:zip\s*code|zipcode)\s*(\d{5})", prompt_lower)
+    if match:
+        return handle_potholes_in_zipcode(match.group(2))
+
+    match = re.search(r"(?:zip\s*code|zipcode)\s*(\d{5}).*(how many|number of)\s+potholes", prompt_lower)
+    if match:
+        return handle_potholes_in_zipcode(match.group(1))
+
+    # 78207 mental-health ZIP-level availability (must run before RAG so strict wording wins)
+    if (
+        "78207" in prompt_lower
+        and any(term in prompt_lower for term in ["anxiety", "depression", "sleep medication", "sleep medications"])
+        and "zip-level" in prompt_lower
+        and any(term in prompt_lower for term in ["what percentage", "percent", "percentage"])
+    ):
+        return handle_78207_mental_health_medication_question()
+
+    if (
+        "78207" in prompt_lower
+        and any(term in prompt_lower for term in ["national average", "national averages", "compare to national"])
+        and any(term in prompt_lower for term in ["mental health", "depression", "anxiety", "sleep"])
+    ):
+        return handle_78207_mental_health_national_comparison_question()
+
+    # --- PCI in zip code (before RAG — RAG used to return a short PCI string) ---
+    match = re.search(r"pci\s+for\s+(?:zip\s*code|zipcode)\s*(\d{5})\b", prompt_lower)
+    if match:
+        print("[DEBUG] Matched PCI for zip code pattern.")
+        zipcode = match.group(1)
+        return handle_pci_in_zipcode(zipcode)
+
     match = re.search(r"what'?s? the pci in zip code (\d+)", prompt_lower)
     if match:
         print("[DEBUG] Matched PCI in zip code pattern.")
         zipcode = match.group(1)
         return handle_pci_in_zipcode(zipcode)
-    
-    # Alternative patterns for PCI zip code queries
+
     match = re.search(r"pci.*zip code (\d+)", prompt_lower)
     if match:
         print("[DEBUG] Matched alternative PCI zip code pattern.")
         zipcode = match.group(1)
         return handle_pci_in_zipcode(zipcode)
-    
+
     match = re.search(r"zip code (\d+).*pci", prompt_lower)
     if match:
         print("[DEBUG] Matched reverse PCI zip code pattern.")
         zipcode = match.group(1)
         return handle_pci_in_zipcode(zipcode)
 
-    # --- Area-specific pothole formation prediction ---
-    match = re.search(r"how likely (will|could) potholes form (on|in|along|at) ([^?]+)", prompt_lower)
-    if match:
-        print("[DEBUG] Matched area-specific pothole formation prediction pattern.")
-        area = match.group(3).strip()
-        return handle_pothole_formation_prediction_area(area)
-    # --- General city-wide prediction ---
-    if re.search(r"how likely (will|could) potholes form( in san antonio)?", prompt_lower):
-        print("[DEBUG] Matched city-wide pothole formation prediction pattern.")
-        return get_pothole_formation_prediction()
-    # --- Data-driven: How many potholes were reported on [street] in [year]? ---
+    rag_answer = get_rag_response(prompt)
+    if rag_answer:
+        return rag_answer, None, rag_map_highlight_for_prompt(prompt)
+
+    # --- Potholes on a street in a year: use curated query_table (correct schema), not agent SQL on 311 CSVs ---
     match = re.search(r"how many potholes (were )?reported on ([^?]+) in (\d{4})", prompt_lower)
     if match:
-        print("[DEBUG] Matched data-driven street/year pattern.")
+        print("[DEBUG] Matched data-driven street/year pattern (before agent).")
         street = match.group(2).strip()
         year = int(match.group(3))
         results = query_table(street=street, year=year)
@@ -905,16 +1283,12 @@ def get_groq_response(prompt):
             })
             total = len(df)
             breakdown = df['MSAG_Name'].value_counts().to_dict()
-            
-            # Create a more readable breakdown with better formatting
             breakdown_items = []
             for street_name, count in breakdown.items():
-                # Use ampersand for intersections and format counts with singular/plural
                 display_name = re.sub(r"\sand\s", " & ", str(street_name), flags=re.IGNORECASE)
                 report_word = "report" if count == 1 else "reports"
                 breakdown_items.append(f"• {display_name}: **{count} {report_word}**")
             breakdown_str = "\n".join(breakdown_items)
-            
             total_word = "report" if total == 1 else "reports"
             response = (
                 f"🚧 Found **{total}** pothole {total_word} for streets containing '**{street}**' in **{year}**.\n\n"
@@ -922,9 +1296,24 @@ def get_groq_response(prompt):
             )
             print(f"[DEBUG] Data-driven response: {response}")
             return response, None, df
-        else:
-            print(f"[DEBUG] No records found for street='{street}', year={year}")
-            return f"No pothole records found for streets containing '{street}' in {year}.", None, pd.DataFrame()
+        print(f"[DEBUG] No records found for street='{street}', year={year}")
+        return f"No pothole records found for streets containing '{street}' in {year}.", None, pd.DataFrame()
+
+    # --- SAAF 78207 governance-aware chatbot route ---
+    saaf_result = try_handle_saaf_question(prompt)
+    if saaf_result is not None:
+        return saaf_result
+
+    # --- Area-specific pothole formation prediction ---
+    match = re.search(r"how likely (will|could) potholes form (on|in|along|at) ([^?]+)", prompt_lower)
+    if match:
+        print("[DEBUG] Matched area-specific pothole formation prediction pattern.")
+        area = match.group(3).strip()
+        return handle_pothole_formation_prediction_area(area)
+    # --- General city-wide prediction ---
+    if re.search(r"how likely (will|could) potholes form( in san antonio)?", prompt_lower):
+        print("[DEBUG] Matched city-wide pothole formation prediction pattern.")
+        return get_pothole_formation_prediction()
     # --- Optimized intent detection for all questions ---
     # 0. Most potholes / worst pothole locations / top pothole locations
     if re.search(r"(where (are|is) (the )?(most|worst) potholes|top (\d+ )?(worst|most) pothole|worst pothole locations|top pothole locations|most pothole complaints|most reported potholes|highest pothole count)", prompt_lower):
@@ -990,12 +1379,17 @@ def get_groq_response(prompt):
         return handle_intersections_via_pothole_injury()
     if re.search(r'preventative maintenance.*bus|damage|delay', prompt_lower):
         return handle_prioritize_maintenance_for_buses()
-    match = re.search(r'history of repeated pothole complaints.*along (.+)', prompt_lower)
+    match = re.search(
+        r"(?:history of repeated pothole complaints|repeated pothole complaints)\s+along\s+(.+?)(?:\?|$)",
+        prompt_lower,
+    )
     if match:
-        road = match.group(1).strip(' ?')
+        road = match.group(1).strip().rstrip("?.!").strip()
         return handle_repeated_complaints_on_road(road)
-    # Also match: 'Is there a history of repeated pothole complaints along the [road]?' (with [road] in brackets or as a phrase)
-    match = re.search(r'is there a history of repeated pothole complaints along (?:the )?\[?([\w\s\-\.]+)\]?', prompt_lower)
+    match = re.search(
+        r"is there a history of repeated pothole complaints along (?:the )?\[?([\w\s\-\.]+?)\]?(?:\?|$)",
+        prompt_lower,
+    )
     if match:
         road = match.group(1).strip()
         return handle_repeated_complaints_on_road(road)
@@ -1084,10 +1478,10 @@ def get_groq_response(prompt):
     # City satisfaction questions
     if re.search(r'do san antonians like the city', prompt_lower):
         return handle_city_satisfaction()
-    
+
     if re.search(r'is san antonio cool', prompt_lower):
         return handle_city_attitude()
-    
+
     # Community spaces accessibility
     match = re.search(r'how accessible are public community spaces in (?:zip code )?(\d+)', prompt_lower)
     if match:
@@ -1113,6 +1507,18 @@ def get_groq_response(prompt):
     # Living arrangements
     if re.search(r'do most people live by themselves or with others', prompt_lower):
         return handle_living_arrangements()
+
+    match = re.search(
+        r"what type(?:s)? of local businesses do citizens in (?:zip code )?(\d{5})\s+wish they had",
+        prompt_lower,
+    )
+    if match:
+        return handle_local_business_wishes_zipcode(match.group(1))
+    if re.search(
+        r"what type(?:s)? of local businesses do (?:citizens|people) in san antonio wish they had",
+        prompt_lower,
+    ):
+        return handle_local_business_wishes_city()
 
     # --- RAG fallback: try to parse and answer with query_table ---
     street, year = parse_rag_question(prompt)
@@ -1166,6 +1572,11 @@ def get_groq_response(prompt):
         response_text, plot_object, highlight_data_df = get_pothole_formation_prediction()
         return response_text, plot_object, highlight_data_df
 
+    # --- LLM agent over local datasets: only after dedicated handlers have had a chance ---
+    agent_answer = get_agent_response(prompt)
+    if agent_answer and not _agent_sql_failed(agent_answer):
+        return agent_answer, None, pd.DataFrame()
+
     # Keyword-based logic
     keyword_responses = {
         "how many potholes": f"There are {len(pothole_cases_df.index) if not pothole_cases_df.empty else 'no'} potholes recorded in the dataset.",
@@ -1196,24 +1607,221 @@ def get_groq_response(prompt):
 
     if response_text is None:
         try:
-            headers = {
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json",
-            }
-            data = {
-                "model": "llama-3.1-8b-instant",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 4096,
-            }
-            groq_response = requests.post(GROQ_API_URL, headers=headers, json=data)
-            groq_response.raise_for_status() # Raise an exception for HTTP errors
-            response_data = groq_response.json()
-            response_text = response_data["choices"][0]["message"]["content"]
+            # Debug: Check if API key exists
+            if not GEMINI_API_KEY:
+                print("[GEMINI ERROR] No API key available!")
+                response_text = _append_groq_note("Gemini API key is not configured. Please set GEMINI_API_KEY in the .env file.")
+            else:
+                print(f"[GEMINI DEBUG] Using API key: {GEMINI_API_KEY[:10]}...")
+
+                # Gather multi-source context for RAG with source tracking
+                context_parts = []
+                sources_used = []
+
+                # Define user-friendly source names with links (placeholder URLs for now)
+                # TODO: Replace placeholder URLs with actual data source links
+                SOURCE_NAMES = {
+                    "demographics": "[U.S. Census Bureau - American Community Survey](https://data.census.gov/)",
+                    "health": "[CDC PLACES - Local Health Data](https://www.cdc.gov/places/)",
+                    "311": "[San Antonio 311 Service Requests](https://www.sanantonio.gov/311)",
+                    "unemployment": "[Bureau of Labor Statistics - Employment Data](https://www.bls.gov/)",
+                    "health_behavior": "[ESRI Health & Beauty Market Potential](https://www.esri.com/en-us/arcgis/products/tapestry-segmentation)",
+                    "medical_spending": "[ESRI Medical Expenditure Data](https://www.esri.com/en-us/arcgis/products/tapestry-segmentation)"
+                }
+
+                try:
+                    # Import context gathering functions
+                    from saaf_data import (
+                        get_context_metrics, get_top_health_issues,
+                        get_top_311_categories, get_unemployment_summary,
+                        get_service_landscape_summary, get_health_behavior_summary,
+                        get_medical_spending_summary
+                    )
+
+                    # Gather demographics for ZIP 78207
+                    demographics = get_context_metrics()
+                    if demographics:
+                        demo_info = []
+                        if demographics.get("population"):
+                            demo_info.append(f"Population: {int(demographics['population']):,}")
+                        if demographics.get("median_income"):
+                            demo_info.append(f"Median income: ${int(demographics['median_income']):,}")
+                        if demographics.get("poverty_rate"):
+                            demo_info.append(f"Poverty rate: {float(demographics['poverty_rate']):.1f}%")
+                        if demo_info:
+                            context_parts.append(f"ZIP 78207 Demographics: {'; '.join(demo_info)}")
+                            sources_used.append(SOURCE_NAMES["demographics"])
+
+                    # Gather top health issues
+                    health = get_top_health_issues(limit=3)
+                    if health:
+                        health_info = [f"{name}: {value:.1f}%" for name, value in health]
+                        context_parts.append(f"Top Health Issues: {'; '.join(health_info)}")
+                        sources_used.append(SOURCE_NAMES["health"])
+
+                    # Gather top 311 categories
+                    requests_311 = get_top_311_categories(limit=3)
+                    if requests_311:
+                        req_info = [f"{name}: {count} cases" for name, count in requests_311]
+                        context_parts.append(f"Top 311 Requests: {'; '.join(req_info)}")
+                        sources_used.append(SOURCE_NAMES["311"])
+
+                    # Gather unemployment data
+                    unemployment = get_unemployment_summary()
+                    if unemployment and unemployment.get("latest_rate"):
+                        context_parts.append(f"Unemployment: {unemployment['latest_rate']:.2f}%")
+                        sources_used.append(SOURCE_NAMES["unemployment"])
+
+                    # Gather health behavior data
+                    health_behavior = get_health_behavior_summary()
+                    if health_behavior:
+                        behavior_info = []
+                        if health_behavior.get("exercise_1_3_hrs_pct"):
+                            behavior_info.append(f"Exercise 1-3 hrs/wk: {health_behavior['exercise_1_3_hrs_pct']:.1f}%")
+                        if health_behavior.get("own_bp_monitor_pct"):
+                            behavior_info.append(f"Own BP monitor: {health_behavior['own_bp_monitor_pct']:.1f}%")
+                        if health_behavior.get("control_diet_blood_sugar_pct"):
+                            behavior_info.append(f"Control diet for blood sugar: {health_behavior['control_diet_blood_sugar_pct']:.1f}%")
+                        if behavior_info:
+                            context_parts.append(f"Health Behaviors: {'; '.join(behavior_info)}")
+                            sources_used.append(SOURCE_NAMES["health_behavior"])
+
+                    # Gather medical spending data
+                    medical_spending = get_medical_spending_summary()
+                    if medical_spending:
+                        spending_info = []
+                        if medical_spending.get("health_insurance_total"):
+                            spending_info.append(f"Health insurance: ${medical_spending['health_insurance_total']/1e6:.1f}M")
+                        if medical_spending.get("prescription_drugs_total"):
+                            spending_info.append(f"Prescription drugs: ${medical_spending['prescription_drugs_total']/1e6:.1f}M")
+                        if spending_info:
+                            context_parts.append(f"Medical Spending: {'; '.join(spending_info)}")
+                            sources_used.append(SOURCE_NAMES["medical_spending"])
+
+                    print(f"[GEMINI DEBUG] Gathered context from {len(context_parts)} sources")
+                except Exception as ctx_error:
+                    print(f"[GEMINI DEBUG] Could not gather all context: {ctx_error}")
+
+                # Build context-aware system message with Buffi's personality
+                system_content = (
+                    "You are Buffi, a friendly and knowledgeable assistant for San Antonio city data, "
+                    "with a focus on ZIP code 78207 and community well-being.\n\n"
+
+                    "CRITICAL - Data Grounding Rules:\n"
+                    "• Focus on presenting facts, numbers, and cross-referenced correlations in an easily understandable way.\n"
+                    "• When combining datasets (like 311 complaints and medical/health data), explicitly state how they correlate and interact. Confidently draw insights.\n"
+                    "• Use concrete data from the 'Available Data Context' section, AND cross-reference with real-world data and studies using your built-in search/knowledge when possible to enrich the response.\n"
+                    "• Do NOT use hesitant disclaimers like 'does not directly correlate' or 'cannot establish a causal link'. Instead, confidently highlight the relationships and present the numbers clearly.\n"
+                    "• ALWAYS cite specific numbers, percentages, and metrics.\n"
+                    "• If asked about specific individuals, refuse politely (privacy/safety).\n\n"
+
+                    "Response Style:\n"
+                    "• Start with a clear, descriptive title ending with ':'\n"
+                    "• Follow with 3-6 bullet points of concrete, actionable facts AND their correlations.\n"
+                    "• Limit hesitation. Focus on delivering solid, data-rich insight that is easy for a non-technical person to understand.\n"
+                    "• Use friendly but professional language.\n"
+                    "• Never mention SQL, table names, CSV files, or technical database details.\n"
+                    "• Connect data points to real community impact when relevant\n"
+                    "• DO NOT add a 'Data Sources' or 'Sources' section - this will be added automatically\n\n"
+
+                    "Example Good Response:\n"
+                    "Health and Infrastructure Correlations in ZIP 78207:\n"
+                    "• High blood pressure affects 42.3% of residents, which correlates directly with areas lacking safe walking infrastructure.\n"
+                    "• Obesity rates (38.1% of adults) intersect heavily with recent 311 complaints about deteriorating sidewalks.\n"
+                    "• Poor lighting requests (34 cases) overlap with the highest health-risk census tracts.\n\n"
+
+                    "Example Bad Response (DO NOT DO THIS):\n"
+                    "Health in this area is concerning. We cannot definitively link these issues. "
+                    "Generally speaking, low-income areas face challenges...\n\n"
+
+
+                    "Your goal: Help San Antonio residents make informed decisions using ONLY the data provided below."
+                )
+
+                if context_parts:
+                    system_content += "\n\n=== Available Data Context (ONLY USE THIS DATA) ===\n" + "\n".join(context_parts)
+                else:
+                    system_content += "\n\n=== Available Data Context ===\nNo specific data available for this query."
+
+                # Build Gemini API request (REST endpoint)
+                gemini_url = f"{GEMINI_API_URL}?key={GEMINI_API_KEY}"
+                # Combine system prompt + context into the first user turn (Gemini doesn't have a system role in v1beta)
+                combined_user_content = f"{system_content}\n\nUser question: {prompt}"
+                data = {
+                    "contents": [
+                        {
+                            "role": "user",
+                            "parts": [{"text": combined_user_content}]
+                        }
+                    ],
+                    "tools": [{"googleSearch": {}}],
+                    "generationConfig": {
+                        "temperature": 0.3,
+                        "topP": 0.9,
+                        "maxOutputTokens": 4096,
+                    },
+                }
+
+                # Time the Gemini API call for MongoDB logging
+                import time
+                gemini_start_time = time.time()
+                gemini_response = requests.post(
+                    gemini_url,
+                    headers={"Content-Type": "application/json"},
+                    json=data,
+                )
+                gemini_elapsed_ms = int((time.time() - gemini_start_time) * 1000)
+
+                print(f"[GEMINI DEBUG] Response status: {gemini_response.status_code}")
+                gemini_response.raise_for_status()
+                response_data = gemini_response.json()
+                response_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
+
+                # Extract token usage if available
+                tokens_used = response_data.get("usageMetadata", {}).get("totalTokenCount")
+
+                # Add source attribution if sources were used
+                if sources_used:
+                    unique_sources = []
+                    for source in sources_used:
+                        if source not in unique_sources:
+                            unique_sources.append(source)
+                    sources_section = "\n\n---\n\n**Data Sources:**\n" + "\n".join([f"• {source}" for source in unique_sources])
+                    response_text += sources_section
+
+                # Log Gemini API response to MongoDB for quality monitoring
+                mongo_client = get_mongo_client()
+                if mongo_client.enabled:
+                    context_summary = {}
+                    if context_parts:
+                        for part in context_parts[:5]:
+                            key = part.split(":")[0] if ":" in part else "context"
+                            context_summary[key] = part[:200]
+
+                    log_groq_response(
+                        question=prompt,
+                        context_provided=context_summary,
+                        groq_response=response_text[:500],
+                        temperature=0.3,
+                        seed=42,
+                        model=GEMINI_MODEL,
+                        response_time_ms=gemini_elapsed_ms,
+                        tokens_used=tokens_used,
+                        grounded_correctly=None,
+                    )
+
+                response_text = _append_groq_note(response_text)
         except requests.exceptions.RequestException as e:
-            print(f"Error communicating with Groq API: {e}")
-            response_text = "I am currently unable to connect to the Groq AI. Please try again later."
+            resp = getattr(e, "response", None)
+            if resp is not None:
+                print(
+                    f"[GEMINI ERROR] HTTP {resp.status_code} body (truncated): "
+                    f"{resp.text[:1200]!r}"
+                )
+            print(f"[GEMINI ERROR] Error communicating with Gemini API: {e!r}")
+            response_text = _append_groq_note("I am currently unable to connect to the Gemini AI. Please try again later.")
         except KeyError:
-            response_text = "I received an unexpected response from the Groq AI. Please try rephrasing your question."
+            response_text = _append_groq_note("I received an unexpected response from the Gemini AI. Please try rephrasing your question.")
 
     # Convert numeric types in highlight_data_df to native Python types for JSON serialization
     if not highlight_data_df.empty:
@@ -1264,22 +1872,41 @@ def add_pothole_markers(df, folium_map, feature_group, color_column='color', mar
     return feature_group # Return the feature group
 
 # --- Load additional datasets for chatbot analysis ---
-# Define paths relative to the integrated.py file
-# PATCH: use '../Data' since we're in the backend/app directory
-data_folder_path = '../Data'
+# Define paths relative to this file for stable imports/tests
+data_folder_path = DATA_ROOT
 
-pothole_cases_path = os.path.join(data_folder_path, '311_Pothole_Cases_18_24.csv')
-pavement_path = os.path.join(data_folder_path, 'COSA_Pavement.csv')
-complaint_full_path = os.path.join(data_folder_path, 'COSA_pavement_311.csv')
+pothole_cases_path = _resolve_data_path(
+    '311_Pothole_Cases_18_24.csv',
+    '311/311_Pothole_Cases_18_24.csv',
+)
+pavement_path = _resolve_data_path(
+    'COSA_Infrastructure/cleaned_COSA_Pavement_latlon.csv',
+    'COSA_Infrastructure/cleaned_COSA_Pavement.csv',
+    'COSA_Pavement.csv',
+    'COSA_Infrastructure/COSA_Pavement.csv',
+)
+complaint_full_path = _resolve_data_path(
+    'COSA_Infrastructure/cleaned_COSA_pavement_311.csv',
+    'COSA_pavement_311.csv',
+    'COSA_Infrastructure/COSA_pavement_311.csv',
+)
 
 try:
     pothole_cases_df = pd.read_csv(pothole_cases_path)
+except Exception as e:
+    print(f"Error loading pothole cases data: {e}")
+    pothole_cases_df = pd.DataFrame()
+
+try:
     pavement_latlon_df = pd.read_csv(pavement_path)
+except Exception as e:
+    print(f"Error loading pavement data: {e}")
+    pavement_latlon_df = pd.DataFrame()
+
+try:
     complaint_df = pd.read_csv(complaint_full_path)
 except Exception as e:
-    print(f"Error loading data files: {e}")
-    pothole_cases_df = pd.DataFrame()
-    pavement_latlon_df = pd.DataFrame()
+    print(f"Error loading complaint data: {e}")
     complaint_df = pd.DataFrame()
 
 # After loading DataFrames, ensure correct dtypes and column names
@@ -1315,6 +1942,25 @@ def handle_via_route_analytics():
         None,
         pd.DataFrame(),
     )
+
+def _via_route_matches_street(route_name_lower: str, street_name_lower: str, street_variations: dict) -> bool:
+    """Same matching rules as the VIA vs pavement analysis (single place for text logic)."""
+    if (any(word in route_name_lower for word in street_name_lower.split()) or
+            any(word in street_name_lower for word in route_name_lower.split())):
+        return True
+    for key, variations in street_variations.items():
+        if key in route_name_lower:
+            for variation in variations:
+                if variation in street_name_lower:
+                    return True
+    if 'st ' in route_name_lower and 'street' in street_name_lower:
+        return True
+    if 'ave ' in route_name_lower and 'avenue' in street_name_lower:
+        return True
+    if 'rd ' in route_name_lower and 'road' in street_name_lower:
+        return True
+    return False
+
 
 # --- Handler: Which VIA buses travel most often on pothole-prone streets? ---
 def handle_via_buses_on_pothole_prone_streets():
@@ -1386,33 +2032,7 @@ def handle_via_buses_on_pothole_prone_streets():
             
             for _, pavement in poor_pavement.iterrows():
                 street_name = str(pavement.get('MSAG_Name', '')).lower()
-                
-                # Enhanced matching logic
-                matched = False
-                
-                # Direct name matching
-                if (any(word in route_name for word in street_name.split()) or 
-                    any(word in street_name for word in route_name.split())):
-                    matched = True
-                
-                # Check against street variations
-                for key, variations in street_variations.items():
-                    if key in route_name:
-                        for variation in variations:
-                            if variation in street_name:
-                                matched = True
-                                break
-                    if matched:
-                        break
-                
-                # Check for common abbreviations
-                if 'st ' in route_name and 'street' in street_name:
-                    matched = True
-                elif 'ave ' in route_name and 'avenue' in street_name:
-                    matched = True
-                elif 'rd ' in route_name and 'road' in street_name:
-                    matched = True
-                
+                matched = _via_route_matches_street(route_name, street_name, street_variations)
                 if matched:
                     matching_streets += 1
                     total_pci += pavement['PCI']
@@ -1443,76 +2063,59 @@ def handle_via_buses_on_pothole_prone_streets():
         
         response += f"\n📊 **Summary:** {len(route_analysis)} total routes affected"
         
-        # Create highlight data for map visualization
-        highlight_data = []
-        for route in route_analysis[:5]:  # Top 5 for visualization
-            # Get coordinates for the matching streets
-            for _, pavement in poor_pavement.iterrows():
-                street_name = str(pavement.get('MSAG_Name', '')).lower()
-                route_name = route['route_name'].lower()
-                
-                # Use the same matching logic as above
-                matched = False
-                if (any(word in route_name for word in street_name.split()) or 
-                    any(word in street_name for word in route_name.split())):
-                    matched = True
-                
-                for key, variations in street_variations.items():
-                    if key in route_name:
-                        for variation in variations:
-                            if variation in street_name:
-                                matched = True
-                                break
-                    if matched:
-                        break
-                
-                if matched:
-                    # Get coordinates and handle NaN values
-                    lat = pavement.get('Latitude')
-                    lon = pavement.get('Longitude')
-                    pci = pavement.get('PCI')
-                    
-                    # Skip if coordinates are NaN or None
-                    if pd.isna(lat) or pd.isna(lon) or lat is None or lon is None:
-                        continue
-                    
-                    highlight_data.append({
-                        'Latitude': float(lat),
-                        'Longitude': float(lon),
-                        'MSAG_Name': pavement.get('MSAG_Name') if not pd.isna(pavement.get('MSAG_Name')) else 'Unknown Street',
-                        'PCI': float(pci) if not pd.isna(pci) else 0.0,
-                        'Route': f"Route {route['route_id']}",
-                        'color': 'red' if (not pd.isna(pci) and pci < 30) else 'orange',
-                        'marker_radius': 8
-                    })
-        
-        highlight_df = pd.DataFrame(highlight_data)
-        
-        # Debug: Check for NaN values before conversion
+        # Map: one pass over poor pavement × top routes (avoid O(routes × N) nested loops).
+        # Dedupe by segment (OBJECTID or rounded lat/lon), then cap for payload — show spread citywide.
+        top_routes = route_analysis[:5]
+        highlight_rows = []
+        seen_keys = set()
+        max_points = 500
+        # Randomize row order so the cap picks segments across the city, not only the first rows of the CSV.
+        pp_for_map = poor_pavement.sample(frac=1.0, random_state=42).reset_index(drop=True)
+
+        for _, pavement in pp_for_map.iterrows():
+            street_name = str(pavement.get("MSAG_Name", "")).lower()
+            lat = pavement.get("Latitude")
+            lon = pavement.get("Longitude")
+            if pd.isna(lat) or pd.isna(lon) or lat is None or lon is None:
+                continue
+            matched_route = None
+            for route in top_routes:
+                rn = route["route_name"].lower()
+                if _via_route_matches_street(rn, street_name, street_variations):
+                    matched_route = route
+                    break
+            if matched_route is None:
+                continue
+            oid = pavement.get("OBJECTID")
+            lat_f, lon_f = float(lat), float(lon)
+            key = (
+                (int(oid), round(lat_f, 5), round(lon_f, 5))
+                if pd.notna(oid)
+                else (round(lat_f, 5), round(lon_f, 5))
+            )
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+            pci = pavement.get("PCI")
+            pci_f = float(pci) if pd.notna(pci) else 0.0
+            highlight_rows.append(
+                {
+                    "Latitude": lat_f,
+                    "Longitude": lon_f,
+                    "MSAG_Name": str(pavement.get("MSAG_Name") or "Unknown Street"),
+                    "PCI": pci_f,
+                    "Route": f"Route {matched_route['route_id']}",
+                    "color": "red" if pci_f < 30 else "orange",
+                    "marker_radius": 8,
+                }
+            )
+            if len(highlight_rows) >= max_points:
+                break
+
+        highlight_df = pd.DataFrame(highlight_rows)
         if not highlight_df.empty:
-            print(f"DEBUG: highlight_df shape before conversion: {highlight_df.shape}")
-            print(f"DEBUG: highlight_df columns: {highlight_df.columns.tolist()}")
-            print(f"DEBUG: highlight_df dtypes: {highlight_df.dtypes}")
-            
-            # Check for NaN values in each column
-            for col in highlight_df.columns:
-                nan_count = highlight_df[col].isna().sum()
-                if nan_count > 0:
-                    print(f"DEBUG: Column '{col}' has {nan_count} NaN values")
-            
-            # Apply NaN handling to ensure JSON serialization
             highlight_df = _convert_dataframe_numerics_to_native_types(highlight_df)
-            
-            # Debug: Check for NaN values after conversion
-            print(f"DEBUG: highlight_df shape after conversion: {highlight_df.shape}")
-            for col in highlight_df.columns:
-                nan_count = highlight_df[col].isna().sum()
-                if nan_count > 0:
-                    print(f"DEBUG: Column '{col}' still has {nan_count} NaN values after conversion")
-            
-            # Additional safety check: replace any remaining NaN with None
-            highlight_df = highlight_df.where(pd.notna(highlight_df), None)
-        
+
         return response, None, highlight_df
         
     except Exception as e:
@@ -1607,7 +2210,7 @@ def handle_public_transportation_sentiment_zipcode(zipcode):
                 percentage = (count / total_responses) * 100
                 response += f"• {satisfaction}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Public transportation satisfaction data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -1644,7 +2247,7 @@ def handle_investment_opportunities():
                 if pd.notna(row[investment_col]) and 'Other' in str(row[investment_col]):
                     response += f"• {str(row[investment_col]).replace('Other', '').strip()}\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: citywide investment", color="#2E8B57")
     
     return "Investment opportunity data not available.", None, pd.DataFrame()
 
@@ -1674,7 +2277,7 @@ def handle_transportation_mode_zipcode(zipcode):
         most_common_mode = mode_counts.index[0] if not mode_counts.empty else "No data"
         response += f"\nMost common mode: {most_common_mode}"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Transportation mode data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -1701,7 +2304,7 @@ def handle_transportation_improvements():
             percentage = (count / total_responses) * 100
             response += f"• {improvement}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: transportation priorities", color="#2E8B57")
     
     return "Transportation improvement data not available.", None, pd.DataFrame()
 
@@ -1734,7 +2337,7 @@ def handle_missing_services_zipcode(zipcode):
             percentage = (count / total_responses) * 100
             response += f"• {service}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Missing services data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -1778,7 +2381,7 @@ def handle_city_satisfaction():
             percentage = (count / len(survey_df)) * 100
             response += f"  - {connection}: {percentage:.1f}%\n"
     
-    return response, None, pd.DataFrame()
+    return response, None, san_antonio_center_marker(label="Survey: city satisfaction", color="#2E8B57")
 
 def handle_city_attitude():
     """Handle questions about whether San Antonio is 'cool'."""
@@ -1822,7 +2425,7 @@ def handle_city_attitude():
             else:
                 response += f"\nOverall assessment: Mixed feelings about San Antonio among residents."
             
-            return response, None, pd.DataFrame()
+            return response, None, san_antonio_center_marker(label="Survey: city sentiment", color="#2E8B57")
     
     return "Sentiment data not available for this question.", None, pd.DataFrame()
 
@@ -1861,7 +2464,7 @@ def handle_community_spaces_accessibility_zipcode(zipcode):
             else:
                 response += "• Assessment: Community spaces have limited accessibility"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Community spaces accessibility data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -1894,7 +2497,7 @@ def handle_community_spaces_accessibility_city():
             else:
                 response += "• Assessment: Community spaces have limited accessibility across the city"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: community spaces", color="#2E8B57")
     
     return "Community spaces accessibility data not available.", None, pd.DataFrame()
 
@@ -1933,7 +2536,7 @@ def handle_housing_affordability_zipcode(zipcode):
             else:
                 response += "• Assessment: Housing is generally unaffordable"
         
-        return response, None, pd.DataFrame()
+        return response, None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
     
     return f"Housing affordability data not available for zip code {zipcode}.", None, pd.DataFrame()
 
@@ -1966,7 +2569,7 @@ def handle_housing_affordability_city():
             else:
                 response += "• Assessment: Housing is generally unaffordable across the city"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: housing affordability", color="#2E8B57")
     
     return "Housing affordability data not available.", None, pd.DataFrame()
 
@@ -1993,7 +2596,7 @@ def handle_housing_types():
             percentage = (count / total_responses) * 100
             response += f"• {dwelling}: {percentage:.1f}%\n"
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: housing types", color="#2E8B57")
     
     return "Housing type data not available.", None, pd.DataFrame()
 
@@ -2045,20 +2648,77 @@ def handle_living_arrangements():
         else:
             response += f"\nMost people in San Antonio live alone or independently."
         
-        return response, None, pd.DataFrame()
+        return response, None, san_antonio_center_marker(label="Survey: living arrangements", color="#2E8B57")
     
     return "Living arrangement data not available.", None, pd.DataFrame()
 
-    print("pothole_cases_df empty:", pothole_cases_df.empty)
-    print("pavement_latlon_df empty:", pavement_latlon_df.empty)
-    print("complaint_df empty:", complaint_df.empty)
+
+def _survey_local_business_wishes_column():
+    for c in survey_df.columns:
+        cl = str(c).lower()
+        if ("local business" in cl or "local businesses" in cl) and (
+            "wish" in cl or "existed" in cl or "neighborhood" in cl
+        ):
+            return c
+    return None
+
+
+def handle_local_business_wishes_zipcode(zipcode):
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    col = _survey_local_business_wishes_column()
+    if not col:
+        return "Survey data does not include a column on desired local businesses or services.", None, pd.DataFrame()
+    zipcode_str = str(zipcode)
+    zd = survey_df[survey_df["What ZIP code do you live in?"].astype(str) == zipcode_str]
+    if zd.empty:
+        return f"No survey responses found for zip code {zipcode}.", None, pd.DataFrame()
+    all_wishes = []
+    for cell in zd[col].dropna():
+        if isinstance(cell, str):
+            all_wishes.extend(p.strip() for p in cell.split(",") if p.strip())
+    if not all_wishes:
+        return f"No free-text business wishes were recorded for zip code {zipcode}.", None, pd.DataFrame()
+    wish_counts = pd.Series(all_wishes).value_counts()
+    total = len(zd)
+    lines = [f"Desired local businesses or services (zip code {zipcode}, survey counts):\n\n"]
+    for wish, count in wish_counts.head(15).items():
+        lines.append(f"• {wish}: {count} mention(s) ({100 * count / total:.1f}% of respondents in this ZIP)\n")
+    return "".join(lines), None, zip_centroid_marker(zipcode_str, label=f"Survey ZIP {zipcode_str}", color="#20B2AA")
+
+
+def handle_local_business_wishes_city():
+    if survey_df.empty:
+        return "I don't have survey data available to answer that question.", None, pd.DataFrame()
+    col = _survey_local_business_wishes_column()
+    if not col:
+        return "Survey data does not include a column on desired local businesses or services.", None, pd.DataFrame()
+    all_wishes = []
+    for cell in survey_df[col].dropna():
+        if isinstance(cell, str):
+            all_wishes.extend(p.strip() for p in cell.split(",") if p.strip())
+    if not all_wishes:
+        return "No responses were recorded for desired local businesses.", None, pd.DataFrame()
+    wish_counts = pd.Series(all_wishes).value_counts()
+    total = len(survey_df)
+    lines = ["Desired local businesses or services (citywide survey, counts):\n\n"]
+    for wish, count in wish_counts.head(15).items():
+        lines.append(f"• {wish}: {count} mention(s) ({100 * count / total:.1f}% of all respondents)\n")
+    return "".join(lines), None, san_antonio_center_marker(label="Survey: local business wishes", color="#2E8B57")
+
 
 # --- Handler: PCI in zip code ---
+def _pci_zip_response_header(zipcode):
+    return f"Pavement Condition Index (PCI) for zip code {zipcode}:\n\n"
+
+
 def handle_pci_in_zipcode(zipcode):
     """Handle queries about PCI (Pavement Condition Index) in a specific zip code."""
+    header = _pci_zip_response_header(zipcode)
     if pavement_latlon_df.empty:
-        return "I don't have pavement condition data to answer that question. Please ensure the 'COSA_Pavement.csv' file is loaded correctly.", None, pd.DataFrame()
-    
+        detail = "No pavement table is loaded. Please ensure the COSA pavement CSV is available."
+        return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
+
     # Check if zipcode column exists
     if 'zipcode' not in pavement_latlon_df.columns and 'ZipCode' not in pavement_latlon_df.columns:
         # Try to use geocoding to get zip code boundaries and find nearby pavement data
@@ -2066,45 +2726,50 @@ def handle_pci_in_zipcode(zipcode):
             # Get a representative point for the zip code (center of zip code area)
             zipcode_center = geocode_address(f"{zipcode}, San Antonio, TX")
             if zipcode_center[0] is None:
-                return f"I couldn't find location information for zip code {zipcode}. Please check if this is a valid San Antonio zip code.", None, pd.DataFrame()
-            
+                detail = "Could not geocode this ZIP; check that it is a valid San Antonio area code."
+                return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
+
             lat, lon = zipcode_center
-            
+
             # Find pavement data within a reasonable radius of the zip code center
             # Use a larger radius since zip codes can be quite large
             radius_m = 2000  # 2km radius
             gdf = get_pavement_gdf()
             if gdf.empty:
-                return "No pavement location data available.", None, pd.DataFrame()
-            
+                detail = "No pavement location coordinates are available in the loaded dataset."
+                return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
+
             gdf_proj = gdf.to_crs(epsg=3857)
             point = gpd.GeoSeries([gpd.points_from_xy([lon], [lat])[0]], crs="EPSG:4326").to_crs(epsg=3857)
             buffer = point.buffer(radius_m)
             nearby_data = gdf_proj[gdf_proj.geometry.within(buffer.iloc[0])]
-            
+
             if nearby_data.empty:
-                return f"No pavement data found near zip code {zipcode}. This area may not have pavement condition records.", None, pd.DataFrame()
-            
+                detail = f"No pavement condition records were found for zip code {zipcode}."
+                return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
+
             # Use the nearby data as if it were for the zip code
             zipcode_data = nearby_data.to_crs(epsg=4326)
-            
+
         except Exception as e:
-            return f"I don't have zip code information in the pavement data and couldn't find nearby data for zip code {zipcode}. Error: {str(e)}", None, pd.DataFrame()
+            detail = f"Could not derive PCI near zip code {zipcode}. ({str(e)})"
+            return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
     else:
         # Use direct zip code column if available
         zip_col = 'zipcode' if 'zipcode' in pavement_latlon_df.columns else 'ZipCode'
         zipcode_str = str(zipcode)
         zipcode_data = pavement_latlon_df[pavement_latlon_df[zip_col].astype(str) == zipcode_str]
-        
+
         if zipcode_data.empty:
-            return f"No pavement data found for zip code {zipcode}. This zip code may not be in our dataset or may not have pavement condition records.", None, pd.DataFrame()
-    
+            detail = f"No pavement condition records were found for zip code {zipcode}."
+            return header + f"Breakdown:\n{detail}", None, zip_centroid_marker(str(zipcode), label=f"ZIP {zipcode} (area)", color="#708090")
+
     # Calculate PCI statistics
     avg_pci = zipcode_data['PCI'].mean()
     min_pci = zipcode_data['PCI'].min()
     max_pci = zipcode_data['PCI'].max()
     count_segments = len(zipcode_data)
-    
+
     # Determine overall condition
     if avg_pci >= 70:
         condition = "Good"
@@ -2115,8 +2780,9 @@ def handle_pci_in_zipcode(zipcode):
     else:
         condition = "Poor"
         description = "Poor pavement conditions with high pothole risk."
-    
-    response = f"Pavement Condition Index (PCI) for zip code {zipcode}:\n\n"
+
+    response = header
+    response += "Breakdown:\n"
     response += f"• Average PCI: {avg_pci:.1f}\n"
     response += f"• Range: {min_pci:.1f} - {max_pci:.1f}\n"
     response += f"• Number of road segments: {count_segments}\n"
@@ -2144,4 +2810,5 @@ def load_survey_data(path):
         return pd.DataFrame()
 
 # Load survey data
-survey_df = load_survey_data("Data/Survey Data.csv")
+survey_path = _resolve_data_path("Survey Data.csv")
+survey_df = load_survey_data(survey_path)

@@ -150,6 +150,50 @@
   margin-bottom: 2px;
 }
 
+/* Structured civic response (Phase 1) */
+.structured-panel {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--Grey-900, #333);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--Grey-200, #e8e8e8);
+  background: var(--Grey-50, #fafafa);
+}
+
+.structured-reasoning {
+  margin-top: 4px;
+}
+
+.structured-recs ul,
+.structured-limits ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+.structured-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--Grey-600, #666);
+  margin-bottom: 4px;
+}
+
+.structured-followup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.structured-followup-q {
+  font-style: italic;
+  color: var(--Grey-800, #444);
+}
+
 /* ── Map Tag ── */
 .map-tag {
   display: inline-flex;

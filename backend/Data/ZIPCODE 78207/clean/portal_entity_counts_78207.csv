@@ -1,0 +1,129 @@
+Entity ID,name,Event count
+1,ADHD,733
+10,English,1989
+100,Psychological Testing,233
+101,Play Therapy,1
+102,Counselor,554
+103,Telehealth,175
+11,Spanish,477
+12,Culture Matching,83
+13,Anxiety Disorders,360
+14,Autism,134
+15,Bipolar Disorders,808
+16,Depression,799
+17,Disruptive Disorders,23
+18,Dissociative Disorders,31
+19,Eating Disorders,28
+2,Adults (26-65),2138
+20,OCD,23
+21,Personality Disorders,41
+22,Psychosis,44
+23,PTSD/Trauma,117
+24,Sleep Disorders,65
+25,Somatic Symptom Disorders,9
+26,Substance Use Disorders,64
+27,Divorce,166
+28,Domestic Violence,1456
+289,ASL,28
+29,Bereavement,54
+3,Children (12 and under),541
+30,Suicidal Ideation,531
+31,Sexual Abuse,28
+32,Trafficking,14
+33,Sexuality-related Trauma,29
+34,Race or Ethnicity Related Trauma,12
+35,Bullying,37
+36,LCDC,4
+37,LCSW,63
+38,LMFT,19
+39,LMSW,1
+4,LGBTQ+ welcoming,211
+40,LPC,6
+42,LVN,4
+43,RN,2
+44,PA/NP,5
+45,Psychiatry,53
+46,Psychology,96
+47,Board Approved Clinical Consultant,235
+48,Case Manager Certification,109
+49,Certified Addiction Specialist,2
+5,All male,116
+50,Certified Clinical Mental Health Counselor,9
+51,Diplomate in Clinical Social Work,124
+52,Master Addiction Counselor,23
+53,Trauma Informed Care,780
+54,Inpatient Hospitalization,101
+548,Woman,1067
+549,Man,674
+55,Individual Therapy/Counseling,4
+550,Transgender Woman,34
+551,Transgender Man,31
+552,Non-Binary,55
+553,Agender/Doesn't Identify as Any Gender,19
+554,Gender not Listed,24
+555,Prefer not to State,74
+556,Other Language(s),18
+557,Woman,972
+558,Man,435
+559,LGBTQ+,186
+56,Group Therapy/Counseling,2
+560,Non-binary,66
+561,Veteran,56
+562,Faith-Based,174
+563,American Indian or Alaska Native,28
+564,Asian,46
+565,Black or African American,129
+566,Hispanic or Latino,340
+567,Native Hawaiian or Other Pacific Islander,29
+568,White,159
+569,Myself,810
+570,Friend or Family,551
+572,Client/Patient,379
+573,Someone else,138
+58,Case Management,231
+587,It does not matter,724
+59,Medication Management,394
+6,Seniors (65 and older),555
+60,Couples Therapy/Counseling,44
+61,Pastoral Counseling,6
+62,Peer Support,299
+63,Educational Service,130
+64,Medicare,153
+65,Medicaid,486
+66,Private Insurance,484
+67,Private Pay,228
+68,Sliding Scale,634
+69,Free,1747
+7,Veterans,143
+70,Referral Required,566
+71,PMHNP,1178
+72,PMHNP-BC,6
+73,Alzheimer’s/Dementia,207
+74,Family Therapist,130
+75,Counseling Interns,3
+76,Hotline,136
+77,Meditation,218
+78,Recreation/Art/Music Therapy,1569
+79,QMHP,3
+8,All female,324
+80,Anger Management,37
+81,Stress Management,51
+82,Intellectual or Developmental Disability (IDD),26
+83,Residential Care Services,3
+84,ASL or Hearing Impaired,9
+85,Trained Facilitators,20
+86,Behavioral Therapy,15
+87,Occupational Therapy,2
+88,Speech Therapy,2
+89,Mobile Assessment Team,1
+9,Youth (13-25),819
+90,Military Sexual Trauma (MST),296
+91,Pregnancy or Abortion,69
+92,Homelessness,1386
+93,PCP,222
+94,Certified Counselors,61
+95,Adoption,536
+96,Loneliness,107
+97,Donation Encouraged,1012
+98,Combat Trauma,118
+99,Sex Addiction,466
