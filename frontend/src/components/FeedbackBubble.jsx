@@ -12,7 +12,7 @@ const SUGGESTED_QUESTIONS = [
   "Show me the areas with the worst road conditions",
 ];
 
-const QUICK_CHIPS = ['Zipcode', 'Neighborhood', 'District', 'Other'];
+const QUICK_CHIPS = ['Zip Code', 'District', 'County', 'Other +'];
 
 function deriveMaptitle(userText) {
   const t = userText.toLowerCase();
@@ -27,12 +27,12 @@ function deriveMaptitle(userText) {
 }
 
 const CHART_TYPES = [
-  { key: 'bar',   label: 'Bar',   icon: '▊' },
-  { key: 'pie',   label: 'Pie',   icon: '◔' },
-  { key: 'radar', label: 'Radar', icon: '◎' },
+  { key: 'pie',   label: 'Pie Chart' },
+  { key: 'radar', label: 'Radar Chart' },
+  { key: 'bar',   label: 'Bar Chart' },
 ];
 
-export default function FeedbackBubble({ setHighlightData, setChartData, setMapTitle, chartType, setChartType }) {
+export default function FeedbackBubble({ setHighlightData, setChartData, setMapTitle, chartType, setChartType, setIsLoading }) {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -57,6 +57,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
       textareaRef.current.style.height = 'auto';
     }
     setLoading(true);
+    if (setIsLoading) setIsLoading(true);
     if (setHighlightData) setHighlightData(null);
     if (setChartData) setChartData(null);
 
@@ -100,6 +101,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
       if (setChartData) setChartData(null);
     }
     setLoading(false);
+    if (setIsLoading) setIsLoading(false);
   };
 
   const handleSubmit = (e) => {
@@ -222,7 +224,6 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
                           className={`chart-type-btn ${chartType === ct.key ? 'active' : ''}`}
                           onClick={() => setChartType && setChartType(ct.key)}
                         >
-                          <span className="chart-type-icon">{ct.icon}</span>
                           {ct.label}
                         </button>
                       ))}
@@ -283,34 +284,41 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
 
 function ChatInput({ message, setMessage, onSubmit, loading, textareaRef }) {
   return (
-    <form className="chat-input-area" onSubmit={onSubmit}>
-      <button type="button" className="at-btn" tabIndex={-1}>@</button>
-      <textarea
-        ref={textareaRef}
-        className="chat-textarea"
-        placeholder="Write a message..."
-        value={message}
-        rows={1}
-        disabled={loading}
-        onChange={(e) => {
-          setMessage(e.target.value);
-          e.target.style.height = 'auto';
-          e.target.style.height = e.target.scrollHeight + 'px';
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            if (!loading && message.trim()) onSubmit(e);
-          }
-        }}
-      />
-      <button
-        type="submit"
-        className="send-btn"
-        disabled={loading || !message.trim()}
-      >
-        <img src={sendIcon} alt="Send" className="send-icon" />
-      </button>
-    </form>
+    <div className="chat-input-area">
+      <div className="chat-input-box">
+        <div className="chat-input-row">
+          <textarea
+            ref={textareaRef}
+            className="chat-textarea"
+            placeholder="Write message here..."
+            value={message}
+            rows={1}
+            disabled={loading}
+            onChange={(e) => {
+              setMessage(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = e.target.scrollHeight + 'px';
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!loading && message.trim()) onSubmit(e);
+              }
+            }}
+          />
+        </div>
+        <div className="chat-input-actions">
+          <button type="button" className="at-btn" tabIndex={-1}>@</button>
+          <button
+            type="button"
+            className="send-btn"
+            disabled={loading || !message.trim()}
+            onClick={onSubmit}
+          >
+            <img src={sendIcon} alt="Send" className="send-icon" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

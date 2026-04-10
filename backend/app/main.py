@@ -133,6 +133,7 @@ async def chat(request: Request):
             "response": cached["response"],
             "structured": cached.get("structured"),
             "highlight_data": cached.get("highlight_data"),
+            "chart_data": cached.get("chart_data"),
         }
         # Also write to disk cache so next hit is local
         disk_set(user_message, result)
@@ -143,9 +144,12 @@ async def chat(request: Request):
     response_tuple = get_groq_response(user_message)
     raw_text = ""
     highlight_data = None
+    chart_data = None
 
     if isinstance(response_tuple, tuple):
         raw_text = response_tuple[0] if response_tuple[0] is not None else ""
+        if len(response_tuple) > 1 and response_tuple[1] is not None:
+            chart_data = response_tuple[1]
         if len(response_tuple) > 2 and response_tuple[2] is not None:
             try:
                 highlight_data = response_tuple[2].to_dict("records")
@@ -198,6 +202,7 @@ async def chat(request: Request):
         "response": structured.answer,
         "structured": payload,
         "highlight_data": highlight_data,
+        "chart_data": chart_data,
     }
 
     # Write to disk cache (always, no login needed)

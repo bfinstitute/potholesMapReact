@@ -55,7 +55,7 @@ def fallback_structured_from_text(answer_text: str) -> CivicStructuredResponse:
         recommendations=[],
         follow_up_question="",
         confidence="medium",
-        limitations=["Automated narrative synthesis was skipped or unavailable."],
+        limitations=[],
         map_action=MapAction(),
         metrics=None,
     )

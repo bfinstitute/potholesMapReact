@@ -34,8 +34,8 @@
   --spacing-550: 48px;
   --spacing-600: 64px;
 
-  --topbar-height: 52px;
-  --layout-padding: 12px;
+  --topbar-height: 80px;
+  --layout-padding: 0px;
 }
 
 @font-face {
@@ -62,10 +62,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 22px 16px;
   background: var(--Grey-50);
   border-bottom: 1px solid var(--Grey-200);
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .top-bar-left {
@@ -75,14 +76,15 @@
 }
 
 .top-bar-logo {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 6px;
 }
 
 .top-bar-brand {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 570;
+  letter-spacing: 0.01em;
   color: var(--Grey-1000);
   white-space: nowrap;
 }
@@ -120,9 +122,10 @@
 }
 
 .map-title-text {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--Grey-900);
+  font-size: 18px;
+  font-weight: 380;
+  letter-spacing: 0.01em;
+  color: var(--Grey-1000);
 }
 
 .map-title-chevron {
@@ -141,6 +144,33 @@
   gap: 4px;
 }
 
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--Grey-1000);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 570;
+  font-family: 'Saans TRIAL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  margin-left: 4px;
+  transition: background 0.15s;
+}
+
+.share-btn:hover {
+  background: var(--Grey-950);
+}
+
+.share-chevron {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
 .top-bar-icon-btn {
   background: none;
   border: none;
@@ -151,10 +181,12 @@
   align-items: center;
   justify-content: center;
   transition: background 0.15s;
+  color: var(--Grey-600);
 }
 
 .top-bar-icon-btn:hover {
   background: var(--Grey-100);
+  color: var(--Grey-900);
 }
 
 .top-bar-icon {
@@ -169,8 +201,8 @@
   height: calc(100% - var(--topbar-height));
   display: flex;
   flex-direction: row;
-  padding: var(--layout-padding);
-  gap: var(--layout-padding);
+  padding: 0;
+  gap: 0;
   overflow: hidden;
 }
 
@@ -181,7 +213,19 @@
   align-items: center;
   gap: 4px;
   padding: 8px 0;
-  width: 36px;
+  width: 56px;
+  flex-shrink: 0;
+  background: var(--Grey-50);
+  border-right: 1px solid var(--Grey-200);
+}
+
+.strip-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--Grey-300);
+  margin-top: auto;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
@@ -195,10 +239,12 @@
   align-items: center;
   justify-content: center;
   transition: background 0.15s;
+  color: var(--Grey-500);
 }
 
 .icon-strip-btn:hover {
   background: var(--Grey-200);
+  color: var(--Grey-900);
 }
 
 .strip-icon {
@@ -209,16 +255,16 @@
 
 /* ── Chat Panel ── */
 .chat-panel {
-  width: 380px;
+  width: 553px;
   flex-shrink: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 0;
   background: var(--Grey-50);
-  border: 1px solid var(--Grey-200);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  border-right: 1px solid var(--Grey-200);
+  box-shadow: none;
 }
 
 /* ── Map Panel ── */
@@ -226,7 +272,69 @@
   flex: 1;
   height: 100%;
   overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid var(--Grey-200);
+  border-radius: 0;
+  border: none;
   position: relative;
+  background: #F4F4F5;
+}
+
+.map-panel--loading {
+  background: #6B6B6B;
+}
+
+/* ── Loading Visual ── */
+.loading-visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loading-visual-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loading-spinner {
+  color: #fff;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-visual-text {
+  font-size: 16px;
+  font-weight: 570;
+  color: #fff;
+  font-family: 'Saans TRIAL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.loading-progress-track {
+  width: 320px;
+  height: 6px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.loading-progress-bar {
+  height: 100%;
+  width: 70%;
+  background: var(--Primary-600);
+  border-radius: 99px;
+  animation: progress-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%   { width: 20%; }
+  50%  { width: 80%; }
+  100% { width: 20%; }
 }
