@@ -1,15 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import '../styles/FeedbackBubble.css';
 import sendIcon from '../assets/images/iconoir_send-solid.svg';
-import botIcon from '../assets/images/BFI_LogoIcon.svg';
 import checkIcon from '../assets/images/iconoir_check-circle.svg';
+import suiteChartsIcon from '../assets/images/SuiteIcons-Charts.svg';
+import suiteDataIcon from '../assets/images/SuiteIcons-Data.svg';
+import suiteMapsIcon from '../assets/images/SuiteIcons-Maps.svg';
 import Markdown from 'markdown-to-jsx';
 
 const SUGGESTED_QUESTIONS = [
-  "Show me potholes on the west side",
-  "Which ZIP codes have the most potholes?",
-  "What's the PCI score for ZIP code 78207?",
-  "Show me the areas with the worst road conditions",
+  { text: "Show me potholes on the west side",          icon: suiteMapsIcon   },
+  { text: "Which ZIP codes have the most potholes?",    icon: suiteDataIcon   },
+  { text: "What's the PCI score for ZIP code 78207?",   icon: suiteDataIcon   },
+  { text: "Show me the areas with the worst road conditions", icon: suiteMapsIcon },
 ];
 
 const QUICK_CHIPS = ['Zip Code', 'District', 'County', 'Other +'];
@@ -129,12 +131,12 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
               <button
                 key={i}
                 className="landing-question-btn"
-                onClick={() => sendMessage(q)}
+                onClick={() => sendMessage(q.text)}
               >
                 <span className="landing-question-icon">
-                  <img src={botIcon} alt="" className="landing-q-icon" />
+                  <img src={q.icon} alt="" className="landing-q-icon" />
                 </span>
-                {q}
+                {q.text}
               </button>
             ))}
           </div>
@@ -164,14 +166,20 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
               <div className="bot-block">
                 {msg.chartTag && (
                   <div className="map-tag chart-tag">
-                    <span className="chart-tag-icon">📊</span>
+                    <img src={suiteChartsIcon} alt="chart" className="suite-tag-icon" />
                     <span className="map-tag-label">{msg.chartTag}</span>
                   </div>
                 )}
                 {msg.mapTag && (
                   <div className="map-tag">
-                    <span className="map-tag-dot" />
+                    <img src={suiteMapsIcon} alt="map" className="suite-tag-icon" />
                     <span className="map-tag-label">{msg.mapTag}</span>
+                  </div>
+                )}
+                {!msg.chartTag && !msg.mapTag && (
+                  <div className="map-tag data-tag">
+                    <img src={suiteDataIcon} alt="data" className="suite-tag-icon" />
+                    <span className="map-tag-label">Data Response</span>
                   </div>
                 )}
                 <div className="bot-text">

@@ -70,15 +70,16 @@
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  background: #FF5C17;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .landing-q-icon {
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
 }
 
 /* ── Chat History ── */
@@ -231,17 +232,29 @@
 
 /* Chart tag variant */
 .chart-tag {
-  background: #F3F0FF;
-  border-color: #D4C8FF;
+  background: #FFF3EE;
+  border-color: #FFD0BB;
 }
 
 .chart-tag .map-tag-label {
-  color: #5B21B6;
+  color: #CC3D00;
 }
 
-.chart-tag-icon {
-  font-size: 11px;
-  line-height: 1;
+/* Data tag variant */
+.data-tag {
+  background: var(--Grey-100);
+  border-color: var(--Grey-200);
+}
+
+.data-tag .map-tag-label {
+  color: var(--Grey-700);
+}
+
+/* Suite icon inside tags */
+.suite-tag-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 /* ── Chart Type Toggle ── */
