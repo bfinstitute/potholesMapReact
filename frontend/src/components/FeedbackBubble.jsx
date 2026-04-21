@@ -8,10 +8,10 @@ import suiteMapsIcon from '../assets/images/SuiteIcons-Maps.svg';
 import Markdown from 'markdown-to-jsx';
 
 const SUGGESTED_QUESTIONS = [
-  { text: "Show me potholes on the west side",          icon: suiteMapsIcon   },
-  { text: "Which ZIP codes have the most potholes?",    icon: suiteDataIcon   },
-  { text: "What's the PCI score for ZIP code 78207?",   icon: suiteDataIcon   },
-  { text: "Show me the areas with the worst road conditions", icon: suiteMapsIcon },
+  { text: "Are housing issues concentrated in specific neighborhoods in ZIP code 78207?",          icon: suiteMapsIcon   },
+  { text: "What are the largest mental health needs in ZIP code 78207?",                           icon: suiteDataIcon   },
+  { text: "How can we improve decision making on future funding to invest in the right services to address the highest needs on mental health in ZIP code 78207?", icon: suiteDataIcon },
+  { text: "How can we improve decision making on future funding to invest in the right services to address the highest needs every category related to the social determinant of health in ZIP code 78207?", icon: suiteChartsIcon },
 ];
 
 const QUICK_CHIPS = ['Zip Code', 'District', 'County', 'Other +'];
@@ -34,18 +34,28 @@ const CHART_TYPES = [
   { key: 'bar',   label: 'Bar Chart' },
 ];
 
-export default function FeedbackBubble({ setHighlightData, setChartData, setMapTitle, chartType, setChartType, setIsLoading }) {
+export default function FeedbackBubble({ setHighlightData, setChartData, setMapTitle, chartType, setChartType, setIsLoading, setLastQuery, initialQuery }) {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const historyRef = useRef(null);
   const textareaRef = useRef(null);
+  const initialQuerySent = useRef(false);
 
   useEffect(() => {
     if (historyRef.current) {
       historyRef.current.scrollTop = historyRef.current.scrollHeight;
     }
   }, [chatHistory, loading]);
+
+  // Auto-send query from URL ?q= param on first mount
+  useEffect(() => {
+    if (initialQuery && !initialQuerySent.current) {
+      initialQuerySent.current = true;
+      sendMessage(initialQuery);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sendMessage = async (text) => {
     const trimmed = text.trim();
@@ -54,6 +64,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
     const title = deriveMaptitle(trimmed);
     const userMsg = { from: 'user', text: trimmed };
     setChatHistory(prev => [...prev, userMsg]);
+    if (setLastQuery) setLastQuery(trimmed);
     setMessage('');
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -84,6 +95,9 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
           mapTag: hasMap && !hasChart ? title : null,
           chartTag: hasChart ? data.chart_data.title : null,
           chips: (hasMap || hasChart) ? QUICK_CHIPS : null,
+          savedChartData: data.chart_data || null,
+          savedHighlightData: data.highlight_data || null,
+          savedTitle: hasChart ? data.chart_data.title : hasMap ? title : null,
         },
       ]);
 
@@ -155,6 +169,14 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
   // ── Chat State ──
   const lastChartIdx = chatHistory.reduce((acc, msg, i) => msg.chartTag ? i : acc, -1);
 
+  const restoreViz = (msg) => {
+    if (msg.savedChartData && setChartData) setChartData(msg.savedChartData);
+    else if (setChartData) setChartData(null);
+    if (msg.savedHighlightData && setHighlightData) setHighlightData(msg.savedHighlightData);
+    else if (setHighlightData) setHighlightData(null);
+    if (msg.savedTitle && setMapTitle) setMapTitle(msg.savedTitle);
+  };
+
   return (
     <div className="chat-wrapper">
       <div className="chat-history" ref={historyRef}>
@@ -165,16 +187,16 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
             ) : (
               <div className="bot-block">
                 {msg.chartTag && (
-                  <div className="map-tag chart-tag">
+                  <button className="map-tag chart-tag map-tag--clickable" onClick={() => restoreViz(msg)} title="Click to show this chart">
                     <img src={suiteChartsIcon} alt="chart" className="suite-tag-icon" />
                     <span className="map-tag-label">{msg.chartTag}</span>
-                  </div>
+                  </button>
                 )}
                 {msg.mapTag && (
-                  <div className="map-tag">
+                  <button className="map-tag map-tag--clickable" onClick={() => restoreViz(msg)} title="Click to show this map">
                     <img src={suiteMapsIcon} alt="map" className="suite-tag-icon" />
                     <span className="map-tag-label">{msg.mapTag}</span>
-                  </div>
+                  </button>
                 )}
                 {!msg.chartTag && !msg.mapTag && (
                   <div className="map-tag data-tag">
@@ -230,7 +252,10 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
                         <button
                           key={ct.key}
                           className={`chart-type-btn ${chartType === ct.key ? 'active' : ''}`}
-                          onClick={() => setChartType && setChartType(ct.key)}
+                          onClick={() => {
+                            if (setChartType) setChartType(ct.key);
+                            restoreViz(msg);
+                          }}
                         >
                           {ct.label}
                         </button>

@@ -230,6 +230,23 @@
   white-space: nowrap;
 }
 
+/* Clickable tag — map and chart tags are buttons */
+button.map-tag {
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: filter 0.12s, transform 0.1s;
+}
+
+.map-tag--clickable:hover {
+  filter: brightness(0.94);
+  transform: translateY(-1px);
+}
+
+.map-tag--clickable:active {
+  transform: translateY(0);
+}
+
 /* Chart tag variant */
 .chart-tag {
   background: #FFF3EE;
