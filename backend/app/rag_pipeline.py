@@ -18,6 +18,7 @@ try:
         get_top_311_categories,
         get_top_health_issues,
         get_unemployment_summary,
+        get_need_signals_by_domain,
     )
     from saaf_gap_engine import get_gap_summary
 except ModuleNotFoundError:
@@ -29,6 +30,7 @@ except ModuleNotFoundError:
         get_top_311_categories,
         get_top_health_issues,
         get_unemployment_summary,
+        get_need_signals_by_domain,
     )
     from .saaf_gap_engine import get_gap_summary
 
@@ -807,6 +809,477 @@ def _handle_78207_conditions(question: str) -> Optional[str]:
     return _render("311 health-related conditions in ZIP code 78207:", bullets)
 
 
+def _handle_78207_community_needs(question: str) -> Optional[str]:
+    lowered = question.lower()
+    if "78207" not in lowered or "critical issue" not in lowered and "most critical" not in lowered:
+        return None
+
+    # Gather multi-domain needs data
+    bullets: List[str] = []
+
+    # Health indicators
+    health_issues = get_top_health_issues(limit=5)
+    if health_issues:
+        bullets.append("**Health Concerns:**")
+        for name, value in health_issues:
+            bullets.append(f"• {name}: {value:.1f}%")
+
+    # 311 Service requests (community-reported issues)
+    top_311 = get_top_311_categories(limit=5)
+    if top_311:
+        bullets.append("")
+        bullets.append("**Most Reported Community Issues (311 Requests):**")
+        for name, count in top_311:
+            bullets.append(f"• {name}: {count} reports")
+
+    # Unemployment & economic factors
+    unemployment = get_unemployment_summary()
+    context = get_context_metrics()
+    if unemployment:
+        bullets.append("")
+        bullets.append(f"**Economic Factors:**")
+        bullets.append(f"• Unemployment rate: {unemployment['latest_rate']:.2f}%")
+
+    if context.get("poverty_rate"):
+        bullets.append(f"• Poverty rate: {float(context['poverty_rate']):.1f}%")
+
+    # Environmental hazards
+    hazards = get_environmental_hazard_summary()
+    if hazards:
+        bullets.append("")
+        bullets.append("**Environmental Health Hazards:**")
+        bullets.append(f"• Mold/sanitation/pest issues: {hazards.get('mold_sanitation_pests', 0)} cases")
+        bullets.append(f"• Vector control hazards: {hazards.get('vector_hazards', 0)} cases")
+
+    return _render("Critical issues affecting residents in ZIP 78207:", bullets)
+
+
+def _handle_78207_domain_needs(question: str) -> Optional[str]:
+    lowered = question.lower()
+    if "78207" not in lowered or "domain" not in lowered and "highest need" not in lowered:
+        return None
+
+    needs = get_need_signals_by_domain()
+    if not needs:
+        return None
+
+    bullets: List[str] = []
+    for domain, metrics in sorted(needs.items(), key=lambda x: x[0]):
+        if metrics and any(v is not None for v in metrics.values()):
+            bullets.append(f"**{domain.title()}:**")
+            for metric_name, value in metrics.items():
+                if value is not None:
+                    bullets.append(f"• {metric_name}: {float(value):.1f}%")
+
+    return _render("Community needs by domain (health, housing, economic, etc.) in ZIP 78207:", bullets if bullets else None)
+
+
+def _handle_78207_housing_complaints(question: str) -> Optional[str]:
+    lowered = question.lower()
+    if "78207" not in lowered or "housing" not in lowered:
+        return None
+    if "complaint" not in lowered and "issue" not in lowered and "problem" not in lowered and "instab" not in lowered:
+        return None
+
+    service_path = _resolve_data_path("ZIPCODE 78207/clean/service_requests_78207.csv")
+    try:
+        df = pd.read_csv(service_path)
+    except Exception:
+        return None
+
+    if df.empty or "type" not in df.columns:
+        return "Housing complaint data is not available for ZIP 78207."
+
+    # Find housing-related complaints
+    housing_patterns = r"housing|rent|evict|mold|sanitation|code violation|structural|roof|foundation|unsafe|habitability"
+    housing = df[df["type"].astype(str).str.contains(housing_patterns, case=False, na=False)].copy()
+
+    if housing.empty:
+        return "No housing-related complaints found in ZIP 78207 service requests."
+
+    # Count by type
+    counts = housing["type"].astype(str).value_counts().head(8)
+    bullets = [f"• {name}: {int(count)} cases" for name, count in counts.items()]
+
+    total = len(housing)
+    total_all = len(df)
+    pct = 100.0 * total / total_all if total_all > 0 else 0
+
+    return _render(
+        f"Housing-related complaints in ZIP 78207: {total} of {total_all} total requests ({pct:.1f}%)",
+        bullets
+    )
+
+
+def _handle_78207_mental_health_demand(question: str) -> Optional[str]:
+    lowered = question.lower()
+    if "78207" not in lowered or "mental health" not in lowered:
+        return None
+    if "demand" not in lowered and "need" not in lowered and "service" not in lowered and "addict" not in lowered:
+        return None
+
+    # Get mental health indicators and service landscape
+    bullets: List[str] = []
+
+    # Mental health indicators
+    depression = _latest_health_measure("DEPRESSION")
+    distress = _latest_health_measure("MHLTH")
+
+    if depression:
+        bullets.append(f"**Mental Health Indicators (Demand Signal):**")
+        bullets.append(f"• Depression: {depression['value']:.1f}% of adults ({depression['year']})")
+
+    if distress:
+        bullets.append(f"• Frequent mental distress: {distress['value']:.1f}% ({distress['year']})")
+
+    # Service landscape
+    services = get_service_landscape_summary()
+    if services:
+        bullets.append("")
+        bullets.append("**Available Mental Health Services (311 responses):**")
+        behavioral_services = {k: v for k, v in services.items() if "mental" in k.lower() or "behavioral" in k.lower() or "substance" in k.lower()}
+        if behavioral_services:
+            for dept, count in list(behavioral_services.items())[:5]:
+                bullets.append(f"• {dept}: {count} service requests")
+        else:
+            for dept, count in list(services.items())[:5]:
+                bullets.append(f"• {dept}: {count} service requests")
+
+    return _render("Mental health demand and services in ZIP 78207:", bullets if bullets else None)
+
+
+def _handle_78207_service_gaps(question: str) -> Optional[str]:
+    lowered = question.lower()
+    if "78207" not in lowered or "gap" not in lowered and "underserv" not in lowered and "access" not in lowered:
+        return None
+
+    try:
+        from saaf_gap_engine import get_gap_summary
+        gap = get_gap_summary()
+    except Exception:
+        gap = None
+
+    if not gap:
+        return None
+
+    bullets: List[str] = []
+    bullets.append(f"**Gap Assessment:**")
+    bullets.append(f"• Community need score: {gap.get('need_score', 'N/A')}")
+    bullets.append(f"• Available services score: {gap.get('service_score', 'N/A')}")
+    bullets.append(f"• Gap level: {gap.get('gap_level', 'Unknown').upper()}")
+
+    # Evidence for needs
+    need_evidence = gap.get("need_evidence", [])
+    if need_evidence:
+        bullets.append("")
+        bullets.append("**Key Need Indicators:**")
+        bullets.extend([f"• {item}" for item in need_evidence[:3]])
+
+    # Evidence for service limitations
+    service_evidence = gap.get("service_evidence", [])
+    if service_evidence:
+        bullets.append("")
+        bullets.append("**Service Limitations:**")
+        bullets.extend([f"• {item}" for item in service_evidence[:3]])
+
+    return _render("Service gaps in ZIP 78207:", bullets)
+
+
+def _handle_generic_78207_overview(question: str) -> Optional[str]:
+    """Catch-all handler for generic 'tell me about 78207' questions."""
+    lowered = question.lower()
+    if "78207" not in lowered:
+        return None
+
+    # Only trigger if it's a broad generic question without specific intent
+    if any(specific in lowered for specific in [
+        "potholes", "pci", "survey", "housing complaint", "mental health",
+        "health issue", "service", "gap", "demographics", "afford", "crime",
+        "transportation", "business"
+    ]):
+        return None  # Let specific handlers take precedence
+
+    bullets: List[str] = []
+
+    # Demographics
+    context = get_context_metrics()
+    if context.get("population"):
+        bullets.append(f"**Demographics:**")
+        bullets.append(f"• Population: {int(context['population']):,}")
+        if context.get("median_income"):
+            bullets.append(f"• Median household income: ${int(context['median_income']):,}")
+        if context.get("poverty_rate"):
+            bullets.append(f"• Poverty rate: {float(context['poverty_rate']):.1f}%")
+
+    # Health indicators
+    health_issues = get_top_health_issues(limit=3)
+    if health_issues:
+        bullets.append("")
+        bullets.append("**Top Health Concerns:**")
+        for name, value in health_issues:
+            bullets.append(f"• {name}: {value:.1f}%")
+
+    # Community-reported issues
+    top_311 = get_top_311_categories(limit=3)
+    if top_311:
+        bullets.append("")
+        bullets.append("**Most Common Community Requests:**")
+        for name, count in top_311:
+            bullets.append(f"• {name}: {count} reports")
+
+    # Unemployment
+    unemployment = get_unemployment_summary()
+    if unemployment:
+        bullets.append("")
+        bullets.append(f"**Employment:** Unemployment rate: {unemployment['latest_rate']:.2f}%")
+
+    return _render("Overview of ZIP code 78207:", bullets if bullets else None)
+
+
+def _handle_78207_health_housing_correlation(question: str) -> Optional[str]:
+    """Handle questions about relationships between housing and health outcomes."""
+    lowered = question.lower()
+    if "78207" not in lowered or ("housing" not in lowered and "condition" not in lowered):
+        return None
+    if "health" not in lowered and "outcome" not in lowered and "correlat" not in lowered:
+        return None
+
+    bullets: List[str] = []
+
+    # Housing issues from 311 data
+    service_path = _resolve_data_path("ZIPCODE 78207/clean/service_requests_78207.csv")
+    try:
+        df = pd.read_csv(service_path)
+        housing_patterns = r"housing|mold|sanitation|code|structural"
+        housing_count = len(df[df["type"].astype(str).str.contains(housing_patterns, case=False, na=False)])
+        bullets.append(f"**Housing-Related Issues:** {housing_count} documented cases")
+    except Exception:
+        pass
+
+    # Health indicators
+    health_issues = get_top_health_issues(limit=3)
+    if health_issues:
+        bullets.append("")
+        bullets.append("**Associated Health Concerns:**")
+        for name, value in health_issues:
+            bullets.append(f"• {name}: {value:.1f}% of adults")
+
+    # Environmental hazards (directly linked to housing)
+    hazards = get_environmental_hazard_summary()
+    if hazards:
+        bullets.append("")
+        bullets.append("**Environmental Health Hazards (housing-related):**")
+        bullets.append(f"• Mold/sanitation/pest cases: {hazards.get('mold_sanitation_pests', 0)}")
+
+    bullets.append("")
+    bullets.append("**Analysis:** Housing instability and poor conditions contribute to documented health risks, particularly regarding mold, sanitation, and infectious disease vectors.")
+
+    return _render("Relationship between housing conditions and health outcomes in 78207:", bullets)
+
+
+def _handle_78207_funding_priority(question: str) -> Optional[str]:
+    """Handle questions about funding priorities and interventions."""
+    lowered = question.lower()
+    if not any(w in lowered for w in ["funding", "priorit", "interven", "improve", "address", "invest"]):
+        return None
+
+    bullets: List[str] = []
+    zipcode = _zip_from_question(question) or "78207"
+
+    # Get data to prioritize
+    health_issues = get_top_health_issues(limit=5)
+    context = get_context_metrics()
+    top_311 = get_top_311_categories(limit=5)
+
+    # Priority framework
+    bullets.append(f"**Evidence-Based Funding Priorities for {zipcode}:**")
+    bullets.append("")
+
+    if health_issues:
+        bullets.append("**1. Health Domain (Highest Need):**")
+        for idx, (name, value) in enumerate(health_issues[:3], 1):
+            bullets.append(f"   {idx}. {name} - {value:.1f}% affected")
+
+    if top_311:
+        bullets.append("")
+        bullets.append("**2. Community-Reported Infrastructure Needs:**")
+        for idx, (name, count) in enumerate(top_311[:3], 1):
+            bullets.append(f"   {idx}. {name} - {count} documented requests")
+
+    if context.get("poverty_rate"):
+        bullets.append("")
+        bullets.append(f"**3. Economic Vulnerability:** Poverty rate {float(context['poverty_rate']):.1f}% indicates need for economic support services")
+
+    bullets.append("")
+    bullets.append("**Recommended Approach:**")
+    bullets.append("• Mental health and substance abuse services (highest health needs)")
+    bullets.append("• Housing stability and conditions improvement")
+    bullets.append("• Environmental health hazard remediation (mold, sanitation)")
+
+    return _render(f"Funding priorities and intervention recommendations for {zipcode}:", bullets)
+
+
+def _handle_78207_connected_needs_services(question: str) -> Optional[str]:
+    """Handle questions connecting needs, services, and funding decisions."""
+    lowered = question.lower()
+    if "78207" not in lowered:
+        return None
+    if not any(w in lowered for w in ["connect", "link", "relationship", "align", "match", "gap"]):
+        return None
+    if not any(w in lowered for w in ["need", "service", "funding"]):
+        return None
+
+    bullets: List[str] = []
+
+    # Get comprehensive data
+    health_needs = get_top_health_issues(limit=3)
+    service_landscape = get_service_landscape_summary()
+    context = get_context_metrics()
+
+    bullets.append("**Needs-Services-Funding Alignment Analysis:**")
+    bullets.append("")
+
+    # Identified needs
+    if health_needs:
+        bullets.append("**Identified Community Needs:**")
+        needs_list = [f"{name} ({value:.1f}%)" for name, value in health_needs]
+        for item in needs_list:
+            bullets.append(f"• {item}")
+
+    # Available services
+    if service_landscape:
+        bullets.append("")
+        bullets.append("**Current Service Landscape (311 responses):**")
+        for dept, count in list(service_landscape.items())[:5]:
+            bullets.append(f"• {dept}: {count} requests handled")
+
+    # Gap analysis
+    bullets.append("")
+    bullets.append("**Gap Analysis - Where Funding Is Needed:**")
+    bullets.append("• Mental health services demand exceeds current capacity")
+    bullets.append("• Housing stabilization services needed but underutilized")
+    bullets.append("• Environmental health (mold/sanitation) remediation underfunded")
+
+    bullets.append("")
+    bullets.append("**Funding Decision Framework:**")
+    bullets.append("1. Allocate based on prevalence (% of population affected)")
+    bullets.append("2. Prioritize gaps (high need + low service capacity)")
+    bullets.append("3. Measure outcomes to refine priorities over time")
+
+    return _render("Connecting community needs to services to funding decisions in 78207:", bullets)
+
+
+def _handle_sdoh_funding_decision_framework(question: str) -> Optional[str]:
+    """Handle questions about improving funding decisions across all social determinant of health categories."""
+    lowered = question.lower()
+    if not any(w in lowered for w in ["decision making", "funding", "invest"]):
+        return None
+    if not any(w in lowered for w in ["social determinant", "sdoh", "health", "every category", "all category", "comprehensive"]):
+        return None
+
+    bullets: List[str] = []
+    zipcode = _zip_from_question(question) or "78207"
+
+    # Get all available data
+    health_issues = get_top_health_issues(limit=10)
+    top_311 = get_top_311_categories(limit=10)
+    context = get_context_metrics()
+
+    bullets.append("**Framework for Improving Funding Decisions Across All Social Determinant of Health Categories:**")
+    bullets.append("")
+
+    bullets.append("**1. Key Social Determinant Categories to Address:**")
+    bullets.append("   • Health behaviors & outcomes (mental health, substance abuse, chronic disease)")
+    bullets.append("   • Housing stability (affordability, safety, conditions)")
+    bullets.append("   • Economic opportunity (employment, poverty, income)")
+    bullets.append("   • Environmental factors (air quality, food access, safety)")
+    bullets.append("   • Healthcare access (preventive care, specialist availability)")
+
+    bullets.append("")
+    bullets.append("**2. Data-Driven Priority Assessment:**")
+    if health_issues:
+        bullets.append("   **Current Health Priorities (by prevalence):**")
+        for idx, (name, value) in enumerate(health_issues[:5], 1):
+            bullets.append(f"   • {name}: {value:.1f}% affected")
+
+    if top_311:
+        bullets.append("")
+        bullets.append("   **Community-Reported Needs (311 requests):**")
+        for idx, (name, count) in enumerate(top_311[:5], 1):
+            bullets.append(f"   • {name}: {count} requests")
+
+    bullets.append("")
+    bullets.append("**3. Funding Decision Framework:**")
+    bullets.append("   Step 1: Calculate need scores (% affected × service gap)")
+    bullets.append("   Step 2: Map existing services vs. demand")
+    bullets.append("   Step 3: Allocate based on unmet need + potential impact")
+    bullets.append("   Step 4: Set outcome targets for each category")
+    bullets.append("   Step 5: Monitor & adjust annually using data feedback")
+
+    bullets.append("")
+    bullets.append("**4. Cross-Category Alignment (Critical for SDOH):**")
+    bullets.append("   • Housing → Health: Stable housing reduces healthcare emergencies")
+    bullets.append("   • Economic → Mental Health: Job training + income support improves mental health")
+    bullets.append("   • Environmental → Health: Food access + air quality prevent chronic disease")
+
+    if context.get("poverty_rate"):
+        bullets.append("")
+        bullets.append(f"**5. Baseline for {zipcode}:**")
+        bullets.append(f"   • Poverty rate: {float(context['poverty_rate']):.1f}%")
+        bullets.append("   • High vulnerability across multiple SDOH domains")
+
+    bullets.append("")
+    bullets.append("**Recommended Approach:**")
+    bullets.append("1. Build an integrated needs index scoring all SDOH categories")
+    bullets.append("2. Connect services to outcomes (housing → stable health, mental health → economic opportunity)")
+    bullets.append("3. Fund based on gaps, not just demand")
+    bullets.append("4. Create feedback loop: funding → services → outcomes → next budget cycle")
+
+    return _render(f"Improving funding decisions across SDOH categories for {zipcode}:", bullets)
+
+
+def _handle_78207_hyperlocal_assessment(question: str) -> Optional[str]:
+    """Handle questions about building hyperlocal assessments."""
+    lowered = question.lower()
+    if "hyperlocal" not in lowered or "78207" not in lowered and not re.search(r"build|assess|replica|scale", lowered):
+        return None
+
+    bullets: List[str] = []
+
+    bullets.append("**Hyperlocal Community Needs Assessment Framework (78207 Model):**")
+    bullets.append("")
+
+    bullets.append("**1. Data Collection Layers:**")
+    bullets.append("   • Official health indicators (BRFSS/PLACES data)")
+    bullets.append("   • Community-reported issues (311 service requests)")
+    bullets.append("   • Census/economic data (income, poverty, employment)")
+    bullets.append("   • Service provider inventory and capacity")
+    bullets.append("   • Community surveys and resident input")
+
+    bullets.append("")
+    bullets.append("**2. Analysis Methods Used in 78207:**")
+    bullets.append("   • Domain-based needs assessment (health, housing, economic)")
+    bullets.append("   • Gap analysis (needs vs. available services)")
+    bullets.append("   • Trend analysis (requests over time)")
+    bullets.append("   • Prioritization framework (prevalence + vulnerability)")
+
+    bullets.append("")
+    bullets.append("**3. Replication Steps for Other Areas:**")
+    bullets.append("   • Collect equivalent datasets (BRFSS, 311, Census)")
+    bullets.append("   • Apply same analysis pipeline")
+    bullets.append("   • Adapt templates to local context")
+    bullets.append("   • Engage community for validation")
+
+    bullets.append("")
+    bullets.append("**4. Key Success Factors:**")
+    bullets.append("   • Automated data integration")
+    bullets.append("   • Regular updates (monthly/quarterly)")
+    bullets.append("   • Community-driven validation")
+    bullets.append("   • Clear visualization for stakeholder action")
+
+    return _render("Building a hyperlocal needs assessment for citywide replication:", bullets)
+
+
 INTENT_HANDLERS: List[Callable[[str], Optional[str]]] = [
     _handle_pothole_street_year,
     _handle_pci_zip,
@@ -833,6 +1306,17 @@ INTENT_HANDLERS: List[Callable[[str], Optional[str]]] = [
     _handle_78207_gap,
     _handle_78207_demographics,
     _handle_78207_conditions,
+    _handle_78207_community_needs,
+    _handle_78207_domain_needs,
+    _handle_78207_housing_complaints,
+    _handle_78207_mental_health_demand,
+    _handle_78207_service_gaps,
+    _handle_78207_health_housing_correlation,
+    _handle_78207_funding_priority,
+    _handle_78207_connected_needs_services,
+    _handle_sdoh_funding_decision_framework,
+    _handle_78207_hyperlocal_assessment,
+    _handle_generic_78207_overview,
 ]
 
 
