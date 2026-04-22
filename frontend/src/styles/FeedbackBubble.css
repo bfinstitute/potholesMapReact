@@ -45,24 +45,41 @@
 .landing-question-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-height: 80px;
   background: var(--Grey-100);
-  border: none;
+  border: 1px solid var(--Grey-400);
   border-radius: 10px;
-  padding: 16px;
+  padding: var(--spacing-400);
   font-size: 16px;
   font-weight: 570;
   font-family: 'Saans TRIAL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--Grey-1000);
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
   line-height: 1.4;
   letter-spacing: 0.01em;
 }
 
 .landing-question-btn:hover {
   background: var(--Grey-200);
+  border-color: var(--Grey-400);
+}
+
+.landing-question-btn:active {
+  background: var(--Grey-300);
+  border-color: var(--Grey-400);
+}
+
+.landing-question-btn:focus {
+  outline: none;
+  background: var(--Grey-100);
+  border-color: var(--Grey-1000);
+}
+
+.landing-question-btn:focus:not(:focus-visible) {
+  border-color: var(--Grey-400);
 }
 
 .landing-question-icon {
@@ -70,15 +87,16 @@
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  background: #FF5C17;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .landing-q-icon {
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
 }
 
 /* ── Chat History ── */
@@ -108,16 +126,24 @@
 
 /* ── User Pill ── */
 .user-pill {
-  max-width: 75%;
-  background: var(--Primary-500);
-  color: #FFFFFF;
-  border-radius: 24px;
-  padding: 16px;
+  min-width: 188px;
+  max-width: 768px;
+  min-height: 80px;
+  background: var(--Grey-200);
+  color: var(--Grey-1000);
+  padding: var(--spacing-400);
+  border-top-left-radius: var(--spacing-450);
+  border-top-right-radius: var(--spacing-200);
+  border-bottom-right-radius: var(--spacing-450);
+  border-bottom-left-radius: var(--spacing-450);
   font-size: 16px;
   font-weight: 380;
   line-height: 22px;
   letter-spacing: 0.03em;
   word-wrap: break-word;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 /* ── Bot Block ── */
@@ -229,19 +255,48 @@
   white-space: nowrap;
 }
 
+/* Clickable tag — map and chart tags are buttons */
+button.map-tag {
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: filter 0.12s, transform 0.1s;
+}
+
+.map-tag--clickable:hover {
+  filter: brightness(0.94);
+  transform: translateY(-1px);
+}
+
+.map-tag--clickable:active {
+  transform: translateY(0);
+}
+
 /* Chart tag variant */
 .chart-tag {
-  background: #F3F0FF;
-  border-color: #D4C8FF;
+  background: #FFF3EE;
+  border-color: #FFD0BB;
 }
 
 .chart-tag .map-tag-label {
-  color: #5B21B6;
+  color: #CC3D00;
 }
 
-.chart-tag-icon {
-  font-size: 11px;
-  line-height: 1;
+/* Data tag variant */
+.data-tag {
+  background: var(--Grey-100);
+  border-color: var(--Grey-200);
+}
+
+.data-tag .map-tag-label {
+  color: var(--Grey-700);
+}
+
+/* Suite icon inside tags */
+.suite-tag-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 /* ── Chart Type Toggle ── */
@@ -398,9 +453,10 @@
 .chat-input-box {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px;
-  border: 1px solid #D4D4D8;
+  gap: 12px;
+  padding: var(--spacing-300); /* Spacing 300 = 8px */
+  min-height: 88px;
+  border: 1px solid var(--Grey-200);
   border-radius: 10px;
   background: var(--Grey-50);
 }
@@ -409,6 +465,42 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* ── Attached File Chip ── */
+.attached-file-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--Grey-200);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: 'Saans TRIAL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--Grey-800);
+  max-width: 240px;
+}
+
+.attached-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attached-file-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--Grey-500);
+  font-size: 12px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.12s;
+}
+
+.attached-file-remove:hover {
+  color: var(--Grey-1000);
 }
 
 .chat-input-actions {
@@ -421,19 +513,18 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  color: var(--Grey-500);
-  padding: 6px 4px;
+  padding: 4px;
   border-radius: 6px;
   flex-shrink: 0;
-  font-family: 'Saans TRIAL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-weight: 600;
-  line-height: 1;
-  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+  opacity: 0.5;
 }
 
 .at-btn:hover {
-  color: var(--Grey-900);
+  opacity: 1;
 }
 
 .chat-textarea {
@@ -488,5 +579,8 @@
   width: 15px;
   height: 15px;
   object-fit: contain;
-  filter: brightness(10);
+}
+
+.send-btn .send-icon {
+  filter: brightness(0) invert(1);
 }

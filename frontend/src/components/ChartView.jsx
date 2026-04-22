@@ -24,8 +24,15 @@ const TOOLTIP_STYLE = {
 };
 
 // Derive which key is the "name" (category) and which is the "value" (numeric)
+const HORIZONTAL_LABEL_KEYS = new Set([
+  'street', 'area', 'name', 'category', 'indicator', 'domain', 'metric', 'dimension', 'department', 'issue',
+]);
 function getKeys(chartData) {
-  const isHorizontal = chartData.yKey === 'street' || chartData.yKey === 'area';
+  // Horizontal when the yKey is a known label field OR when first row's yKey value is a string
+  const firstRow = chartData.data && chartData.data[0];
+  const yValIsString = firstRow && typeof firstRow[chartData.yKey] === 'string';
+  const xValIsNumber = firstRow && typeof firstRow[chartData.xKey] === 'number';
+  const isHorizontal = HORIZONTAL_LABEL_KEYS.has(chartData.yKey) || (yValIsString && xValIsNumber);
   return {
     nameKey: isHorizontal ? chartData.yKey : chartData.xKey,
     valueKey: isHorizontal ? chartData.xKey : chartData.yKey,

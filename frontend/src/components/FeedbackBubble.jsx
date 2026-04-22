@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 import '../styles/FeedbackBubble.css';
-import sendIcon from '../assets/images/iconoir_send-solid.svg';
-import botIcon from '../assets/images/BFI_LogoIcon.svg';
+import arrowUpIcon from '../assets/images/Icons_Arrow_up.svg';
+import attachIcon from '../assets/images/Icons_Attach.svg';
 import checkIcon from '../assets/images/iconoir_check-circle.svg';
+import suiteChartsIcon from '../assets/images/SuiteIcons-Charts.svg';
+import suiteDataIcon from '../assets/images/SuiteIcons-Data.svg';
+import suiteMapsIcon from '../assets/images/SuiteIcons-Maps.svg';
 import Markdown from 'markdown-to-jsx';
 
 const SUGGESTED_QUESTIONS = [
-  "Show me potholes on the west side",
-  "Which ZIP codes have the most potholes?",
-  "What's the PCI score for ZIP code 78207?",
-  "Show me the areas with the worst road conditions",
+  { text: "Are housing issues concentrated in specific neighborhoods in ZIP code 78207?",          icon: suiteMapsIcon   },
+  { text: "What are the largest mental health needs in ZIP code 78207?",                           icon: suiteDataIcon   },
+  { text: "How can we improve decision making on future funding to invest in the right services to address the highest needs on mental health in ZIP code 78207?", icon: suiteDataIcon },
+  { text: "How can we improve decision making on future funding to invest in the right services to address the highest needs every category related to the social determinant of health in ZIP code 78207?", icon: suiteChartsIcon },
 ];
 
 const QUICK_CHIPS = ['Zip Code', 'District', 'County', 'Other +'];
@@ -26,24 +29,39 @@ function deriveMaptitle(userText) {
   return 'Map of Pothole Results';
 }
 
+function deriveConversationTitle(userText) {
+  const clean = userText.replace(/\?$/, '').trim();
+  return clean.length > 52 ? clean.slice(0, 49) + '…' : clean;
+}
+
 const CHART_TYPES = [
   { key: 'pie',   label: 'Pie Chart' },
   { key: 'radar', label: 'Radar Chart' },
   { key: 'bar',   label: 'Bar Chart' },
 ];
 
-export default function FeedbackBubble({ setHighlightData, setChartData, setMapTitle, chartType, setChartType, setIsLoading }) {
+export default function FeedbackBubble({ setHighlightData, setChartData, restoreChartData, setMapTitle, chartType, setChartType, setIsLoading, setLastQuery, setLastBotResponse, initialQuery }) {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const historyRef = useRef(null);
   const textareaRef = useRef(null);
+  const initialQuerySent = useRef(false);
 
   useEffect(() => {
     if (historyRef.current) {
       historyRef.current.scrollTop = historyRef.current.scrollHeight;
     }
   }, [chatHistory, loading]);
+
+  // Auto-send query from URL ?q= param on first mount
+  useEffect(() => {
+    if (initialQuery && !initialQuerySent.current) {
+      initialQuerySent.current = true;
+      sendMessage(initialQuery);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sendMessage = async (text) => {
     const trimmed = text.trim();
@@ -52,6 +70,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
     const title = deriveMaptitle(trimmed);
     const userMsg = { from: 'user', text: trimmed };
     setChatHistory(prev => [...prev, userMsg]);
+    if (setLastQuery) setLastQuery(trimmed);
     setMessage('');
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -79,17 +98,20 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
           from: 'bot',
           text: answerText,
           structured,
-          mapTag: hasMap && !hasChart ? title : null,
+          mapTag: hasMap ? title : null,
           chartTag: hasChart ? data.chart_data.title : null,
           chips: (hasMap || hasChart) ? QUICK_CHIPS : null,
+          savedChartData: data.chart_data || null,
+          savedHighlightData: data.highlight_data || null,
+          savedTitle: hasChart ? data.chart_data.title : hasMap ? title : null,
         },
       ]);
 
       if (setHighlightData) setHighlightData(data.highlight_data || null);
       if (setChartData) setChartData(data.chart_data || null);
+      if (setLastBotResponse) setLastBotResponse(answerText);
       if (setMapTitle) {
-        if (hasChart) setMapTitle(data.chart_data.title);
-        else if (hasMap) setMapTitle(title);
+        if (hasChart || hasMap) setMapTitle(deriveConversationTitle(trimmed));
         else setMapTitle('New conversation');
       }
     } catch {
@@ -129,12 +151,12 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
               <button
                 key={i}
                 className="landing-question-btn"
-                onClick={() => sendMessage(q)}
+                onClick={() => sendMessage(q.text)}
               >
                 <span className="landing-question-icon">
-                  <img src={botIcon} alt="" className="landing-q-icon" />
+                  <img src={q.icon} alt="" className="landing-q-icon" />
                 </span>
-                {q}
+                {q.text}
               </button>
             ))}
           </div>
@@ -153,6 +175,21 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
   // ── Chat State ──
   const lastChartIdx = chatHistory.reduce((acc, msg, i) => msg.chartTag ? i : acc, -1);
 
+  const restoreViz = (msg, mode = 'chart') => {
+    // Use restoreChartData (raw setter) so chart type is NOT reset to 'bar'
+    const chartSetter = restoreChartData || setChartData;
+    if (mode === 'map') {
+      // Clear chart so the map panel is revealed
+      if (chartSetter) chartSetter(null);
+    } else {
+      if (msg.savedChartData && chartSetter) chartSetter(msg.savedChartData);
+      else if (chartSetter) chartSetter(null);
+    }
+    if (msg.savedHighlightData && setHighlightData) setHighlightData(msg.savedHighlightData);
+    else if (setHighlightData) setHighlightData(null);
+    if (msg.savedTitle && setMapTitle) setMapTitle(msg.savedTitle);
+  };
+
   return (
     <div className="chat-wrapper">
       <div className="chat-history" ref={historyRef}>
@@ -163,15 +200,21 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
             ) : (
               <div className="bot-block">
                 {msg.chartTag && (
-                  <div className="map-tag chart-tag">
-                    <span className="chart-tag-icon">📊</span>
+                  <button className="map-tag chart-tag map-tag--clickable" onClick={() => restoreViz(msg, 'chart')} title="Click to show this chart">
+                    <img src={suiteChartsIcon} alt="chart" className="suite-tag-icon" />
                     <span className="map-tag-label">{msg.chartTag}</span>
-                  </div>
+                  </button>
                 )}
                 {msg.mapTag && (
-                  <div className="map-tag">
-                    <span className="map-tag-dot" />
+                  <button className="map-tag map-tag--clickable" onClick={() => restoreViz(msg, 'map')} title="Click to show this map">
+                    <img src={suiteMapsIcon} alt="map" className="suite-tag-icon" />
                     <span className="map-tag-label">{msg.mapTag}</span>
+                  </button>
+                )}
+                {!msg.chartTag && !msg.mapTag && (
+                  <div className="map-tag data-tag">
+                    <img src={suiteDataIcon} alt="data" className="suite-tag-icon" />
+                    <span className="map-tag-label">Data Response</span>
                   </div>
                 )}
                 <div className="bot-text">
@@ -222,7 +265,10 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
                         <button
                           key={ct.key}
                           className={`chart-type-btn ${chartType === ct.key ? 'active' : ''}`}
-                          onClick={() => setChartType && setChartType(ct.key)}
+                          onClick={() => {
+                            if (setChartType) setChartType(ct.key);
+                            restoreViz(msg, 'chart');
+                          }}
                         >
                           {ct.label}
                         </button>
@@ -283,9 +329,33 @@ export default function FeedbackBubble({ setHighlightData, setChartData, setMapT
 }
 
 function ChatInput({ message, setMessage, onSubmit, loading, textareaRef }) {
+  const fileRef = useRef(null);
+  const [attachedFile, setAttachedFile] = useState(null);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) setAttachedFile(file);
+    e.target.value = '';
+  };
+
+  const handleRemoveFile = () => setAttachedFile(null);
+
   return (
     <div className="chat-input-area">
+      <input
+        ref={fileRef}
+        type="file"
+        style={{ display: 'none' }}
+        onChange={handleFileSelect}
+        accept="image/*,.pdf,.doc,.docx,.txt,.csv,.xlsx"
+      />
       <div className="chat-input-box">
+        {attachedFile && (
+          <div className="attached-file-chip">
+            <span className="attached-file-name" title={attachedFile.name}>{attachedFile.name}</span>
+            <button className="attached-file-remove" onClick={handleRemoveFile} title="Remove">✕</button>
+          </div>
+        )}
         <div className="chat-input-row">
           <textarea
             ref={textareaRef}
@@ -308,14 +378,16 @@ function ChatInput({ message, setMessage, onSubmit, loading, textareaRef }) {
           />
         </div>
         <div className="chat-input-actions">
-          <button type="button" className="at-btn" tabIndex={-1}>@</button>
+          <button type="button" className="at-btn" tabIndex={-1} onClick={() => fileRef.current?.click()} title="Attach file">
+            <img src={attachIcon} alt="Attach" className="send-icon" />
+          </button>
           <button
             type="button"
             className="send-btn"
             disabled={loading || !message.trim()}
             onClick={onSubmit}
           >
-            <img src={sendIcon} alt="Send" className="send-icon" />
+            <img src={arrowUpIcon} alt="Send" className="send-icon" />
           </button>
         </div>
       </div>
