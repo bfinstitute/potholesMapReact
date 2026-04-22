@@ -20,7 +20,26 @@ const QUICK_CHIPS = ['Zip Code', 'District', 'County', 'Other +'];
 function deriveMaptitle(userText) {
   const t = userText.toLowerCase();
   const zipMatch = t.match(/\b(782\d{2})\b/);
-  if (zipMatch) return `Map of Potholes in ${zipMatch[1]}`;
+  const zip = zipMatch ? zipMatch[1] : '';
+  const suffix = zip ? ` in ${zip}` : '';
+
+  // SDOH / community needs
+  if (t.includes('social determinant') || t.includes('sdoh')) return `Community Needs by Domain${suffix}`;
+  // Mental health
+  if (t.includes('mental health') || t.includes('behavioral health')) return `Mental Health Needs${suffix}`;
+  // Housing
+  if (t.includes('housing') || t.includes('evict') || t.includes('rent')) return `Housing Needs${suffix}`;
+  // Economic
+  if (t.includes('economic') || t.includes('poverty') || t.includes('income') || t.includes('employment') || t.includes('job')) return `Economic Conditions${suffix}`;
+  // Health / public health
+  if (t.includes('health need') || t.includes('public health') || t.includes('diabetes') || t.includes('obesity') || t.includes('chronic')) return `Public Health Needs${suffix}`;
+  // Funding / investment / services
+  if (t.includes('fund') || t.includes('invest') || t.includes('service') || t.includes('decision')) return `Community Services${suffix}`;
+  // Survey / needs assessment
+  if (t.includes('survey') || t.includes('need') || t.includes('gap')) return `Needs Assessment${suffix}`;
+
+  // Pothole-specific fallbacks
+  if (zip) return `Map of Potholes in ${zip}`;
   if (t.includes('west')) return 'Map of West San Antonio Potholes';
   if (t.includes('worst') || t.includes('most')) return 'Map of Worst Pothole Areas';
   if (t.includes('pci')) return 'Map of Pavement Conditions';

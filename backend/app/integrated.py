@@ -1263,6 +1263,11 @@ def get_groq_response(prompt):
         zipcode = match.group(1)
         return handle_pci_in_zipcode(zipcode)
 
+    # --- SAAF 78207 governance-aware chatbot route (must run before RAG so charts/community data wins) ---
+    saaf_result = try_handle_saaf_question(prompt)
+    if saaf_result is not None:
+        return saaf_result
+
     rag_answer = get_rag_response(prompt)
     if rag_answer:
         return rag_answer, None, rag_map_highlight_for_prompt(prompt)
@@ -1298,11 +1303,6 @@ def get_groq_response(prompt):
             return response, None, df
         print(f"[DEBUG] No records found for street='{street}', year={year}")
         return f"No pothole records found for streets containing '{street}' in {year}.", None, pd.DataFrame()
-
-    # --- SAAF 78207 governance-aware chatbot route ---
-    saaf_result = try_handle_saaf_question(prompt)
-    if saaf_result is not None:
-        return saaf_result
 
     # --- Area-specific pothole formation prediction ---
     match = re.search(r"how likely (will|could) potholes form (on|in|along|at) ([^?]+)", prompt_lower)
