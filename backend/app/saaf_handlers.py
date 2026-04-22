@@ -447,8 +447,8 @@ def _sdh_comprehensive_response() -> Tuple[str, Optional[dict], pd.DataFrame]:
 
     housing_signal = domain_signals.get("housing_environment", {}).get("signal")
     if housing_signal is not None:
-        lines.append(f"Housing & Environment: hazard complaint count {int(housing_signal)}")
-        chart_rows.append({"domain": "Housing & Environment", "signal": round(float(housing_signal), 0)})
+        lines.append(f"Housing & Environment: {int(housing_signal)} hazard-related complaints (311 data)")
+        # Excluded from chart — raw complaint count is not comparable to % signals
 
     eco_signal = domain_signals.get("economic_mobility", {}).get("signal")
     if eco_signal is not None:
@@ -480,58 +480,66 @@ def _sdh_comprehensive_response() -> Tuple[str, Optional[dict], pd.DataFrame]:
 
 
 def _funding_decision_response() -> Tuple[str, Optional[dict], pd.DataFrame]:
-    """Decision-making framework: connect needs data to funding priorities."""
+    """Decision-making framework focused on mental health: connect needs data to funding priorities."""
     gap = get_gap_summary()
     domain_signals = get_need_signals_by_domain()
+    mh = get_mental_health_indicator_trend()
+    top_health = get_top_health_issues(limit=10)
     summary, map_df = get_funding_summary_and_map_data()
 
     sources_used = [_get_source("health"), _get_source("311"), _get_source("demographics"), _get_source("funding")]
-    lines = [
-        "Data-driven funding decision framework for ZIP 78207:",
-        "",
-        "Step 1 — Identify the highest-need domains:",
+
+    # Filter mental health specific indicators for % chart (same unit)
+    mh_indicators = [
+        (name, val) for name, val in top_health
+        if any(kw in name.lower() for kw in ["mental", "depression", "distress", "sleep", "anxiety", "cognit"])
     ]
+    if not mh_indicators:
+        mh_indicators = top_health[:3]
 
-    chart_rows = []
     mh_signal = domain_signals.get("mental_health", {}).get("signal")
-    if mh_signal is not None:
-        lines.append(f"  • Mental Health need signal: {mh_signal:.1f}%")
-        chart_rows.append({"domain": "Mental Health Need", "score": round(float(mh_signal), 1)})
-
     eco_signal = domain_signals.get("economic_mobility", {}).get("signal")
-    if eco_signal is not None:
-        lines.append(f"  • Economic Mobility need signal: {eco_signal:.1f}%")
-        chart_rows.append({"domain": "Economic Mobility Need", "score": round(float(eco_signal), 1)})
 
-    housing_signal = domain_signals.get("housing_environment", {}).get("signal")
-    if housing_signal is not None:
-        lines.append(f"  • Housing/Environment complaint count: {int(housing_signal)}")
-        chart_rows.append({"domain": "Housing Need", "score": round(float(housing_signal), 0)})
+    lines = [
+        "Data-driven mental health funding decision framework for ZIP 78207:",
+        "",
+        "Step 1 — Quantify the mental health need:",
+    ]
+    for name, val in mh_indicators:
+        lines.append(f"  • {name}: {val:.1f}%")
+    if mh:
+        lines.append(f"  • Aggregate mental health burden (Depression + Distress): avg {mh['average_percent']:.1f}%")
 
     lines += [
         "",
-        f"Step 2 — Assess the service gap:",
-        f"  • Need score: {gap['need_score']} | Service score: {gap['service_score']} | Gap: {gap['gap_score']} ({gap['gap_level']})",
+        "Step 2 — Assess the service gap:",
+        f"  • Overall need score: {gap['need_score']} | Service score: {gap['service_score']} | Gap: {gap['gap_score']} ({gap['gap_level']})",
+        "  • High gap score signals that mental health service supply is not meeting documented need.",
         "",
-        "Step 3 — Align investment with gaps:",
+        "Step 3 — Review existing investment:",
     ]
-    chart_rows.append({"domain": "Current Service Score", "score": float(gap["service_score"])})
-
     if summary:
         lines.append(f"  • Current total bond investment: ${summary['total_budget']:,.2f} across {summary['project_count']} projects")
-        lines.append("  • Review if investments target the highest-gap domains above.")
+        lines.append("  • Assess whether these projects fund behavioral health services specifically.")
+    else:
+        lines.append("  • No bond project data ingested yet — manual review of current mental health funding required.")
 
     lines += [
         "",
-        "Recommendation: Prioritize funding allocations to mental health and economic mobility services in ZIP 78207, where the need-service gap is highest.",
+        "Recommendation: Prioritize funding for depression/mental distress intervention programs and behavioral health access in ZIP 78207, targeting the highest-prevalence indicators above.",
     ]
+
+    # Chart uses only %-based indicators so units are comparable
+    chart_rows = [{"indicator": name, "value": round(val, 1)} for name, val in mh_indicators]
+    if eco_signal is not None:
+        chart_rows.append({"indicator": "Economic Mobility Need (%)", "value": round(float(eco_signal), 1)})
 
     chart_data = {
         "type": "bar",
-        "title": "Need Signals vs. Service Coverage — ZIP 78207 Funding Priorities",
-        "xKey": "score",
-        "yKey": "domain",
-        "xLabel": "Score / Signal",
+        "title": "Mental Health Funding Priorities — ZIP 78207 Need Signals (%)",
+        "xKey": "value",
+        "yKey": "indicator",
+        "xLabel": "Prevalence / Signal (%)",
         "data": chart_rows,
     } if chart_rows else None
 
@@ -551,12 +559,12 @@ def _critical_issues_response() -> Tuple[str, Optional[dict], pd.DataFrame]:
     lines = [
         "Most critical issues affecting residents of ZIP 78207 (multi-domain analysis):",
         "",
-        "Health Burdens (CDC PLACES):",
+        "Health Burdens (CDC PLACES — prevalence %):",
     ]
     for name, val in top_health:
         lines.append(f"  • {name}: {val:.1f}%")
 
-    lines.append("\nCommunity Conditions (311 requests):")
+    lines.append("\nCommunity Conditions (311 service requests — case counts):")
     for name, count in top_311:
         lines.append(f"  • {name}: {count} cases")
 
@@ -566,15 +574,25 @@ def _critical_issues_response() -> Tuple[str, Optional[dict], pd.DataFrame]:
         lines.append(f"Healthcare Access Gap: Uninsured rate {float(context['uninsured_rate']):.1f}%")
 
     lines.append(f"\nOverall need-service gap: {gap['gap_level']} (score: {gap['gap_score']})")
-    lines.append("\nConclusion: Mental health, poverty, and uninsured rates are the most critical compounding issues in ZIP 78207.")
+
+    # Derive top issue from data rather than hardcoding
+    top_issue_name = top_health[0][0] if top_health else "health burdens"
+    lines.append(f"\nConclusion: {top_issue_name}, poverty ({float(context['poverty_rate']):.0f}% rate), and a {gap['gap_level']} service gap are the most critical compounding issues in ZIP 78207.")
+
+    # Chart shows health indicators (%) + key economic indicators on same % scale
+    chart_rows = [{"issue": name, "value": round(val, 1)} for name, val in top_health]
+    if context.get("poverty_rate") is not None:
+        chart_rows.append({"issue": "Poverty Rate", "value": round(float(context["poverty_rate"]), 1)})
+    if context.get("uninsured_rate") is not None:
+        chart_rows.append({"issue": "Uninsured Rate", "value": round(float(context["uninsured_rate"]), 1)})
 
     chart_data = {
         "type": "bar",
-        "title": "Critical Health Issues — ZIP 78207 (%)",
+        "title": "Critical Issues — ZIP 78207 (Health & Economic Indicators, %)",
         "xKey": "value",
         "yKey": "issue",
-        "xLabel": "Prevalence / Count",
-        "data": [{"issue": name, "value": round(val, 1)} for name, val in top_health],
+        "xLabel": "Prevalence (%)",
+        "data": chart_rows,
     }
 
     text = _append_sources("\n".join(lines), sources_used)
@@ -629,6 +647,86 @@ def _underserved_response() -> Tuple[str, Optional[dict], pd.DataFrame]:
     return text, chart_data, zip_centroid_marker("78207", label="ZIP 78207 — Underserved", color="#C72B2B")
 
 
+def _hyperlocal_assessment_response() -> Tuple[str, Optional[dict], pd.DataFrame]:
+    """Explain how to build a hyperlocal community needs assessment for ZIP 78207 replicable citywide."""
+    domain_signals = get_need_signals_by_domain()
+    context = get_context_metrics()
+    mh = get_mental_health_indicator_trend()
+    unemployment = get_unemployment_summary()
+
+    sources_used = [_get_source("health"), _get_source("311"), _get_source("demographics")]
+    lines = [
+        "Hyperlocal Community Needs Assessment — ZIP 78207 Framework",
+        "",
+        "Yes — this can be built and replicated citywide. Here is the methodology:",
+        "",
+        "**Layer 1 — Demographic baseline** (currently available for 78207):",
+    ]
+    if context.get("population") is not None:
+        lines.append(f"  • Population: {int(context['population']):,}")
+    if context.get("poverty_rate") is not None:
+        lines.append(f"  • Poverty rate: {float(context['poverty_rate']):.1f}%")
+    if context.get("uninsured_rate") is not None:
+        lines.append(f"  • Uninsured rate: {float(context['uninsured_rate']):.1f}%")
+
+    lines.append("\n**Layer 2 — Health indicator signals** (currently available):")
+    mh_signal = domain_signals.get("mental_health", {}).get("signal")
+    ph_signal = domain_signals.get("public_health", {}).get("signal")
+    if mh_signal is not None:
+        lines.append(f"  • Mental health burden: {mh_signal:.1f}%")
+    if ph_signal is not None:
+        lines.append(f"  • Public health avg indicator: {ph_signal:.1f}%")
+    if mh:
+        lines.append(f"  • Depression + Distress avg: {mh['average_percent']:.1f}%")
+
+    lines.append("\n**Layer 3 — Service request activity** (currently available via 311):")
+    eco_signal = domain_signals.get("economic_mobility", {}).get("signal")
+    if eco_signal is not None:
+        lines.append(f"  • Economic mobility signal: {eco_signal:.1f}%")
+    if unemployment:
+        lines.append(f"  • Unemployment rate: {unemployment['latest_rate']:.2f}%")
+
+    lines += [
+        "",
+        "**To replicate citywide, each ZIP would need:**",
+        "  1. Census tract–level demographic data (ACS 5-year estimates)",
+        "  2. CDC PLACES health indicators aggregated to that ZIP",
+        "  3. 311 service requests filtered by ZIP",
+        "  4. A consistent scoring formula (e.g., composite need index) applied uniformly",
+        "",
+        "**Current 78207 composite signal (available now):**",
+    ]
+
+    chart_rows = []
+    if mh_signal is not None:
+        chart_rows.append({"layer": "Mental Health Need (%)", "value": round(float(mh_signal), 1)})
+    if ph_signal is not None:
+        chart_rows.append({"layer": "Public Health Avg (%)", "value": round(float(ph_signal), 1)})
+    if eco_signal is not None:
+        chart_rows.append({"layer": "Economic Mobility (%)", "value": round(float(eco_signal), 1)})
+    if context.get("poverty_rate") is not None:
+        chart_rows.append({"layer": "Poverty Rate (%)", "value": round(float(context["poverty_rate"]), 1)})
+    if context.get("uninsured_rate") is not None:
+        chart_rows.append({"layer": "Uninsured Rate (%)", "value": round(float(context["uninsured_rate"]), 1)})
+
+    for row in chart_rows:
+        lines.append(f"  • {row['layer']}: {row['value']}")
+
+    lines.append("\nThis ZIP 78207 profile is the template. Ingest the same datasets for other ZIPs to replicate the assessment citywide.")
+
+    chart_data = {
+        "type": "bar",
+        "title": "Hyperlocal Assessment Template — ZIP 78207 Need Signals (%)",
+        "xKey": "value",
+        "yKey": "layer",
+        "xLabel": "Signal Strength (%)",
+        "data": chart_rows,
+    } if chart_rows else None
+
+    text = _append_sources("\n".join(lines), sources_used)
+    return text, chart_data, zip_centroid_marker("78207", label="ZIP 78207 — Needs Assessment", color="#2D7FC1")
+
+
 def try_handle_saaf_question(prompt: str) -> Optional[Tuple[str, Optional[dict], pd.DataFrame]]:
     intent = detect_intent(prompt)
     if intent is None:
@@ -649,7 +747,7 @@ def try_handle_saaf_question(prompt: str) -> Optional[Tuple[str, Optional[dict],
     if intent == "critical_issues":
         return _critical_issues_response()
     if intent == "hyperlocal_assessment":
-        return _sdh_comprehensive_response()
+        return _hyperlocal_assessment_response()
     if intent == "underserved":
         return _underserved_response()
     if intent == "funding_intelligence":

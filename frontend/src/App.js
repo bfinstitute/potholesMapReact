@@ -76,12 +76,16 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [lastQuery, setLastQuery] = useState('');
+  const [lastBotResponse, setLastBotResponse] = useState('');
   const [shareCopied, setShareCopied] = useState(false);
+  const [shareCopiedText, setShareCopiedText] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [dotsOpen, setDotsOpen] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
   const [undoState, setUndoState] = useState(null);
   const panelRef = useRef(null);
   const dotsRef = useRef(null);
+  const shareRef = useRef(null);
   const undoTimerRef = useRef(null);
 
   // Read initial query from URL ?q= param
@@ -94,13 +98,21 @@ function App() {
   useEffect(() => {
     if (!dotsOpen) return;
     const handler = (e) => {
-      if (dotsRef.current && !dotsRef.current.contains(e.target)) {
-        setDotsOpen(false);
-      }
+      if (dotsRef.current && !dotsRef.current.contains(e.target)) setDotsOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [dotsOpen]);
+
+  // Close share dropdown on outside click
+  useEffect(() => {
+    if (!shareOpen) return;
+    const handler = (e) => {
+      if (shareRef.current && !shareRef.current.contains(e.target)) setShareOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [shareOpen]);
 
   // Reset chart type to bar whenever a new chart response arrives
   const handleSetChartData = (data) => {
@@ -127,7 +139,8 @@ function App() {
 
   const handleDownload = async () => {
     if (!panelRef.current || isLoading) return;
-    const filename = `${mapTitle.replace(/\s+/g, '_') || 'visualization'}.png`;
+    const rawTitle = chartData?.title || mapTitle || 'visualization';
+    const filename = `${rawTitle.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_')}.png`;
     try {
       if (chartData) {
         // Charts: html2canvas works fine
@@ -176,22 +189,43 @@ function App() {
     if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
   };
 
-  const handleShare = async () => {
-    if (!lastQuery) return;
-    const url = `${window.location.origin}${window.location.pathname}?q=${encodeURIComponent(lastQuery)}`;
+  const copyToClipboard = (text) => {
     try {
-      await navigator.clipboard.writeText(url);
+      navigator.clipboard.writeText(text);
     } catch {
-      // fallback for browsers without clipboard API
       const ta = document.createElement('textarea');
-      ta.value = url;
+      ta.value = text;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
     }
+  };
+
+  const handleShareCopyLink = async () => {
+    if (!lastQuery) return;
+    const url = `${window.location.origin}${window.location.pathname}?q=${encodeURIComponent(lastQuery)}`;
+    copyToClipboard(url);
     setShareCopied(true);
     setTimeout(() => setShareCopied(false), 2000);
+    setShareOpen(false);
+  };
+
+  const handleCopyResponse = () => {
+    if (!lastBotResponse) return;
+    copyToClipboard(lastBotResponse);
+    setShareCopiedText(true);
+    setTimeout(() => setShareCopiedText(false), 2000);
+    setShareOpen(false);
+  };
+
+  const handleEmailShare = () => {
+    if (!lastQuery) return;
+    const url = `${window.location.origin}${window.location.pathname}?q=${encodeURIComponent(lastQuery)}`;
+    const subject = encodeURIComponent(`Insight: ${mapTitle}`);
+    const body = encodeURIComponent(`Check out this insight from Buffi:\n\n${lastBotResponse ? lastBotResponse.slice(0, 300) + '…' : ''}\n\nView it here: ${url}`);
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+    setShareOpen(false);
   };
 
   const titleIconColor = chartData ? '#FF5C17' : '#00B89C';
@@ -214,7 +248,7 @@ function App() {
           )}
         </div>
         <div className={`left-icon-strip${sidebarExpanded ? ' left-icon-strip--expanded' : ''}`}>
-          <button className="icon-strip-btn" title="New Chat">
+          <button className="icon-strip-btn icon-strip-btn--active" title="New Chat">
             <img src={iconChat}     alt="" className="strip-icon" />
             {sidebarExpanded && <span className="strip-label">New Chat</span>}
           </button>
@@ -248,11 +282,13 @@ function App() {
           <FeedbackBubble
             setHighlightData={setHighlightData}
             setChartData={handleSetChartData}
+            restoreChartData={setChartData}
             setMapTitle={setMapTitle}
             chartType={chartType}
             setChartType={setChartType}
             setIsLoading={setIsLoading}
             setLastQuery={setLastQuery}
+            setLastBotResponse={setLastBotResponse}
             initialQuery={initialQuery}
           />
         </div>
@@ -300,14 +336,37 @@ function App() {
                 </div>
               )}
             </div>
-            <button
-              className={`share-btn${shareCopied ? ' share-btn--copied' : ''}`}
-              onClick={handleShare}
-              disabled={!lastQuery}
-              title={lastQuery ? 'Copy shareable link' : 'Ask a question first'}
-            >
-              {shareCopied ? '✓ Copied!' : <>Share <span className="share-chevron">∨</span></>}
-            </button>
+            <div className="share-btn-wrapper" ref={shareRef}>
+              <button
+                className={`share-btn${shareCopied || shareCopiedText ? ' share-btn--copied' : ''}`}
+                onClick={() => lastQuery && setShareOpen(o => !o)}
+                disabled={!lastQuery}
+                title={lastQuery ? 'Share options' : 'Ask a question first'}
+              >
+                <span className="share-btn-label">
+                  {shareCopied ? '✓ Link copied!' : shareCopiedText ? '✓ Text copied!' : 'Share'}
+                </span>
+                <span className="share-btn-divider" />
+                <span className="share-chevron-wrap">
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </button>
+              {shareOpen && (
+                <div className="share-dropdown">
+                  <button className="share-dropdown-item" onClick={handleShareCopyLink}>
+                    Copy link
+                  </button>
+                  <button className="share-dropdown-item" onClick={handleCopyResponse} disabled={!lastBotResponse}>
+                    Copy response text
+                  </button>
+                  <button className="share-dropdown-item" onClick={handleEmailShare} disabled={!lastQuery}>
+                    Send via email
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className={`map-panel${isLoading ? ' map-panel--loading' : ''}`} ref={panelRef}>
