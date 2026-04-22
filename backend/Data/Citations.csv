@@ -1,24 +1,24 @@
-Sources,Citation,Data Link
-,,
-78207_master_dataset_percentage - ,https://data.sanantonio.gov/dataset/311-all-service-calls,https://drive.google.com/file/d/1mgc30-YNwG9TgAjyUNwSxxrpDrqm-peQ/view?usp=drive_link
-78207_master_dataset_value - ,https://data.sanantonio.gov/dataset/311-all-service-calls,https://drive.google.com/file/d/1etKaCEy5XUSNxj-M2GbuseEqpLfyo6eZ/view?usp=drive_link
-age_by_race,https://datacommons.org/place/zip/78207,https://drive.google.com/file/d/1gYYnOa_wInCtkGyoR0pbsiWyBV5zgWaH/view?usp=drive_link
-age_group,https://datacommons.org/place/zip/78207,https://drive.google.com/file/d/1o8K0ElmfTymIX2Ih2ADk_spoNY6xPuvc/view?usp=drive_link
-census_demographics,https://censusreporter.org/profiles/86000US78207-78207/,https://drive.google.com/file/d/1rLF8EprwSKmnbHrSsaDh_DuMnzpHZO7g/view?usp=drive_link
-census_economics,https://censusreporter.org/profiles/86000US78207-78207/,https://drive.google.com/file/d/17l57bX5l-uYwhe2nbTU_SkSxZoGlFQfa/view?usp=drive_link
-Health_and _Beauty_Market_Potential_Demographic,https://nalcab.org/,https://drive.google.com/file/d/18GKuoVAG6RnJACnrY6jJsd-8-I9_20pn/view?usp=drive_link
-Health_and _Beauty_Market_Potential_Behavior,https://nalcab.org/,https://drive.google.com/file/d/1OP_OcnT0vXNlseCqsh-PgAor1XzM8npz/view?usp=drive_link
-health_places,https://data.sanantonio.gov/group/service-calls,https://drive.google.com/file/d/1x9aQY7TrbdPe6vh9Jsx7mI-NJNkHV4Zu/view?usp=drive_link
-Market_profile_Population_Consumer_Spending,https://nalcab.org/,https://drive.google.com/file/d/1Ov-_IMh-uBO9dKHhbhV0C7J6Z0P9ogaw/view?usp=drive_link
-Market_profile_Population_Income,https://nalcab.org/,https://drive.google.com/file/d/1WE9AIo1igQ2AgCuAcJ5rOLmDoSNMRqPx/view?usp=drive_link
-Market_profile_Population_Consumer_Industry,https://nalcab.org/,https://drive.google.com/file/d/1BfqVLr6EdzngNRBB3EzX1Hr6zMw4OfXG/view?usp=drive_link
-Market_profile_Population_Consumer_Summary,https://nalcab.org/,https://drive.google.com/file/d/14d4pyXhSH13gvKkqox7R8OK26xdaR5VN/view?usp=drive_link
-Medical_Expenditure_78207_San_Antonio,https://nalcab.org/,https://drive.google.com/file/d/1M2gHl20aFvIUcUDsqhGfvzouzsXnfIe_/view?usp=drive_link
-Service_Request-78207,https://www.sa.gov/Directory/Departments/311/Services,https://drive.google.com/file/d/1QIDVnt774BfCxD2bY3fstjPnUGlocgsT/view?usp=drive_link
-unemployment_rate,https://data.cdc.gov/Health-Statistics/PLACES-Local-Data-for-Better-Health/9j2v-jamp,https://drive.google.com/file/d/16lfRIro08gG7ls4SPnhvkjP8uvhduJGd/view?usp=drive_link
-311 Service Request,https://data.sanantonio.gov/dataset/311-all-service-calls?utm_source=chatgpt.com,https://drive.google.com/file/d/1991_ATb3JTYOwn8jBP1lPI7gvBh7zUZi/view?usp=drive_link
-Health_Data ,https://data.cdc.gov/National-Center-for-Health-Statistics/Death-rates-for-suicide-by-sex-race-Hispanic-origi/9j2v-jamp/about_data,https://drive.google.com/file/d/1l0qMx1J-OXIB7Z2wp25OAJirV2h3-eSz/view?usp=drive_link
-Housing 78207,https://data.census.gov/,https://drive.google.com/file/d/1g84l7-9tCvzj4Msfg3wzsVjGhQUmYYb2/view?usp=drive_link
-Interventions,https://www.dshs.texas.gov/center-health-statistics/chs-data-sets-reports,https://drive.google.com/file/d/1iDZiTRXkORhGYygvOMsTex0vE-b_hYAa/view?usp=drive_link
-Track data,https://www.cdc.gov/places/,https://drive.google.com/file/d/1PXgUixivD7v7hMWuk-KsibRsvxumHL4v/view?usp=drive_link
-san_antonio_78207,https://data.sanantonio.gov/,
+DataSets,Citation,Data Link,Partners/Sources
+,,,
+78207_master_dataset_percentage - ,https://data.sanantonio.gov/dataset/311-all-service-calls,https://drive.google.com/file/d/1mgc30-YNwG9TgAjyUNwSxxrpDrqm-peQ/view?usp=drive_link,PUBLIC
+78207_master_dataset_value - ,https://data.sanantonio.gov/dataset/311-all-service-calls,https://drive.google.com/file/d/1etKaCEy5XUSNxj-M2GbuseEqpLfyo6eZ/view?usp=drive_link,PUBLIC
+age_by_race,https://datacommons.org/place/zip/78207,https://drive.google.com/file/d/1gYYnOa_wInCtkGyoR0pbsiWyBV5zgWaH/view?usp=drive_link,PUBLIC
+age_group,https://datacommons.org/place/zip/78207,https://drive.google.com/file/d/1o8K0ElmfTymIX2Ih2ADk_spoNY6xPuvc/view?usp=drive_link,PUBLIC
+census_demographics,https://censusreporter.org/profiles/86000US78207-78207/,https://drive.google.com/file/d/1rLF8EprwSKmnbHrSsaDh_DuMnzpHZO7g/view?usp=drive_link,PUBLIC
+census_economics,https://censusreporter.org/profiles/86000US78207-78207/,https://drive.google.com/file/d/17l57bX5l-uYwhe2nbTU_SkSxZoGlFQfa/view?usp=drive_link,PUBLIC
+Health_and _Beauty_Market_Potential_Demographic,https://nalcab.org/,https://drive.google.com/file/d/18GKuoVAG6RnJACnrY6jJsd-8-I9_20pn/view?usp=drive_link,PROSPER WEST / NALCAB
+Health_and _Beauty_Market_Potential_Behavior,https://nalcab.org/,https://drive.google.com/file/d/1OP_OcnT0vXNlseCqsh-PgAor1XzM8npz/view?usp=drive_link,PROSPER WEST / NALCAB
+health_places,https://data.sanantonio.gov/group/service-calls,https://drive.google.com/file/d/1x9aQY7TrbdPe6vh9Jsx7mI-NJNkHV4Zu/view?usp=drive_link,PUBLIC
+Market_profile_Population_Consumer_Spending,https://nalcab.org/,https://drive.google.com/file/d/1Ov-_IMh-uBO9dKHhbhV0C7J6Z0P9ogaw/view?usp=drive_link,PROSPER WEST / NALCAB
+Market_profile_Population_Income,https://nalcab.org/,https://drive.google.com/file/d/1WE9AIo1igQ2AgCuAcJ5rOLmDoSNMRqPx/view?usp=drive_link,PROSPER WEST / NALCAB
+Market_profile_Population_Consumer_Industry,https://nalcab.org/,https://drive.google.com/file/d/1BfqVLr6EdzngNRBB3EzX1Hr6zMw4OfXG/view?usp=drive_link,PROSPER WEST / NALCAB
+Market_profile_Population_Consumer_Summary,https://nalcab.org/,https://drive.google.com/file/d/14d4pyXhSH13gvKkqox7R8OK26xdaR5VN/view?usp=drive_link,PROSPER WEST / NALCAB
+Medical_Expenditure_78207_San_Antonio,https://nalcab.org/,https://drive.google.com/file/d/1M2gHl20aFvIUcUDsqhGfvzouzsXnfIe_/view?usp=drive_link,PROSPER WEST / NALCAB
+Service_Request-78207,https://www.sa.gov/Directory/Departments/311/Services,https://drive.google.com/file/d/1QIDVnt774BfCxD2bY3fstjPnUGlocgsT/view?usp=drive_link,PUBLIC
+unemployment_rate,https://data.cdc.gov/Health-Statistics/PLACES-Local-Data-for-Better-Health/9j2v-jamp,https://drive.google.com/file/d/16lfRIro08gG7ls4SPnhvkjP8uvhduJGd/view?usp=drive_link,PUBLIC
+311 Service Request,https://data.sanantonio.gov/dataset/311-all-service-calls?utm_source=chatgpt.com,https://drive.google.com/file/d/1991_ATb3JTYOwn8jBP1lPI7gvBh7zUZi/view?usp=drive_link,311
+Health_Data ,https://data.cdc.gov/National-Center-for-Health-Statistics/Death-rates-for-suicide-by-sex-race-Hispanic-origi/9j2v-jamp/about_data,https://drive.google.com/file/d/1l0qMx1J-OXIB7Z2wp25OAJirV2h3-eSz/view?usp=drive_link,PUBLIC
+Housing 78207,https://data.census.gov/,https://drive.google.com/file/d/1g84l7-9tCvzj4Msfg3wzsVjGhQUmYYb2/view?usp=drive_link,PUBLIC
+Interventions,https://www.dshs.texas.gov/center-health-statistics/chs-data-sets-reports,https://drive.google.com/file/d/1iDZiTRXkORhGYygvOMsTex0vE-b_hYAa/view?usp=drive_link,PUBLIC
+Track data,https://www.cdc.gov/places/,https://drive.google.com/file/d/1PXgUixivD7v7hMWuk-KsibRsvxumHL4v/view?usp=drive_link,PUBLIC
+san_antonio_78207,https://data.sanantonio.gov/,https://drive.google.com/file/d/1ZG_y7T4N4YgDQhDcgHBP6iEMcK03r46T/view?usp=drive_link,SACRD
