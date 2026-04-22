@@ -192,23 +192,24 @@
 .share-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: var(--Grey-1000);
-  color: #fff;
+  gap: 0;
+  background: #F4F4F5;
+  color: #0E0E11;
   border: none;
   border-radius: 20px;
-  padding: 6px 14px;
+  padding: 0;
   font-size: 14px;
   font-weight: 570;
   font-family: 'Saans TRIAL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   cursor: pointer;
   letter-spacing: 0.01em;
-  margin-left: 4px;
   transition: background 0.15s;
+  overflow: hidden;
+  height: 36px;
 }
 
 .share-btn:hover:not(:disabled) {
-  background: var(--Grey-950);
+  background: #E9E9EB;
 }
 
 .share-btn:disabled {
@@ -217,16 +218,88 @@
 }
 
 .share-btn--copied {
-  background: #1A8A5A;
+  background: #E6F5EF;
+  color: #1A8A5A;
 }
 
 .share-btn--copied:hover {
-  background: #157048;
+  background: #D0EDDF;
 }
 
-.share-chevron {
-  font-size: 10px;
-  opacity: 0.7;
+.share-btn-label {
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.share-btn-divider {
+  width: 1px;
+  height: 100%;
+  background: #E4E4E7;
+  flex-shrink: 0;
+}
+
+.share-chevron-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  height: 100%;
+}
+
+/* ── Share Dropdown ── */
+.share-btn-wrapper {
+  position: relative;
+  margin-left: 4px;
+}
+
+.share-btn-wrapper .share-btn {
+  margin-left: 0;
+}
+
+.share-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--Grey-50);
+  border: 1px solid var(--Grey-200);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  min-width: 190px;
+  z-index: 100;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.share-dropdown-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: 'Saans TRIAL', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 380;
+  color: var(--Grey-900);
+  text-align: left;
+  border-radius: 6px;
+  transition: background 0.12s;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-dropdown-item:hover:not(:disabled) {
+  background: var(--Grey-100);
+}
+
+.share-dropdown-item:disabled {
+  color: var(--Grey-400);
+  cursor: not-allowed;
+}
+
+.share-dropdown-item--copied {
+  color: #1A8A5A;
 }
 
 /* ── Dots Dropdown ── */
@@ -529,6 +602,19 @@
   cursor: not-allowed;
   background: none;
   color: var(--Grey-500);
+}
+
+.icon-strip-btn--active {
+  background: var(--Grey-200);
+  color: var(--Grey-1000);
+}
+
+.icon-strip-btn--active .strip-icon {
+  opacity: 1;
+}
+
+.icon-strip-btn--active:hover {
+  background: var(--Grey-300);
 }
 
 .strip-icon {
