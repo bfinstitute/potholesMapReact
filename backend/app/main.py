@@ -152,7 +152,12 @@ async def chat(request: Request):
             chart_data = response_tuple[1]
         if len(response_tuple) > 2 and response_tuple[2] is not None:
             try:
-                highlight_data = response_tuple[2].to_dict("records")
+                import math
+                records = response_tuple[2].to_dict("records")
+                highlight_data = [
+                    {k: (None if isinstance(v, float) and math.isnan(v) else v) for k, v in row.items()}
+                    for row in records
+                ]
             except Exception:
                 highlight_data = None
     else:
