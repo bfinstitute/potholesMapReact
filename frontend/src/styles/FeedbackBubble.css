@@ -228,6 +228,80 @@
   color: var(--Grey-800, #444);
 }
 
+/* ── Citations ── */
+.citations-panel {
+  margin-top: 8px;
+  border: 1px solid var(--Grey-200, #e5e5e5);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.citations-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--Grey-100, #f5f5f5);
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--Grey-700, #555);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.citations-toggle:hover {
+  background: var(--Grey-200, #e5e5e5);
+}
+
+.citations-toggle-arrow {
+  font-size: 10px;
+  color: var(--Grey-500, #888);
+}
+
+.citations-list {
+  margin: 0;
+  padding: 8px 12px 8px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--Grey-50, #fafafa);
+}
+
+.citation-item {
+  font-size: 12px;
+  color: var(--Grey-800, #333);
+  line-height: 1.5;
+}
+
+.citation-dataset {
+  font-weight: 600;
+  color: var(--Grey-900, #222);
+}
+
+.citation-source {
+  color: var(--Grey-500, #888);
+  font-size: 11px;
+}
+
+.citation-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.citation-link {
+  font-size: 11px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.citation-link:hover {
+  text-decoration: underline;
+}
+
 /* ── Map Tag ── */
 .map-tag {
   display: inline-flex;
