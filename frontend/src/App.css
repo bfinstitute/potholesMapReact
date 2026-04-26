@@ -527,7 +527,9 @@
 }
 
 .top-bar-icon-btn--disabled,
-.top-bar-icon-btn--disabled:hover {
+.top-bar-icon-btn--disabled:hover,
+.top-bar-icon-btn:disabled,
+.top-bar-icon-btn:disabled:hover {
   opacity: 0.35;
   cursor: not-allowed;
   background: none;

@@ -309,11 +309,11 @@ function App() {
             <button className="top-bar-icon-btn top-bar-icon-btn--disabled" title="Bookmark" disabled>
               <IconBookmarkTop />
             </button>
-            <button className="top-bar-icon-btn" title="Download" onClick={handleDownload} disabled={isLoading}>
+            <button className="top-bar-icon-btn" title="Download" onClick={handleDownload} disabled={isLoading || !lastQuery}>
               <img src={downloadIcon} alt="download" className="top-bar-icon" />
             </button>
             <div className="dots-btn-wrapper" ref={dotsRef}>
-              <button className="top-bar-icon-btn" title="More" onClick={() => setDotsOpen(o => !o)}>
+              <button className="top-bar-icon-btn" title="More" onClick={() => lastQuery && setDotsOpen(o => !o)} disabled={!lastQuery}>
                 <IconDots />
               </button>
               {dotsOpen && (
