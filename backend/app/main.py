@@ -59,6 +59,13 @@ except ImportError:
         cache_stats as disk_cache_stats,
     )
 
+try:
+    from .saaf_intents import detect_intent
+    from .citations_loader import get_citations_for_intent
+except ImportError:
+    from saaf_intents import detect_intent
+    from citations_loader import get_citations_for_intent
+
 
 def _geography_hint_from_message(text: str) -> Optional[str]:
     """Lightweight hint for synthesis (Phase 2 will replace with real geo resolution)."""
@@ -152,7 +159,12 @@ async def chat(request: Request):
             chart_data = response_tuple[1]
         if len(response_tuple) > 2 and response_tuple[2] is not None:
             try:
-                highlight_data = response_tuple[2].to_dict("records")
+                import math
+                records = response_tuple[2].to_dict("records")
+                highlight_data = [
+                    {k: (None if isinstance(v, float) and math.isnan(v) else v) for k, v in row.items()}
+                    for row in records
+                ]
             except Exception:
                 highlight_data = None
     else:
@@ -197,6 +209,10 @@ async def chat(request: Request):
 
         # Note: We could also cache the structured payload separately if needed
         # For now, we're just caching the answer text and highlight_data
+
+    # Attach citations based on which SAAF intent was matched
+    citations = get_citations_for_intent(detect_intent(user_message))
+    payload["citations"] = citations
 
     final_response = {
         "response": structured.answer,

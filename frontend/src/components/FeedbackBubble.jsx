@@ -20,7 +20,26 @@ const QUICK_CHIPS = ['Zip Code', 'District', 'County', 'Other +'];
 function deriveMaptitle(userText) {
   const t = userText.toLowerCase();
   const zipMatch = t.match(/\b(782\d{2})\b/);
-  if (zipMatch) return `Map of Potholes in ${zipMatch[1]}`;
+  const zip = zipMatch ? zipMatch[1] : '';
+  const suffix = zip ? ` in ${zip}` : '';
+
+  // SDOH / community needs
+  if (t.includes('social determinant') || t.includes('sdoh')) return `Community Needs by Domain${suffix}`;
+  // Mental health
+  if (t.includes('mental health') || t.includes('behavioral health')) return `Mental Health Needs${suffix}`;
+  // Housing
+  if (t.includes('housing') || t.includes('evict') || t.includes('rent')) return `Housing Needs${suffix}`;
+  // Economic
+  if (t.includes('economic') || t.includes('poverty') || t.includes('income') || t.includes('employment') || t.includes('job')) return `Economic Conditions${suffix}`;
+  // Health / public health
+  if (t.includes('health need') || t.includes('public health') || t.includes('diabetes') || t.includes('obesity') || t.includes('chronic')) return `Public Health Needs${suffix}`;
+  // Funding / investment / services
+  if (t.includes('fund') || t.includes('invest') || t.includes('service') || t.includes('decision')) return `Community Services${suffix}`;
+  // Survey / needs assessment
+  if (t.includes('survey') || t.includes('need') || t.includes('gap')) return `Needs Assessment${suffix}`;
+
+  // Pothole-specific fallbacks
+  if (zip) return `Map of Potholes in ${zip}`;
   if (t.includes('west')) return 'Map of West San Antonio Potholes';
   if (t.includes('worst') || t.includes('most')) return 'Map of Worst Pothole Areas';
   if (t.includes('pci')) return 'Map of Pavement Conditions';
@@ -44,6 +63,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [openCitations, setOpenCitations] = useState({});
   const historyRef = useRef(null);
   const textareaRef = useRef(null);
   const initialQuerySent = useRef(false);
@@ -92,12 +112,14 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
       const hasMap = !!(data.highlight_data && data.highlight_data.length > 0);
       const hasChart = !!(data.chart_data);
 
+      const citations = structured?.citations || [];
       setChatHistory(prev => [
         ...prev,
         {
           from: 'bot',
           text: answerText,
           structured,
+          citations,
           mapTag: hasMap ? title : null,
           chartTag: hasChart ? data.chart_data.title : null,
           chips: (hasMap || hasChart) ? QUICK_CHIPS : null,
@@ -248,6 +270,31 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
                         <li key={ix}>{line}</li>
                       ))}
                     </ul>
+                  </div>
+                )}
+                {msg.citations?.length > 0 && (
+                  <div className="citations-panel">
+                    <button
+                      className="citations-toggle"
+                      onClick={() => setOpenCitations(prev => ({ ...prev, [idx]: !prev[idx] }))}
+                    >
+                      <span className="citations-toggle-label">Sources ({msg.citations.length})</span>
+                      <span className="citations-toggle-arrow">{openCitations[idx] ? '▲' : '▼'}</span>
+                    </button>
+                    {openCitations[idx] && (
+                      <ol className="citations-list">
+                        {msg.citations.map((c, ci) => (
+                          <li key={ci} className="citation-item">
+                            <span className="citation-dataset">{c.dataset}</span>
+                            {c.source && <span className="citation-source"> · {c.source}</span>}
+                            <div className="citation-links">
+                              {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="citation-link">Source ↗</a>}
+                              {c.data_link && <a href={c.data_link} target="_blank" rel="noreferrer" className="citation-link">Data ↗</a>}
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
                   </div>
                 )}
                 {msg.structured?.follow_up_question && (

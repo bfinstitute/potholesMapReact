@@ -46,6 +46,11 @@ class CivicStructuredResponse(BaseModel):
         description="Optional structured metrics from backend (filled in Phase 2).",
     )
 
+    citations: List[dict] = Field(
+        default_factory=list,
+        description="Data sources used to produce this response.",
+    )
+
 
 def fallback_structured_from_text(answer_text: str) -> CivicStructuredResponse:
     """When synthesis is disabled or the LLM fails, still return a valid schema."""
