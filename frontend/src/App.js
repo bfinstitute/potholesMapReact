@@ -14,6 +14,8 @@ import iconSources  from './assets/images/Icons=Sources.svg';
 import iconQueue    from './assets/images/Icons=queue.svg';
 import iconBookmark from './assets/images/Icons=Bookmark.svg';
 import suiteDBIcon from './assets/images/SuiteIcons-DB.svg';
+import chevronDownIcon from './assets/images/Icons=chevron_down.svg';
+import moreHorizIcon from './assets/images/Icons=More_Horizontal.svg';
 import suiteChartsIcon from './assets/images/SuiteIcons-Charts.svg';
 import suiteDataIcon from './assets/images/SuiteIcons-Data.svg';
 import suiteMapsIcon from './assets/images/SuiteIcons-Maps.svg';
@@ -83,9 +85,18 @@ function App() {
   const [dotsOpen, setDotsOpen] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
   const [undoState, setUndoState] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [savedConversations, setSavedConversations] = useState([]);
+  const [activeConvId, setActiveConvId] = useState(() => Date.now());
+  const [convSwitcherOpen, setConvSwitcherOpen] = useState(false);
+  const [chatDotsOpen, setChatDotsOpen] = useState(false);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
   const panelRef = useRef(null);
   const dotsRef = useRef(null);
   const shareRef = useRef(null);
+  const convSwitcherRef = useRef(null);
+  const chatDotsRef = useRef(null);
   const undoTimerRef = useRef(null);
 
   // Read initial query from URL ?q= param
@@ -113,6 +124,26 @@ function App() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [shareOpen]);
+
+  // Close chat dots dropdown on outside click
+  useEffect(() => {
+    if (!chatDotsOpen) return;
+    const handler = (e) => {
+      if (chatDotsRef.current && !chatDotsRef.current.contains(e.target)) setChatDotsOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [chatDotsOpen]);
+
+  // Close conversation switcher on outside click
+  useEffect(() => {
+    if (!convSwitcherOpen) return;
+    const handler = (e) => {
+      if (convSwitcherRef.current && !convSwitcherRef.current.contains(e.target)) setConvSwitcherOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [convSwitcherOpen]);
 
   // Reset chart type to bar whenever a new chart response arrives
   const handleSetChartData = (data) => {
@@ -185,8 +216,44 @@ function App() {
     setMapTitle(undoState.mapTitle);
     setHighlightData(undoState.highlightData);
     handleSetChartData(undoState.chartData);
+    if (undoState.chatHistory) setChatHistory(undoState.chatHistory);
     setUndoState(null);
     if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+  };
+
+  const handleClearConversation = () => {
+    setUndoState({ mapTitle, highlightData, chartData, chatHistory });
+    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    undoTimerRef.current = setTimeout(() => setUndoState(null), 5000);
+    setChatHistory([]);
+    setMapTitle('New conversation');
+    setHighlightData(null);
+    setChartData(null);
+    setChartType('bar');
+    setLastQuery('');
+    setLastBotResponse('');
+    setTableOpen(false);
+    setChatDotsOpen(false);
+  };
+
+  const handleExportConversation = () => {
+    if (!chatHistory.length) return;
+    const text = chatHistory
+      .map(msg => msg.from === 'user' ? `You: ${msg.text}` : `Buffi: ${msg.text}`)
+      .join('\n\n');
+    copyToClipboard(text);
+    setChatDotsOpen(false);
+  };
+
+  const handleStartRename = () => {
+    setRenameValue(mapTitle);
+    setIsRenaming(true);
+    setChatDotsOpen(false);
+  };
+
+  const handleConfirmRename = () => {
+    if (renameValue.trim()) setMapTitle(renameValue.trim());
+    setIsRenaming(false);
   };
 
   const copyToClipboard = (text) => {
@@ -217,6 +284,43 @@ function App() {
     setShareCopiedText(true);
     setTimeout(() => setShareCopiedText(false), 2000);
     setShareOpen(false);
+  };
+
+  const saveCurrentConv = () => {
+    if (chatHistory.length === 0) return;
+    const snapshot = { id: activeConvId, chatHistory, highlightData, chartData, chartType, lastQuery, lastBotResponse, mapTitle };
+    setSavedConversations(prev => {
+      const idx = prev.findIndex(c => c.id === activeConvId);
+      if (idx >= 0) return prev.map((c, i) => i === idx ? snapshot : c);
+      return [...prev, snapshot];
+    });
+  };
+
+  const handleNewConversation = () => {
+    saveCurrentConv();
+    setActiveConvId(Date.now());
+    setChatHistory([]);
+    setHighlightData(null);
+    setChartData(null);
+    setChartType('bar');
+    setLastQuery('');
+    setLastBotResponse('');
+    setMapTitle('New conversation');
+    setConvSwitcherOpen(false);
+  };
+
+  const handleSwitchConversation = (conv) => {
+    saveCurrentConv();
+    setSavedConversations(prev => prev.filter(c => c.id !== conv.id));
+    setActiveConvId(conv.id);
+    setChatHistory(conv.chatHistory);
+    setHighlightData(conv.highlightData || null);
+    setChartData(conv.chartData || null);
+    setChartType(conv.chartType || 'bar');
+    setLastQuery(conv.lastQuery || '');
+    setLastBotResponse(conv.lastBotResponse || '');
+    setMapTitle(conv.mapTitle || 'New conversation');
+    setConvSwitcherOpen(false);
   };
 
   const handleEmailShare = () => {
@@ -277,9 +381,47 @@ function App() {
         <div className="col-header col-header--chat">
           <img src={bfiIcon} alt="Buffi" className="chat-header-logo" />
           <span className="top-bar-brand">Buffi V.02</span>
+          <div className="chat-dots-wrapper" ref={chatDotsRef}>
+            <button
+              className="top-bar-icon-btn"
+              title="More options"
+              onClick={() => setChatDotsOpen(o => !o)}
+            >
+              <img src={moreHorizIcon} alt="More" className="top-bar-icon" />
+            </button>
+            {chatDotsOpen && (
+              <div className="chat-dots-dropdown">
+                <button
+                  className="chat-dots-item"
+                  onClick={handleClearConversation}
+                  disabled={!chatHistory.length}
+                >
+                  Clear conversation
+                </button>
+                <button
+                  className="chat-dots-item"
+                  onClick={handleExportConversation}
+                  disabled={!chatHistory.length}
+                >
+                  Export conversation
+                </button>
+                <div className="chat-dots-divider" />
+                <button
+                  className="chat-dots-item"
+                  onClick={handleStartRename}
+                  disabled={mapTitle === 'New conversation'}
+                >
+                  Rename
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         <div className="chat-panel">
           <FeedbackBubble
+            key={activeConvId}
+            chatHistory={chatHistory}
+            setChatHistory={setChatHistory}
             setHighlightData={setHighlightData}
             setChartData={handleSetChartData}
             restoreChartData={setChartData}
@@ -289,7 +431,7 @@ function App() {
             setIsLoading={setIsLoading}
             setLastQuery={setLastQuery}
             setLastBotResponse={setLastBotResponse}
-            initialQuery={initialQuery}
+            initialQuery={chatHistory.length === 0 && savedConversations.length === 0 ? initialQuery : ''}
           />
         </div>
       </div>
@@ -302,8 +444,55 @@ function App() {
             {hasVisualization && (
               <button className="map-title-close" onClick={handleCloseMap}>✕</button>
             )}
-            <span className="map-title-text">{mapTitle}</span>
-            <button className="map-title-chevron">∨</button>
+            {isRenaming ? (
+              <input
+                className="map-title-input"
+                value={renameValue}
+                autoFocus
+                onChange={e => setRenameValue(e.target.value)}
+                onBlur={handleConfirmRename}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleConfirmRename();
+                  if (e.key === 'Escape') setIsRenaming(false);
+                }}
+              />
+            ) : (
+              <span className="map-title-text">{mapTitle}</span>
+            )}
+            <div className="conv-switcher-wrapper" ref={convSwitcherRef}>
+              <button
+                className="map-title-chevron"
+                onClick={() => setConvSwitcherOpen(o => !o)}
+                title="Switch conversation"
+              >
+                <img
+                  src={chevronDownIcon}
+                  alt="Switch conversation"
+                  className={`map-title-chevron-icon${convSwitcherOpen ? ' map-title-chevron-icon--open' : ''}`}
+                />
+              </button>
+              {convSwitcherOpen && (
+                <div className="conv-switcher-dropdown">
+                  <button className="conv-switcher-new" onClick={handleNewConversation}>
+                    + New conversation
+                  </button>
+                  {savedConversations.length > 0 && (
+                    <>
+                      <div className="conv-switcher-divider" />
+                      {[...savedConversations].reverse().map(conv => (
+                        <button
+                          key={conv.id}
+                          className="conv-switcher-item"
+                          onClick={() => handleSwitchConversation(conv)}
+                        >
+                          {conv.mapTitle || 'New conversation'}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <div className="top-bar-map-right">
             <button className="top-bar-icon-btn top-bar-icon-btn--disabled" title="Bookmark" disabled>

@@ -2,10 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import '../styles/FeedbackBubble.css';
 import arrowUpIcon from '../assets/images/Icons_Arrow_up.svg';
 import attachIcon from '../assets/images/Icons_Attach.svg';
-import checkIcon from '../assets/images/iconoir_check-circle.svg';
+import copyIcon from '../assets/images/Icons=Copy.svg';
+import thumbsUpIcon from '../assets/images/Icons=Thumbs_up.svg';
+import thumbsDownIcon from '../assets/images/Icons=Thumbs_down.svg';
+import moreHorizIcon from '../assets/images/Icons=More_Horizontal.svg';
 import suiteChartsIcon from '../assets/images/SuiteIcons-Charts.svg';
 import suiteDataIcon from '../assets/images/SuiteIcons-Data.svg';
 import suiteMapsIcon from '../assets/images/SuiteIcons-Maps.svg';
+import chevronDownIcon from '../assets/images/Icons=chevron_down.svg';
+import loadIcon from '../assets/images/Icons=Load.svg';
 import Markdown from 'markdown-to-jsx';
 
 const SUGGESTED_QUESTIONS = [
@@ -15,7 +20,6 @@ const SUGGESTED_QUESTIONS = [
   { text: "How can we improve decision making on future funding to invest in the right services to address the highest needs every category related to the social determinant of health in ZIP code 78207?", icon: suiteChartsIcon },
 ];
 
-const QUICK_CHIPS = ['Zip Code', 'District', 'County', 'Other +'];
 
 function deriveMaptitle(userText) {
   const t = userText.toLowerCase();
@@ -59,20 +63,45 @@ const CHART_TYPES = [
   { key: 'bar',   label: 'Bar Chart' },
 ];
 
-export default function FeedbackBubble({ setHighlightData, setChartData, restoreChartData, setMapTitle, chartType, setChartType, setIsLoading, setLastQuery, setLastBotResponse, initialQuery }) {
+export default function FeedbackBubble({ setHighlightData, setChartData, restoreChartData, setMapTitle, chartType, setChartType, setIsLoading, setLastQuery, setLastBotResponse, initialQuery, chatHistory, setChatHistory }) {
   const [message, setMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingPhase, setLoadingPhase] = useState(1);
   const [openCitations, setOpenCitations] = useState({});
+  const [openMoreIdx, setOpenMoreIdx] = useState(null);
+  const [vizModalOpen, setVizModalOpen] = useState(false);
+  const [vizModalMsg, setVizModalMsg] = useState(null);
+  const moreDropdownRef = useRef(null);
+  const [reactions, setReactions] = useState({});
+  const [copiedIdx, setCopiedIdx] = useState(null);
   const historyRef = useRef(null);
   const textareaRef = useRef(null);
   const initialQuerySent = useRef(false);
+
+  // Close "more" dropdown on outside click
+  useEffect(() => {
+    if (openMoreIdx === null) return;
+    const handler = (e) => {
+      if (moreDropdownRef.current && !moreDropdownRef.current.contains(e.target)) {
+        setOpenMoreIdx(null);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [openMoreIdx]);
 
   useEffect(() => {
     if (historyRef.current) {
       historyRef.current.scrollTop = historyRef.current.scrollHeight;
     }
   }, [chatHistory, loading]);
+
+  // Switch to phase 2 after 2.5s of loading
+  useEffect(() => {
+    if (!loading) { setLoadingPhase(1); return; }
+    const timer = setTimeout(() => setLoadingPhase(2), 2500);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   // Auto-send query from URL ?q= param on first mount
   useEffect(() => {
@@ -122,7 +151,6 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
           citations,
           mapTag: hasMap ? title : null,
           chartTag: hasChart ? data.chart_data.title : null,
-          chips: (hasMap || hasChart) ? QUICK_CHIPS : null,
           savedChartData: data.chart_data || null,
           savedHighlightData: data.highlight_data || null,
           savedTitle: hasChart ? data.chart_data.title : hasMap ? title : null,
@@ -132,10 +160,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
       if (setHighlightData) setHighlightData(data.highlight_data || null);
       if (setChartData) setChartData(data.chart_data || null);
       if (setLastBotResponse) setLastBotResponse(answerText);
-      if (setMapTitle) {
-        if (hasChart || hasMap) setMapTitle(deriveConversationTitle(trimmed));
-        else setMapTitle('New conversation');
-      }
+      if (setMapTitle) setMapTitle(deriveConversationTitle(trimmed));
     } catch {
       setChatHistory(prev => [
         ...prev,
@@ -153,12 +178,43 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
     sendMessage(message);
   };
 
-  const handleChipClick = (chip) => {
-    sendMessage(chip);
+  const handleCopy = (text, idx) => {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
   };
 
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text).catch(() => {});
+  const handleRegenerate = (idx) => {
+    const userMsg = chatHistory.slice(0, idx).reverse().find(m => m.from === 'user');
+    if (userMsg) sendMessage(userMsg.text);
+    setOpenMoreIdx(null);
+  };
+
+  const handleCopyPlain = (text) => {
+    const plain = text
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/\[(.+?)\]\(.+?\)/g, '$1')
+      .replace(/`(.+?)`/g, '$1');
+    navigator.clipboard.writeText(plain).catch(() => {});
+    setOpenMoreIdx(null);
+  };
+
+  const handleReport = (idx) => {
+    try {
+      const reports = JSON.parse(localStorage.getItem('buffi_reports') || '[]');
+      reports.push({ idx, text: chatHistory[idx]?.text, timestamp: Date.now() });
+      localStorage.setItem('buffi_reports', JSON.stringify(reports));
+    } catch {}
+    setOpenMoreIdx(null);
+  };
+
+  const handleReaction = (idx, type) => {
+    setReactions(prev => {
+      const current = prev[idx];
+      return { ...prev, [idx]: current === type ? null : type };
+    });
   };
 
   // ── Landing State ──
@@ -279,7 +335,11 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
                       onClick={() => setOpenCitations(prev => ({ ...prev, [idx]: !prev[idx] }))}
                     >
                       <span className="citations-toggle-label">Sources ({msg.citations.length})</span>
-                      <span className="citations-toggle-arrow">{openCitations[idx] ? '▲' : '▼'}</span>
+                      <img
+                        src={chevronDownIcon}
+                        alt=""
+                        className={`citations-toggle-arrow${openCitations[idx] ? ' citations-toggle-arrow--open' : ''}`}
+                      />
                     </button>
                     {openCitations[idx] && (
                       <ol className="citations-list">
@@ -303,50 +363,67 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
                     <span className="structured-followup-q">{msg.structured.follow_up_question}</span>
                   </div>
                 )}
-                {/* Chart type toggle — only on the most recent chart response */}
+                {/* Visualization picker — only on the most recent chart response */}
                 {msg.chartTag && idx === lastChartIdx && (
-                  <div className="chart-type-row">
-                    <span className="chart-type-label">Chart type</span>
-                    <div className="chart-type-btns">
-                      {CHART_TYPES.map(ct => (
-                        <button
-                          key={ct.key}
-                          className={`chart-type-btn ${chartType === ct.key ? 'active' : ''}`}
-                          onClick={() => {
-                            if (setChartType) setChartType(ct.key);
-                            restoreViz(msg, 'chart');
-                          }}
-                        >
-                          {ct.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {msg.chips && (
-                  <div className="chip-row">
-                    {msg.chips.map((chip, ci) => (
-                      <button
-                        key={ci}
-                        className="quick-chip"
-                        onClick={() => handleChipClick(chip)}
-                      >
-                        {chip}
-                      </button>
-                    ))}
-                  </div>
+                  <button
+                    className="viz-change-btn"
+                    onClick={() => { setVizModalMsg(msg); setVizModalOpen(true); }}
+                  >
+                    Change visualization
+                  </button>
                 )}
                 <div className="reaction-bar">
-                  <button className="reaction-btn" title="Helpful">👍</button>
-                  <button className="reaction-btn" title="Not helpful">👎</button>
+                  <div className="reaction-copy-wrapper">
+                    <button
+                      className="reaction-btn"
+                      title="Copy response"
+                      onClick={() => handleCopy(msg.text, idx)}
+                    >
+                      <img src={copyIcon} alt="Copy" className="reaction-icon" />
+                    </button>
+                    {copiedIdx === idx && (
+                      <span className="reaction-copied-toast">Copied!</span>
+                    )}
+                  </div>
                   <button
-                    className="reaction-btn"
-                    title="Copy"
-                    onClick={() => handleCopy(msg.text)}
+                    className={`reaction-btn${reactions[idx] === 'up' ? ' reaction-btn--active' : ''}`}
+                    title="Helpful"
+                    onClick={() => handleReaction(idx, 'up')}
                   >
-                    <img src={checkIcon} alt="copy" className="reaction-icon" />
+                    <img src={thumbsUpIcon} alt="Helpful" className="reaction-icon" />
                   </button>
-                  <button className="reaction-btn" title="More">···</button>
+                  <button
+                    className={`reaction-btn${reactions[idx] === 'down' ? ' reaction-btn--active' : ''}`}
+                    title="Not helpful"
+                    onClick={() => handleReaction(idx, 'down')}
+                  >
+                    <img src={thumbsDownIcon} alt="Not helpful" className="reaction-icon" />
+                  </button>
+                  <div
+                    className="reaction-more-wrapper"
+                    ref={openMoreIdx === idx ? moreDropdownRef : null}
+                  >
+                    <button
+                      className={`reaction-btn${openMoreIdx === idx ? ' reaction-btn--active' : ''}`}
+                      title="More options"
+                      onClick={() => setOpenMoreIdx(openMoreIdx === idx ? null : idx)}
+                    >
+                      <img src={moreHorizIcon} alt="More" className="reaction-icon" />
+                    </button>
+                    {openMoreIdx === idx && (
+                      <div className="reaction-more-dropdown">
+                        <button className="reaction-more-item" onClick={() => handleRegenerate(idx)}>
+                          Regenerate
+                        </button>
+                        <button className="reaction-more-item" onClick={() => handleCopyPlain(msg.text)}>
+                          Copy as plain text
+                        </button>
+                        <button className="reaction-more-item reaction-more-item--danger" onClick={() => handleReport(idx)}>
+                          Report
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -356,8 +433,12 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
         {loading && (
           <div className="msg-row bot">
             <div className="bot-block">
-              <div className="typing-indicator">
-                <span /><span /><span />
+              <div className={`loading-state loading-state--${loadingPhase}`}>
+                <div className="loading-state-line1">
+                  <img src={loadIcon} alt="" className="loading-state-icon" />
+                  <span>Working</span>
+                </div>
+                <div className="loading-state-line2">Searching your sources</div>
               </div>
             </div>
           </div>
@@ -371,6 +452,39 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
         loading={loading}
         textareaRef={textareaRef}
       />
+
+      {/* Visualization picker modal */}
+      {vizModalOpen && vizModalMsg && (
+        <div className="viz-modal-overlay" onClick={() => setVizModalOpen(false)}>
+          <div className="viz-modal" onClick={e => e.stopPropagation()}>
+            <div className="viz-modal-header">
+              <span className="viz-modal-title">Which way would you like me to visualize the data?</span>
+              <button className="viz-modal-close" onClick={() => setVizModalOpen(false)}>✕</button>
+            </div>
+            <div className="viz-modal-list">
+              {CHART_TYPES.map((ct, i) => (
+                <div key={ct.key}>
+                  <button
+                    className={`viz-modal-option${chartType === ct.key ? ' viz-modal-option--selected' : ''}`}
+                    onClick={() => {
+                      if (setChartType) setChartType(ct.key);
+                      restoreViz(vizModalMsg, 'chart');
+                      setVizModalOpen(false);
+                    }}
+                  >
+                    <span className={`viz-modal-radio${chartType === ct.key ? ' viz-modal-radio--selected' : ''}`} />
+                    <span className="viz-modal-label">{ct.label}</span>
+                  </button>
+                  {i < CHART_TYPES.length - 1 && <div className="viz-modal-divider" />}
+                </div>
+              ))}
+            </div>
+            <div className="viz-modal-footer">
+              <button className="viz-modal-skip" onClick={() => setVizModalOpen(false)}>Skip</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
