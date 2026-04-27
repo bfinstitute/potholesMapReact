@@ -64,30 +64,37 @@ const IconBookmarkTop = () => (
   </svg>
 );
 
+const _getStoredActive = () => {
+  try { return JSON.parse(localStorage.getItem('buffi_active_conv')) || {}; } catch { return {}; }
+};
+const _getStoredSaved = () => {
+  try { return JSON.parse(localStorage.getItem('buffi_saved_convs')) || []; } catch { return []; }
+};
+
 function App() {
   const [geoData, setGeoData] = useState(null);
   const [indicators, setIndicators] = useState([]);
   const [profiles, setProfiles] = useState({});
   const [selectedArea, setSelectedArea] = useState(null);
   const [customData, setCustomData] = useState(null);
-  const [highlightData, setHighlightData] = useState(null);
-  const [chartData, setChartData] = useState(null);
-  const [chartType, setChartType] = useState('bar');
-  const [mapTitle, setMapTitle] = useState('New conversation');
+  const [highlightData, setHighlightData] = useState(() => _getStoredActive().highlightData || null);
+  const [chartData, setChartData] = useState(() => _getStoredActive().chartData || null);
+  const [chartType, setChartType] = useState(() => _getStoredActive().chartType || 'bar');
+  const [mapTitle, setMapTitle] = useState(() => _getStoredActive().mapTitle || 'New conversation');
   const [viewMode] = useState('circle');
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [lastQuery, setLastQuery] = useState('');
-  const [lastBotResponse, setLastBotResponse] = useState('');
+  const [lastQuery, setLastQuery] = useState(() => _getStoredActive().lastQuery || '');
+  const [lastBotResponse, setLastBotResponse] = useState(() => _getStoredActive().lastBotResponse || '');
   const [shareCopied, setShareCopied] = useState(false);
   const [shareCopiedText, setShareCopiedText] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [dotsOpen, setDotsOpen] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
   const [undoState, setUndoState] = useState(null);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [savedConversations, setSavedConversations] = useState([]);
-  const [activeConvId, setActiveConvId] = useState(() => Date.now());
+  const [chatHistory, setChatHistory] = useState(() => _getStoredActive().chatHistory || []);
+  const [savedConversations, setSavedConversations] = useState(_getStoredSaved);
+  const [activeConvId, setActiveConvId] = useState(() => _getStoredActive().id || Date.now());
   const [convSwitcherOpen, setConvSwitcherOpen] = useState(false);
   const [chatDotsOpen, setChatDotsOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
@@ -124,6 +131,20 @@ function App() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [shareOpen]);
+
+  // Persist saved conversations to localStorage
+  useEffect(() => {
+    try { localStorage.setItem('buffi_saved_convs', JSON.stringify(savedConversations)); } catch {}
+  }, [savedConversations]);
+
+  // Persist active conversation to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('buffi_active_conv', JSON.stringify({
+        id: activeConvId, chatHistory, mapTitle, highlightData, chartData, chartType, lastQuery, lastBotResponse,
+      }));
+    } catch {}
+  }, [activeConvId, chatHistory, mapTitle, highlightData, chartData, chartType, lastQuery, lastBotResponse]);
 
   // Close chat dots dropdown on outside click
   useEffect(() => {
@@ -225,6 +246,7 @@ function App() {
     setUndoState({ mapTitle, highlightData, chartData, chatHistory });
     if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
     undoTimerRef.current = setTimeout(() => setUndoState(null), 5000);
+    setActiveConvId(Date.now());
     setChatHistory([]);
     setMapTitle('New conversation');
     setHighlightData(null);
