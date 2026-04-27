@@ -1,0 +1,364 @@
+/* ── Overlay ── */
+.rv-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Panel ── */
+.rv-panel {
+  width: 95vw;
+  height: 92vh;
+  background: #fff;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Top Bar ── */
+.rv-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 48px;
+  border-bottom: 1px solid var(--Grey-200);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.rv-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rv-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--Grey-600);
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.rv-close-btn:hover { background: var(--Grey-100); }
+
+.rv-file-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 6px;
+  background: var(--Grey-50, #fafafa);
+}
+
+.rv-filename {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  font-weight: 570;
+  color: var(--Grey-900);
+}
+
+.rv-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rv-more-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--Grey-500);
+  font-size: 16px;
+  letter-spacing: 1px;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.rv-more-btn:hover { background: var(--Grey-100); }
+
+.rv-highlight-btn {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 15px;
+  border: 1px solid var(--Grey-300);
+  background: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  font-weight: 570;
+  color: var(--Grey-700);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.rv-highlight-btn:hover  { background: var(--Grey-100); }
+.rv-highlight-btn.active {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+  color: #DC2626;
+}
+
+.rv-submit-btn {
+  height: 30px;
+  padding: 0 16px;
+  border-radius: 15px;
+  border: none;
+  background: var(--Primary-600);
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  font-weight: 570;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.rv-submit-btn:hover { background: var(--Primary-950); }
+
+/* ── Body ── */
+.rv-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Chat Panel ── */
+.rv-chat {
+  width: 300px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--Grey-200);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.rv-chat-label {
+  display: block;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--Primary-600);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid var(--Grey-100);
+  flex-shrink: 0;
+}
+
+.rv-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rv-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rv-msg-ai .rv-msg-text {
+  background: var(--Grey-100);
+  border-radius: 10px 10px 10px 2px;
+  padding: 10px 12px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  color: var(--Grey-900);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.rv-msg-user .rv-msg-text {
+  background: var(--Primary-600);
+  color: #fff;
+  border-radius: 10px 10px 2px 10px;
+  padding: 8px 12px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 0;
+  align-self: flex-end;
+  max-width: 90%;
+}
+
+.rv-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 2px;
+}
+
+.rv-suggestions-label {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--Grey-500);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.rv-suggestion-btn {
+  text-align: left;
+  padding: 7px 10px;
+  border: 1px solid var(--Primary-300);
+  border-radius: 8px;
+  background: var(--Primary-50, #f0f4ff);
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 11px;
+  color: var(--Primary-700);
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1.4;
+}
+
+.rv-suggestion-btn:hover { background: var(--Primary-100); }
+
+/* ── Chat Input ── */
+.rv-chat-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--Grey-200);
+  flex-shrink: 0;
+}
+
+.rv-chat-input {
+  flex: 1;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 17px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  color: var(--Grey-900);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.rv-chat-input:focus { border-color: var(--Primary-400); }
+
+.rv-chat-send {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.rv-chat-send:hover { background: var(--Primary-950); }
+
+/* ── Data Table Panel ── */
+.rv-table-wrap {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.rv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  min-width: 700px;
+}
+
+.rv-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--Grey-600);
+  border-bottom: 1px solid var(--Grey-200);
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.rv-table tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--Grey-100);
+  color: var(--Grey-800);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* ── Error row highlighting ── */
+.rv-row-error td {
+  background: #FEF2F2;
+}
+
+.rv-cell-error {
+  color: #DC2626 !important;
+  font-weight: 600;
+}
+
+/* ── Editable cell ── */
+.rv-cell-editable {
+  position: relative;
+}
+
+.rv-cell-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rv-edit-btn {
+  opacity: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--Grey-500);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.rv-table tbody tr:hover .rv-edit-btn {
+  opacity: 1;
+}
+
+.rv-edit-btn:hover { color: var(--Primary-600); }
+
+.rv-cell-input {
+  width: 100px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--Primary-400);
+  border-radius: 5px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  color: var(--Grey-900);
+  outline: none;
+  background: #fff;
+}

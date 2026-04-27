@@ -1,0 +1,46 @@
+/*  -- Upload Info Container -- */
+.upload-info {
+    background-color: var(--Grey-50);
+    /* border: 10px solid red; */
+    /* overflow-x: hidden; Prevent horizontal scroll
+    overflow-y: auto;
+    box-sizing: border-box; Prevent padding from adding extra width */
+}
+
+.upload-info h1 {
+    color: var(--Grey-1000);
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 670;
+    line-height: 39px; /* 121.875% */
+    letter-spacing: 0.32px;
+}
+
+.upload-info p {
+    color: var(--Grey-800);
+    /* Body Text main */
+    font-family: "Saans TRIAL";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 380;
+    line-height: 19px; /* 118.75% */
+    letter-spacing: 0.48px;
+}
+
+@media screen and (max-width: 768px) {
+    .upload-info {
+        flex: none;
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .upload-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .upload-info p {
+        font-size: 1rem;
+    }
+}

@@ -1,0 +1,163 @@
+/* -- Main Page -- */
+.main-page {
+    display: flex;
+    min-height: 100vh; /* Ensures it takes at least the full viewport height */
+    width: 100vw;    /* Ensures it takes the full viewport width */
+}
+
+
+/* -- Main Info Left Side -- */
+.main-info-left {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--spacing-500) var(--spacing-550);
+    background-image: linear-gradient(30deg, #2644FF 0%, var(--Primary-800) 50%, var(--Primary-600) 50%, var(--Primary-600) 100%);
+    /* box-sizing: border-box;  Prevent padding from adding extra width */
+}
+
+/* Header */
+.logo-left-header {
+    width: 188.858px;
+    height: 46px;
+}
+
+/* Left Side Image */
+.left-image {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-image img {
+    width: 100%;
+    height: auto;
+    max-width: 493px;
+    max-height: 531px;
+}
+
+/* Footer */
+footer {
+    display: flex;
+    justify-content: space-between;
+    /* align-items: flex-end; */
+}
+
+.bfiLink {
+    color: var(--Grey-100);
+    text-align: left;
+    font-family: "Tobias TRIAL";
+    font-size: 8.125px;
+    font-style: normal;
+    font-weight: 350;
+    line-height: 120%; /* 9.75px */
+    letter-spacing: 0.406px;    
+}
+
+.copyright {
+    color: var(--Grey-100);
+    text-align: right;
+    font-feature-settings: 'liga' off;
+    font-family: "Saans TRIAL";
+    font-size: 8.125px;
+    font-style: normal;
+    font-weight: 380;
+    line-height: 120%; /* 9.75px */
+    letter-spacing: 0.406px;
+}
+
+
+/* -- Main Info Right Side -- */
+.main-info-right {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: var(--Grey-50);
+    padding: var(--spacing-450) var(--spacing-550);
+    align-self: center;
+}
+
+.logo-right {
+    width: 149.999px;
+    height: 36.535px;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+}
+
+h2 {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: 32px 0px;
+}
+
+/* Sign In */
+.signin-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signin-form {
+    background: var(--Grey-50);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 90%;
+    max-width: 445px;
+}
+
+.signin-form input {
+    padding: var(--spacing-400) var(--spacing-450);
+    font-size: 1rem;
+    border-radius: var(--spacing-450);
+    border: 1px solid var(--Grey-300);
+}
+
+.signin-form button {
+    display: flex;
+    margin-top: 12px;
+    padding: var(--spacing-400) 68px;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    border-radius: var(--spacing-450);
+    border: none;
+    background-color: var(--Primary-600);
+    text-align: center;
+    cursor: pointer;
+
+    /* Button Text */
+    color: var(--Grey-50);
+    font-family: "Saans TRIAL";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 570;
+    line-height: normal;
+    width: 100%;
+}
+
+.signin-form button:hover {
+    background-color: var(--Primary-950);
+}
+
+
+/* -- Tablet and down size -- */
+@media screen and (max-width: 768px) {
+    .main-info-left {
+        display: none;
+    }
+}
+
+/* Mobile and small screens */
+@media screen and (max-width: 480px) {
+    /* .main-content {
+        font-size: 1.2rem;
+    }
+
+    .main-content p {
+        font-size: 1rem;
+    } */
+}
