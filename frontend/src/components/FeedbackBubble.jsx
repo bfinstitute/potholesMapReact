@@ -130,7 +130,8 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
     if (setChartData) setChartData(null);
 
     try {
-      const res = await fetch('http://localhost:5005/chat', {
+      const backendUrl = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080').replace(/\/+$/, '');
+      const res = await fetch(`${backendUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed }),

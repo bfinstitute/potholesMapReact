@@ -66,6 +66,11 @@ except ImportError:
     from saaf_intents import detect_intent
     from citations_loader import get_citations_for_intent
 
+try:
+    from .hub_routes import router as hub_router
+except ImportError:
+    from hub_routes import router as hub_router
+
 
 def _geography_hint_from_message(text: str) -> Optional[str]:
     """Lightweight hint for synthesis (Phase 2 will replace with real geo resolution)."""
@@ -93,6 +98,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Alamo-Intelligence-Hub endpoints (login, upload, analyze, ...) under /api
+app.include_router(hub_router)
 
 
 @app.post("/chat")
