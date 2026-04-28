@@ -1,0 +1,139 @@
+/*  -- Main Upload Page Container -- */
+.preview-page {
+  display: flex;
+  /* height: 100vh; */
+  height: auto;
+  padding: var(--spacing-500) var(--spacing-550);
+  flex-direction: column;
+  /* overflow: hidden; */
+  background-color: var(--Grey-50);
+}
+
+.preview-table {
+  max-height: 500px;
+  /* border: 10px solid red; */
+  border-radius: 10px;
+  background-color: var(--Grey-50);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: sans-serif;
+  background-color: var(--Grey-50);
+}
+
+th {
+  background-color: var(--Grey-200);
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  position: relative;
+}
+
+td {
+  margin: 30px;
+}
+
+.header-cell {
+  min-width: 120px;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-label {
+  font-weight: bold;
+}
+
+.question-icon {
+  cursor: help;
+  font-size: 0.85em;
+}
+
+.spark-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.header-description {
+  margin-top: 4px;
+  font-size: 0.8em;
+  color: #666;
+  line-height: 1.2;
+}
+
+/* -- Butttons --  */
+.buttons {
+  display: flex;
+  align-self: center;
+  justify-self: center;
+  gap: 10px;
+  /* flex-shrink: 0; */
+}
+
+.button-base {
+  display: flex;
+  border-radius: var(--spacing-450);
+  border: 1px solid var(--Grey-200);
+  background: var(--Grey-100);
+  width: 300px;
+  padding: var(--spacing-400) 68px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+
+  /* Button Text */
+  color: var(--Grey-1000);
+  font-family: "Saans TRIAL";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 570;
+  line-height: 19px; /* 118.75% */
+  text-transform: capitalize;
+}
+
+.download-btn {
+  border-radius: var(--spacing-500);
+  width: 51px;
+  height: 51px;
+  padding: 12px;
+}
+
+.download-btn:hover,
+.back-btn:hover {
+  background-color: var(--Grey-200);
+}
+
+.next-btn {
+  background: var(--Primary-600);
+  color: var(--Grey-50);
+}
+
+.next-btn:hover {
+  background-color: var(--Primary-950);
+}
+
+
+
+/* Tablet and down */
+@media screen and (max-width: 768px) {
+  .preview-page {
+      flex-direction: column;
+      height: auto;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}

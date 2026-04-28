@@ -1,0 +1,534 @@
+/* ── Page Shell ── */
+.sources-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 28px 32px 32px 32px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+/* ── Top Bar ── */
+.sources-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sources-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sources-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--Grey-1000);
+  margin: 0;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+}
+
+.sources-view-icons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.view-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--Grey-500);
+  transition: background 0.15s, color 0.15s;
+}
+
+.view-icon-btn:hover {
+  background: var(--Grey-100);
+  color: var(--Grey-800);
+}
+
+.view-icon-btn.active {
+  color: var(--Grey-1000);
+}
+
+/* ── Top Bar Right ── */
+.sources-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.storage-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 20px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-700);
+}
+
+.storage-text {
+  font-weight: 500;
+  color: var(--Grey-800);
+}
+
+.storage-used {
+  color: var(--Grey-500);
+}
+
+.storage-info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--Grey-500);
+  transition: background 0.15s;
+}
+
+.storage-info-btn:hover {
+  background: var(--Grey-100);
+}
+
+.upload-btn {
+  height: 36px;
+  padding: 0 20px;
+  border-radius: 20px;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.upload-btn:hover {
+  background: var(--Primary-950);
+}
+
+/* ── Filter Pills ── */
+.sources-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 20px;
+  background: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  font-weight: 450;
+  color: var(--Grey-800);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.filter-pill:hover {
+  background: var(--Grey-100);
+}
+
+/* ── Drop Zone ── */
+.sources-dropzone {
+  flex: 1;
+  border-radius: 16px;
+  border: 2px dashed var(--Grey-300);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  min-height: 400px;
+}
+
+.sources-dropzone.dragging {
+  background: var(--Primary-200);
+  border-color: var(--Primary-400);
+}
+
+.upload-input-hidden {
+  display: none;
+}
+
+/* ── Empty State ── */
+.dropzone-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  max-width: 360px;
+  color: var(--Grey-700);
+}
+
+.dropzone-empty-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 22px;
+  font-weight: 650;
+  color: var(--Grey-1000);
+  margin: 0;
+}
+
+.dropzone-empty-sub {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  color: var(--Grey-600);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.upload-status-text {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Primary-600);
+  margin: 0;
+}
+
+.upload-error-text {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: #e53e3e;
+  margin: 0;
+}
+
+/* ── Drag Active State ── */
+.dropzone-drag-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  max-width: 420px;
+  color: var(--Primary-600);
+}
+
+.dropzone-drag-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 24px;
+  font-weight: 650;
+  color: var(--Grey-1000);
+  margin: 0;
+}
+
+.dropzone-drag-sub {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  color: var(--Grey-700);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dropzone-drag-btn {
+  height: 56px;
+  padding: 0 28px;
+  border-radius: 28px;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.dropzone-drag-btn:hover {
+  background: var(--Primary-950);
+}
+
+/* ── Files view (when files exist) ── */
+.sources-content {
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 16px;
+  padding: 4px;
+  transition: background 0.2s;
+}
+
+.sources-content.dragging-overlay {
+  background: var(--Primary-200);
+  border: 2px dashed var(--Primary-400);
+}
+
+.sources-section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.sources-section-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--Grey-900);
+}
+
+.sources-folders-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.sources-folder-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  min-width: 140px;
+  transition: background 0.12s;
+}
+
+.sources-folder-card:hover {
+  background: var(--Grey-100);
+}
+
+.sources-folder-name {
+  flex: 1;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-900);
+}
+
+.sources-more-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--Grey-500);
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 0;
+}
+
+.sources-files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.sources-file-card {
+  border: 1px solid var(--Grey-200);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.sources-file-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.sources-file-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 10px 8px 10px;
+}
+
+.sources-file-name {
+  flex: 1;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 11px;
+  color: var(--Grey-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sources-file-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #DC2626;
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sources-file-preview {
+  background: var(--Grey-100);
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Success Modal Overlay ── */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.success-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.success-modal-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 20px;
+  font-weight: 650;
+  color: var(--Grey-1000);
+  margin: 0;
+}
+
+.success-modal-body {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  color: var(--Grey-700);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.success-modal-btn {
+  align-self: center;
+  margin-top: 8px;
+  height: 42px;
+  padding: 0 28px;
+  border-radius: 21px;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.success-modal-btn:hover {
+  background: var(--Primary-950);
+}
+
+/* ── Terms of Service Modal ── */
+.tos-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tos-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  max-width: 480px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.tos-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 22px;
+  font-weight: 650;
+  color: var(--Grey-1000);
+  margin: 0;
+}
+
+.tos-body {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  color: var(--Grey-700);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.tos-section {
+  border-top: 1px solid var(--Grey-200);
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tos-section-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--Grey-1000);
+  margin: 0;
+}
+
+.tos-section-body {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-600);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.tos-agree-btn {
+  align-self: center;
+  margin-top: 8px;
+  height: 44px;
+  padding: 0 40px;
+  border-radius: 22px;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tos-agree-btn:hover {
+  background: var(--Primary-950);
+}

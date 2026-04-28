@@ -1,0 +1,74 @@
+.csv-feedback-form {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem auto;
+    font-family: "Saans TRIAL";
+    font-size: 16px;
+    /* Added this to ensure all form children conform to the main container's width */
+    width: 100%;
+}
+
+.csv-feedback-form fieldset {
+    padding: 2rem;
+    border-radius: var(--spacing-500);
+    border: 1px solid var(--Grey-200);
+    background: var(--Grey-50);
+    box-shadow: 0 13.808px 9.205px 0 rgba(255, 255, 255, 0.36) inset, 0 22.405px 22.405px 0 rgba(97, 97, 97, 0.05), 0 3.201px 6.401px 0 rgba(81, 82, 86, 0.14), 0 83.414px 111.218px 0 rgba(0, 0, 0, 0.03);
+    backdrop-filter: blur(27.61508560180664px);
+    margin-bottom: 2rem;
+    /* Ensure the fieldset is also a flex container */
+    display: flex;
+    flex-direction: column;
+}
+
+.csv-feedback-form label {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.csv-feedback-form p {
+    padding: 0px 0px 0px 10px;
+}
+
+.csv-feedback-form textarea,
+.csv-feedback-form select {
+    padding: var(--spacing-400) var(--spacing-450);
+    /* Change width to 100% to fill the parent container completely. */
+    width: 100%;
+    min-width: 0px;
+    border-radius: var(--spacing-450);
+    border: 1px solid var(--Grey-300);
+    background: var(--Grey-50);
+    resize: vertical;
+    /* Added box-sizing to include padding and border within the element's width. */
+    box-sizing: border-box;
+}
+
+.csv-feedback-form button {
+    display: flex;
+    margin-top: 12px;
+    padding: var(--spacing-400) 68px;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    border-radius: var(--spacing-450);
+    border: none;
+    background-color: var(--Primary-600);
+    text-align: center;
+    cursor: pointer;
+
+    /* Button Text */
+    color: var(--Grey-50);
+    font-family: "Saans TRIAL";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 570;
+    line-height: normal;
+    width: 445px;
+}
+
+.csv-feedback-form button:hover {
+    background-color: var(--Primary-950);
+}
