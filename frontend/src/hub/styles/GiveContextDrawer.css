@@ -1,0 +1,301 @@
+/* ── Overlay ── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Panel ── */
+.drawer-panel {
+  width: 500px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--Grey-200);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Header ── */
+.drawer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid var(--Grey-200);
+  flex-shrink: 0;
+}
+
+.drawer-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 18px;
+  font-weight: 650;
+  color: var(--Grey-1000);
+  margin: 0 0 4px 0;
+}
+
+.drawer-subtitle {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-500);
+  margin: 0;
+}
+
+.drawer-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--Grey-600);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.drawer-close-btn:hover {
+  background: var(--Grey-100);
+}
+
+/* ── Form ── */
+.drawer-form {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drawer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-label {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  font-weight: 570;
+  color: var(--Grey-800);
+}
+
+/* ── Inputs ── */
+.drawer-input-wrap {
+  position: relative;
+}
+
+.drawer-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-1000);
+  background: #fff;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.drawer-input:focus {
+  border-color: var(--Primary-400);
+}
+
+.drawer-input-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--Grey-500);
+  border-radius: 4px;
+  padding: 0;
+}
+
+/* ── Textareas ── */
+.drawer-textarea-wrap {
+  position: relative;
+}
+
+.drawer-textarea {
+  width: 100%;
+  padding: 10px 32px 10px 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-1000);
+  background: #fff;
+  box-sizing: border-box;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+  line-height: 1.5;
+}
+
+.drawer-textarea:focus {
+  border-color: var(--Primary-400);
+}
+
+.drawer-clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--Grey-500);
+  border-radius: 4px;
+  padding: 0;
+}
+
+/* ── Radio Groups ── */
+.drawer-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.drawer-radio-item:hover {
+  border-color: var(--Grey-300);
+  background: var(--Grey-100);
+}
+
+.drawer-radio-item input[type="radio"] {
+  margin-top: 2px;
+  accent-color: var(--Primary-600);
+  flex-shrink: 0;
+}
+
+.drawer-radio-label {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  font-weight: 570;
+  color: var(--Grey-1000);
+  flex: 1;
+}
+
+.drawer-radio-hint {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 11px;
+  color: var(--Grey-500);
+  display: block;
+  margin-top: 2px;
+}
+
+/* ── Governance Tags ── */
+.drawer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.drawer-tag {
+  padding: 6px 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 20px;
+  background: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  font-weight: 450;
+  color: var(--Grey-800);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.drawer-tag:hover {
+  border-color: var(--Primary-400);
+  color: var(--Primary-600);
+}
+
+.drawer-tag.selected {
+  background: var(--Primary-100);
+  border-color: var(--Primary-400);
+  color: var(--Primary-600);
+}
+
+/* ── Acknowledgement ── */
+.drawer-ack {
+  padding: 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  background: var(--Grey-100);
+}
+
+.drawer-ack-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  color: var(--Grey-700);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.drawer-ack-label input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: var(--Primary-600);
+  flex-shrink: 0;
+}
+
+/* ── Submit ── */
+.drawer-submit-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 22px;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+
+.drawer-submit-btn:hover:not(:disabled) {
+  background: var(--Primary-950);
+}
+
+.drawer-submit-btn:disabled {
+  background: var(--Grey-300);
+  cursor: not-allowed;
+}

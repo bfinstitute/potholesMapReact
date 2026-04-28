@@ -1,0 +1,45 @@
+.toggle-container {
+    text-align: center;
+    font-family: "Saans TRIAL";
+}
+  
+.toggle-buttons {
+    display: inline-flex;
+    border-radius: var(--spacing-450);
+    border: 1px solid var(--Grey-200);
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+  
+.toggle-button {
+    padding: 0.5rem 1rem;
+    background: var(--Grey-100);
+    color: var(--Grey-1000);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+  
+.toggle-button:hover {
+    background-color: var(--Grey-200);
+}
+  
+.toggle-button.active {
+    background-color: var(--Primary-600);
+    color: var(--Grey-50);
+}
+
+.toggle-button.active:hover {
+    background-color: var(--Primary-950);
+}
+  
+.component-a {
+    padding: 1rem;
+    background-color: #e0f7fa;
+}
+  
+.component-b {
+    padding: 1rem;
+    background-color: #fff3e0;
+}
+  

@@ -1,0 +1,77 @@
+.progress-dots-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 20px 0px 30px 0px;
+    flex-wrap: nowrap;
+  }
+  
+  .step-content-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .step-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .step-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--Primary-1000);
+    background-color: var(--Grey-50);
+    color: var(--Grey-50);
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .step-dot.current {
+    background-color: var(--Primary-600)
+  }
+  
+  .step-dot.completed {
+    background-color: var(--Primary-600)
+  }
+  
+  .step-label {
+    margin-top: 5px;
+    text-align: center;
+    color: var(--Primary-1000);
+
+    /* Body Text Grey */
+    font-family: "Saans TRIAL";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 380;
+    line-height: 19px; /* 118.75% */
+    letter-spacing: 0.48px;
+  }
+  
+  .step-connector {
+    display: flex;
+    gap: 6px;
+    margin: 0 8px;
+    align-items: center;
+    transform: translateY(-150%);
+  }
+  
+  .small-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--Grey-200)
+  }
+  
+  .completed-connector {
+    width: 120px; /* Adjust width to control spacing */
+    height: 8px;
+    background-color: var(--Primary-600);
+    border-radius: 999px; /* Large value for fully rounded ends (capsule shape) */
+  }

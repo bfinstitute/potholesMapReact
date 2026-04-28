@@ -1,0 +1,324 @@
+/* ── Overlay ── */
+.sc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Modal ── */
+.sc-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 32px 28px 32px;
+  width: 460px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+/* ── Title ── */
+.sc-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 20px;
+  font-weight: 650;
+  color: var(--Grey-1000);
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Step Indicator ── */
+.sc-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.sc-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.sc-step-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--Grey-300);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.sc-step.active .sc-step-dot {
+  background: var(--Primary-600);
+  border-color: var(--Primary-600);
+}
+
+.sc-step.done .sc-step-dot {
+  background: var(--Primary-600);
+  border-color: var(--Primary-600);
+  color: #fff;
+}
+
+.sc-step.inactive .sc-step-dot {
+  background: #fff;
+  border-color: var(--Grey-300);
+}
+
+.sc-step-label {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 11px;
+  font-weight: 570;
+  color: var(--Grey-500);
+  white-space: nowrap;
+}
+
+.sc-step.active .sc-step-label { color: var(--Primary-600); }
+.sc-step.done  .sc-step-label  { color: var(--Grey-700); }
+
+.sc-step-line {
+  width: 60px;
+  height: 2px;
+  background: var(--Grey-200);
+  margin: 0 8px;
+  margin-bottom: 22px; /* align with dot center */
+  flex-shrink: 0;
+}
+
+/* ── Body ── */
+.sc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Field ── */
+.sc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sc-label {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  font-weight: 570;
+  color: var(--Grey-800);
+}
+
+/* ── Input ── */
+.sc-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-1000);
+  background: #fff;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.sc-input:focus { border-color: var(--Primary-400); }
+
+/* ── Textarea ── */
+.sc-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-1000);
+  background: #fff;
+  box-sizing: border-box;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+  line-height: 1.5;
+}
+
+.sc-textarea:focus { border-color: var(--Primary-400); }
+
+/* ── Date fields row ── */
+.sc-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.sc-date-wrap {
+  position: relative;
+}
+
+.sc-date-wrap .sc-input {
+  padding-right: 32px;
+}
+
+.sc-date-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--Grey-500);
+  pointer-events: none;
+}
+
+/* ── Checkbox ── */
+.sc-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-700);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.sc-checkbox {
+  margin-top: 2px;
+  accent-color: var(--Primary-600);
+  flex-shrink: 0;
+}
+
+/* ── Next button ── */
+.sc-next-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 22px;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+
+.sc-next-btn:hover { background: var(--Primary-700); }
+
+/* ── Select ── */
+.sc-select-wrap {
+  position: relative;
+}
+
+.sc-select {
+  width: 100%;
+  height: 38px;
+  padding: 0 36px 0 12px;
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  color: var(--Grey-1000);
+  background: #fff;
+  box-sizing: border-box;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.sc-select:focus { border-color: var(--Primary-400); }
+
+.sc-select-chevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--Grey-500);
+  pointer-events: none;
+}
+
+/* ── Classification card ── */
+.sc-classification-card {
+  background: var(--Grey-50, #f9fafb);
+  border: 1px solid var(--Grey-200);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sc-classification-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--Grey-900);
+  margin: 0;
+}
+
+.sc-classification-desc {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 12px;
+  color: var(--Grey-600);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Ack row ── */
+.sc-ack-row {
+  background: var(--Grey-50, #f9fafb);
+  border: 1px solid var(--Grey-200);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* ── Step 2 buttons ── */
+.sc-step2-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.sc-back-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 22px;
+  border: 1px solid var(--Grey-300);
+  background: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  color: var(--Grey-700);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sc-back-btn:hover { background: var(--Grey-100); }
+
+.sc-submit-btn {
+  flex: 2;
+  height: 44px;
+  border-radius: 22px;
+  border: none;
+  background: var(--Primary-600);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sc-submit-btn:hover { background: var(--Primary-700); }
