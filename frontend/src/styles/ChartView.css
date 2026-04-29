@@ -9,7 +9,7 @@
 }
 
 .chart-header {
-  padding: 20px 24px 12px;
+  padding: 18px 16px 8px;
   border-bottom: 1px solid var(--Grey-200);
   flex-shrink: 0;
 }
