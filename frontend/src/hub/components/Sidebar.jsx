@@ -8,7 +8,10 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    // Force a full reload so no in-memory chat state leaks
+    // between users after logout/login.
+    navigate('/', { replace: true });
+    window.location.reload();
   };
 
   return (

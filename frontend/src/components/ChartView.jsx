@@ -54,7 +54,7 @@ function ColorLegend({ items }) {
   );
 }
 
-export default function ChartView({ chartData, chartType = 'bar' }) {
+export default function ChartView({ chartData, chartType = 'bar', hideHeader = false, beforeBody = null }) {
   if (!chartData || !chartData.data || chartData.data.length === 0) return null;
 
   const { type, title, xKey, yKey, yKey2, xLabel, yLabel, data } = chartData;
@@ -183,9 +183,12 @@ export default function ChartView({ chartData, chartType = 'bar' }) {
 
   return (
     <div className="chart-view">
-      <div className="chart-header">
-        <span className="chart-title">{title}</span>
-      </div>
+      {!hideHeader && (
+        <div className="chart-header">
+          <span className="chart-title">{title}</span>
+        </div>
+      )}
+      {beforeBody}
       <div className="chart-body">
         {chartType === 'pie'   && renderPie()}
         {chartType === 'radar' && renderRadar()}
