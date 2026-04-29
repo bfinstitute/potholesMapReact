@@ -60,6 +60,30 @@ const IconBookmarkTop = () => (
   </svg>
 );
 
+const IconBarMini = () => (
+  <svg className="viz-switcher-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true" style={{ color: '#FF5C17' }}>
+    <path d="M4 16V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M10 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M16 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const IconRadarMini = () => (
+  <svg className="viz-switcher-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true" style={{ color: '#8C94CE' }}>
+    <path d="M10 3l6 4v6l-6 4-6-4V7l6-4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M10 3v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+    <path d="M4 7l12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+    <path d="M16 7L4 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+  </svg>
+);
+
+const IconPieMini = () => (
+  <svg className="viz-switcher-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true" style={{ color: '#00B89C' }}>
+    <path d="M10 3v7h7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9.5 3.05A7 7 0 1016.95 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
 const _getStoredActive = () => {
   try { return JSON.parse(localStorage.getItem('buffi_active_conv')) || {}; } catch { return {}; }
 };
@@ -678,15 +702,15 @@ function ChatPage() {
                             <span>San Antonio Map</span>
                           </button>
                           <button type="button" className={`viz-switcher-item${selectedVizKey === 'bar' ? ' active' : ''}`} onClick={() => setVizMode('bar')} aria-pressed={selectedVizKey === 'bar'}>
-                            <img src={suiteChartsIcon} alt="" className="viz-switcher-icon" />
+                            <IconBarMini />
                             <span>Bar</span>
                           </button>
                           <button type="button" className={`viz-switcher-item${selectedVizKey === 'radar' ? ' active' : ''}`} onClick={() => setVizMode('radar')} aria-pressed={selectedVizKey === 'radar'}>
-                            <img src={suiteChartsIcon} alt="" className="viz-switcher-icon" />
+                            <IconRadarMini />
                             <span>Radar</span>
                           </button>
                           <button type="button" className={`viz-switcher-item${selectedVizKey === 'pie' ? ' active' : ''}`} onClick={() => setVizMode('pie')} aria-pressed={selectedVizKey === 'pie'}>
-                            <img src={suiteChartsIcon} alt="" className="viz-switcher-icon" />
+                            <IconPieMini />
                             <span>Pie</span>
                           </button>
                         </div>
@@ -705,15 +729,15 @@ function ChatPage() {
                           <span>San Antonio Map</span>
                         </button>
                         <button type="button" className={`viz-switcher-item${selectedVizKey === 'bar' ? ' active' : ''}`} onClick={() => setVizMode('bar')} aria-pressed={selectedVizKey === 'bar'}>
-                          <img src={suiteChartsIcon} alt="" className="viz-switcher-icon" />
+                          <IconBarMini />
                           <span>Bar</span>
                         </button>
                         <button type="button" className={`viz-switcher-item${selectedVizKey === 'radar' ? ' active' : ''}`} onClick={() => setVizMode('radar')} aria-pressed={selectedVizKey === 'radar'}>
-                          <img src={suiteChartsIcon} alt="" className="viz-switcher-icon" />
+                          <IconRadarMini />
                           <span>Radar</span>
                         </button>
                         <button type="button" className={`viz-switcher-item${selectedVizKey === 'pie' ? ' active' : ''}`} onClick={() => setVizMode('pie')} aria-pressed={selectedVizKey === 'pie'}>
-                          <img src={suiteChartsIcon} alt="" className="viz-switcher-icon" />
+                          <IconPieMini />
                           <span>Pie</span>
                         </button>
                       </div>
