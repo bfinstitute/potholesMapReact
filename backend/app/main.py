@@ -115,6 +115,10 @@ async def chat(request: Request):
     if blocked:
         return {"response": blocked, "structured": None, "highlight_data": None}
 
+    # Detect intent once — used for citations on every code path
+    intent = detect_intent(user_message)
+    citations = get_citations_for_intent(intent)
+
     # Generate context signature for MongoDB caching
     context_sig = _get_context_signature()
 
@@ -122,6 +126,9 @@ async def chat(request: Request):
     disk_cached = disk_get(user_message)
     if disk_cached:
         print(f"[DiskCache] Hit for: {user_message[:60]}")
+        # Always attach fresh citations so cached responses stay up-to-date
+        if isinstance(disk_cached.get("structured"), dict):
+            disk_cached["structured"]["citations"] = citations
         return disk_cached
 
     # --- Cache layer 2: MongoDB (if configured) ---
@@ -146,10 +153,11 @@ async def chat(request: Request):
 
         result = {
             "response": cached["response"],
-            "structured": cached.get("structured"),
+            "structured": cached.get("structured") or {},
             "highlight_data": cached.get("highlight_data"),
             "chart_data": cached.get("chart_data"),
         }
+        result["structured"]["citations"] = citations
         # Also write to disk cache so next hit is local
         disk_set(user_message, result)
         return result
@@ -218,8 +226,6 @@ async def chat(request: Request):
         # Note: We could also cache the structured payload separately if needed
         # For now, we're just caching the answer text and highlight_data
 
-    # Attach citations based on which SAAF intent was matched
-    citations = get_citations_for_intent(detect_intent(user_message))
     payload["citations"] = citations
 
     final_response = {

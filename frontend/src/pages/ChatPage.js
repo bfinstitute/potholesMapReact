@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import MapView from '../components/MapView';
 import ChartView from '../components/ChartView';
 import FeedbackBubble from '../components/FeedbackBubble';
@@ -60,7 +60,15 @@ const IconBookmarkTop = () => (
 );
 
 const _getStoredActive = () => {
-  try { return JSON.parse(localStorage.getItem('buffi_active_conv')) || {}; } catch { return {}; }
+  try {
+    const data = JSON.parse(localStorage.getItem('buffi_active_conv')) || {};
+    if (data.chatHistory) {
+      data.chatHistory = data.chatHistory.filter(
+        msg => !(msg.from === 'bot' && msg.text && (msg.text.startsWith('Sorry, there was an error') || msg.text.startsWith('Error:')))
+      );
+    }
+    return data;
+  } catch { return {}; }
 };
 const _getStoredSaved = () => {
   try { return JSON.parse(localStorage.getItem('buffi_saved_convs')) || []; } catch { return []; }
@@ -68,6 +76,7 @@ const _getStoredSaved = () => {
 
 function ChatPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [geoData, setGeoData] = useState(null);
   const [indicators, setIndicators] = useState([]);
   const [profiles, setProfiles] = useState({});
@@ -108,6 +117,14 @@ function ChatPage() {
   }, []);
 
   // Close dots dropdown on outside click
+  useEffect(() => {
+    if (location.state?.newConv) {
+      handleNewConversation();
+      navigate('/chat', { replace: true, state: {} });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state?.newConv]);
+
   useEffect(() => {
     if (!dotsOpen) return;
     const handler = (e) => {

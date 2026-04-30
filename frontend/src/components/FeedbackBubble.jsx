@@ -130,8 +130,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
     if (setChartData) setChartData(null);
 
     try {
-      const backendUrl = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080').replace(/\/+$/, '');
-      const res = await fetch(`${backendUrl}/chat`, {
+      const res = await fetch(`/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed }),
@@ -162,10 +161,11 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
       if (setChartData) setChartData(data.chart_data || null);
       if (setLastBotResponse) setLastBotResponse(answerText);
       if (setMapTitle) setMapTitle(deriveConversationTitle(trimmed));
-    } catch {
+    } catch (err) {
+      console.error('Chat error:', err);
       setChatHistory(prev => [
         ...prev,
-        { from: 'bot', text: 'Sorry, there was an error connecting to the chatbot.' },
+        { from: 'bot', text: `Error: ${err.message || 'Could not connect to chatbot at ' + (process.env.REACT_APP_BACKEND_URL || 'http://localhost:5005')}` },
       ]);
       if (setHighlightData) setHighlightData(null);
       if (setChartData) setChartData(null);
@@ -254,6 +254,12 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
   // ── Chat State ──
   const lastChartIdx = chatHistory.reduce((acc, msg, i) => msg.chartTag ? i : acc, -1);
 
+  // Build a set of dataset names already shown in earlier bot messages (for dedup)
+  const seenDatasets = [];
+  chatHistory.forEach((msg) => {
+    seenDatasets.push(new Set(msg.from === 'bot' ? (msg.citations || []).map(c => c.dataset) : []));
+  });
+
   const restoreViz = (msg, mode = 'chart') => {
     // Use restoreChartData (raw setter) so chart type is NOT reset to 'bar'
     const chartSetter = restoreChartData || setChartData;
@@ -329,35 +335,45 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
                     </ul>
                   </div>
                 )}
-                {msg.citations?.length > 0 && (
-                  <div className="citations-panel">
-                    <button
-                      className="citations-toggle"
-                      onClick={() => setOpenCitations(prev => ({ ...prev, [idx]: !prev[idx] }))}
-                    >
-                      <span className="citations-toggle-label">Sources ({msg.citations.length})</span>
-                      <img
-                        src={chevronDownIcon}
-                        alt=""
-                        className={`citations-toggle-arrow${openCitations[idx] ? ' citations-toggle-arrow--open' : ''}`}
-                      />
-                    </button>
-                    {openCitations[idx] && (
-                      <ol className="citations-list">
-                        {msg.citations.map((c, ci) => (
-                          <li key={ci} className="citation-item">
-                            <span className="citation-dataset">{c.dataset}</span>
-                            {c.source && <span className="citation-source"> · {c.source}</span>}
-                            <div className="citation-links">
-                              {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="citation-link">Source ↗</a>}
-                              {c.data_link && <a href={c.data_link} target="_blank" rel="noreferrer" className="citation-link">Data ↗</a>}
-                            </div>
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </div>
-                )}
+                {(() => {
+                  // Only show citations not already displayed in a prior message
+                  const priorSeen = new Set(
+                    seenDatasets.slice(0, idx).flatMap(s => [...s])
+                  );
+                  const newCitations = (msg.citations || []).filter(
+                    c => !priorSeen.has(c.dataset)
+                  );
+                  if (newCitations.length === 0) return null;
+                  return (
+                    <div className="citations-panel">
+                      <button
+                        className="citations-toggle"
+                        onClick={() => setOpenCitations(prev => ({ ...prev, [idx]: !prev[idx] }))}
+                      >
+                        <span className="citations-toggle-label">Sources ({newCitations.length})</span>
+                        <img
+                          src={chevronDownIcon}
+                          alt=""
+                          className={`citations-toggle-arrow${openCitations[idx] ? ' citations-toggle-arrow--open' : ''}`}
+                        />
+                      </button>
+                      {openCitations[idx] && (
+                        <ol className="citations-list">
+                          {newCitations.map((c, ci) => (
+                            <li key={ci} className="citation-item">
+                              <span className="citation-dataset">{c.dataset}</span>
+                              {c.source && <span className="citation-source"> · {c.source}</span>}
+                              <div className="citation-links">
+                                {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="citation-link">Source ↗</a>}
+                                {c.data_link && <a href={c.data_link} target="_blank" rel="noreferrer" className="citation-link">Data ↗</a>}
+                              </div>
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </div>
+                  );
+                })()}
                 {msg.structured?.follow_up_question && (
                   <div className="structured-followup">
                     <span className="structured-label">Try asking</span>

@@ -1,8 +1,4 @@
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL ||
-  (process.env.REACT_APP_BACKEND_URL
-    ? `${process.env.REACT_APP_BACKEND_URL.replace(/\/+$/, '')}/api`
-    : 'http://localhost:8080/api');
+const API_BASE_URL = '/api';
 
 class ApiService {
   constructor() {
@@ -157,12 +153,21 @@ class ApiService {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Login failed');
+      const rawText = await response.text();
+      console.log('Login raw response:', response.status, rawText);
+
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(`Server returned invalid response (${response.status}): ${rawText.substring(0, 100)}`);
       }
 
-      return await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Login failed');
+      }
+
+      return data;
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
