@@ -14,6 +14,12 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   const login = (authToken, userData) => {
+    // Always start a fresh chat session on login so one user's
+    // conversation doesn't carry over to another user/device session.
+    try {
+      localStorage.removeItem('buffi_active_conv');
+      localStorage.removeItem('buffi_saved_convs');
+    } catch {}
     setToken(authToken);
     setUser(userData);
     setSignedIn(true);
@@ -25,6 +31,9 @@ export function AuthProvider({ children }) {
     setUser(null);
     setSignedIn(false);
     localStorage.removeItem('authToken');
+    // Clear user-scoped UI state so next login starts fresh
+    localStorage.removeItem('buffi_active_conv');
+    localStorage.removeItem('buffi_saved_convs');
   };
 
   return (

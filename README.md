@@ -21,7 +21,7 @@ You can run the backend without a Groq API key. In this mode, the chatbot will o
 
 ```bash
 cd backend/app
-uvicorn main:app --reload --host 127.0.0.1 --port 5005
+uvicorn main:app --reload --host 0.0.0.0 --port 8080
 ```
 - Do **not** set the `GROQ_API_KEY` environment variable.
 - The bot will answer only data-driven questions. LLM/generic questions will return a fallback message.
@@ -30,7 +30,7 @@ uvicorn main:app --reload --host 127.0.0.1 --port 5005
 If you want LLM fallback for generic questions:
 ```powershell
 $env:GROQ_API_KEY="your_actual_groq_api_key"
-uvicorn main:app --reload --host 127.0.0.1 --port 5005
+uvicorn main:app --reload --host 0.0.0.0 --port 8080
 ```
 
 ---
@@ -52,6 +52,10 @@ npm install
 npm start
 ```
 - The app will be available at [http://localhost:3000](http://localhost:3000) or [http://localhost:3001](http://localhost:3001).
+- The frontend calls the backend via `REACT_APP_BACKEND_URL` (defaults to `http://localhost:8080`).
+
+### Charts
+- The frontend uses **MUI X Charts** (`@mui/x-charts`) for Bar / Pie / Radar charts.
 
 ---
 
