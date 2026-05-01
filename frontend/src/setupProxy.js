@@ -1,7 +1,7 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const backendProxy = createProxyMiddleware({
-  target: 'http://127.0.0.1:5005',
+  target: 'http://127.0.0.1:8080',
   changeOrigin: true,
   timeout: 120000,
   proxyTimeout: 120000,
