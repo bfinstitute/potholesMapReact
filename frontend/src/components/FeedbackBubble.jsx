@@ -57,13 +57,14 @@ function deriveConversationTitle(userText) {
   return clean.length > 52 ? clean.slice(0, 49) + '…' : clean;
 }
 
-const CHART_TYPES = [
+const VIZ_TYPES = [
+  { key: 'map',   label: 'Map View of San Antonio' },
   { key: 'pie',   label: 'Pie Chart' },
   { key: 'radar', label: 'Radar Chart' },
   { key: 'bar',   label: 'Bar Chart' },
 ];
 
-export default function FeedbackBubble({ setHighlightData, setChartData, restoreChartData, setMapTitle, chartType, setChartType, setIsLoading, setLastQuery, setLastBotResponse, initialQuery, chatHistory, setChatHistory }) {
+export default function FeedbackBubble({ setHighlightData, setChartData, restoreChartData, setMapTitle, chartType, setChartType, openVisualizationPanel, setIsLoading, setLastQuery, setLastBotResponse, initialQuery, chatHistory, setChatHistory }) {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState(1);
@@ -130,7 +131,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
     if (setChartData) setChartData(null);
 
     try {
-      const res = await fetch('http://localhost:5005/chat', {
+      const res = await fetch(`/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed }),
@@ -161,10 +162,11 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
       if (setChartData) setChartData(data.chart_data || null);
       if (setLastBotResponse) setLastBotResponse(answerText);
       if (setMapTitle) setMapTitle(deriveConversationTitle(trimmed));
-    } catch {
+    } catch (err) {
+      console.error('Chat error:', err);
       setChatHistory(prev => [
         ...prev,
-        { from: 'bot', text: 'Sorry, there was an error connecting to the chatbot.' },
+        { from: 'bot', text: `Error: ${err.message || 'Could not connect to chatbot at ' + (process.env.REACT_APP_BACKEND_URL || 'http://localhost:5005')}` },
       ]);
       if (setHighlightData) setHighlightData(null);
       if (setChartData) setChartData(null);
@@ -252,6 +254,13 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
 
   // ── Chat State ──
   const lastChartIdx = chatHistory.reduce((acc, msg, i) => msg.chartTag ? i : acc, -1);
+  const lastVizIdx = chatHistory.reduce((acc, msg, i) => (msg.chartTag || msg.mapTag) ? i : acc, -1);
+
+  // Build a set of dataset names already shown in earlier bot messages (for dedup)
+  const seenDatasets = [];
+  chatHistory.forEach((msg) => {
+    seenDatasets.push(new Set(msg.from === 'bot' ? (msg.citations || []).map(c => c.dataset) : []));
+  });
 
   const restoreViz = (msg, mode = 'chart') => {
     // Use restoreChartData (raw setter) so chart type is NOT reset to 'bar'
@@ -266,6 +275,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
     if (msg.savedHighlightData && setHighlightData) setHighlightData(msg.savedHighlightData);
     else if (setHighlightData) setHighlightData(null);
     if (msg.savedTitle && setMapTitle) setMapTitle(msg.savedTitle);
+    if (openVisualizationPanel) openVisualizationPanel();
   };
 
   return (
@@ -328,49 +338,50 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
                     </ul>
                   </div>
                 )}
-                {msg.citations?.length > 0 && (
-                  <div className="citations-panel">
-                    <button
-                      className="citations-toggle"
-                      onClick={() => setOpenCitations(prev => ({ ...prev, [idx]: !prev[idx] }))}
-                    >
-                      <span className="citations-toggle-label">Sources ({msg.citations.length})</span>
-                      <img
-                        src={chevronDownIcon}
-                        alt=""
-                        className={`citations-toggle-arrow${openCitations[idx] ? ' citations-toggle-arrow--open' : ''}`}
-                      />
-                    </button>
-                    {openCitations[idx] && (
-                      <ol className="citations-list">
-                        {msg.citations.map((c, ci) => (
-                          <li key={ci} className="citation-item">
-                            <span className="citation-dataset">{c.dataset}</span>
-                            {c.source && <span className="citation-source"> · {c.source}</span>}
-                            <div className="citation-links">
-                              {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="citation-link">Source ↗</a>}
-                              {c.data_link && <a href={c.data_link} target="_blank" rel="noreferrer" className="citation-link">Data ↗</a>}
-                            </div>
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                  </div>
-                )}
+                {(() => {
+                  // Only show citations not already displayed in a prior message
+                  const priorSeen = new Set(
+                    seenDatasets.slice(0, idx).flatMap(s => [...s])
+                  );
+                  const newCitations = (msg.citations || []).filter(
+                    c => !priorSeen.has(c.dataset)
+                  );
+                  if (newCitations.length === 0) return null;
+                  return (
+                    <div className="citations-panel">
+                      <button
+                        className="citations-toggle"
+                        onClick={() => setOpenCitations(prev => ({ ...prev, [idx]: !prev[idx] }))}
+                      >
+                        <span className="citations-toggle-label">Sources ({newCitations.length})</span>
+                        <img
+                          src={chevronDownIcon}
+                          alt=""
+                          className={`citations-toggle-arrow${openCitations[idx] ? ' citations-toggle-arrow--open' : ''}`}
+                        />
+                      </button>
+                      {openCitations[idx] && (
+                        <ol className="citations-list">
+                          {newCitations.map((c, ci) => (
+                            <li key={ci} className="citation-item">
+                              <span className="citation-dataset">{c.dataset}</span>
+                              {c.source && <span className="citation-source"> · {c.source}</span>}
+                              <div className="citation-links">
+                                {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="citation-link">Source ↗</a>}
+                                {c.data_link && <a href={c.data_link} target="_blank" rel="noreferrer" className="citation-link">Data ↗</a>}
+                              </div>
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </div>
+                  );
+                })()}
                 {msg.structured?.follow_up_question && (
                   <div className="structured-followup">
                     <span className="structured-label">Try asking</span>
                     <span className="structured-followup-q">{msg.structured.follow_up_question}</span>
                   </div>
-                )}
-                {/* Visualization picker — only on the most recent chart response */}
-                {msg.chartTag && idx === lastChartIdx && (
-                  <button
-                    className="viz-change-btn"
-                    onClick={() => { setVizModalMsg(msg); setVizModalOpen(true); }}
-                  >
-                    Change visualization
-                  </button>
                 )}
                 <div className="reaction-bar">
                   <div className="reaction-copy-wrapper">
@@ -462,22 +473,31 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
               <button className="viz-modal-close" onClick={() => setVizModalOpen(false)}>✕</button>
             </div>
             <div className="viz-modal-list">
-              {CHART_TYPES.map((ct, i) => (
-                <div key={ct.key}>
+              {VIZ_TYPES.map((opt, i) => {
+                const selectedKey = vizModalMsg.mapTag && !vizModalMsg.chartTag ? 'map' : chartType;
+                const isSelected = selectedKey === opt.key;
+                return (
+                <div key={opt.key}>
                   <button
-                    className={`viz-modal-option${chartType === ct.key ? ' viz-modal-option--selected' : ''}`}
+                    className={`viz-modal-option${isSelected ? ' viz-modal-option--selected' : ''}`}
                     onClick={() => {
-                      if (setChartType) setChartType(ct.key);
-                      restoreViz(vizModalMsg, 'chart');
+                      if (openVisualizationPanel) openVisualizationPanel();
+                      if (opt.key === 'map') {
+                        restoreViz(vizModalMsg, 'map');
+                      } else {
+                        if (setChartType) setChartType(opt.key);
+                        restoreViz(vizModalMsg, 'chart');
+                      }
                       setVizModalOpen(false);
                     }}
                   >
-                    <span className={`viz-modal-radio${chartType === ct.key ? ' viz-modal-radio--selected' : ''}`} />
-                    <span className="viz-modal-label">{ct.label}</span>
+                    <span className={`viz-modal-radio${isSelected ? ' viz-modal-radio--selected' : ''}`} />
+                    <span className="viz-modal-label">{opt.label}</span>
                   </button>
-                  {i < CHART_TYPES.length - 1 && <div className="viz-modal-divider" />}
+                  {i < VIZ_TYPES.length - 1 && <div className="viz-modal-divider" />}
                 </div>
-              ))}
+              );
+              })}
             </div>
             <div className="viz-modal-footer">
               <button className="viz-modal-skip" onClick={() => setVizModalOpen(false)}>Skip</button>

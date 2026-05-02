@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import '../styles/Home.css';
@@ -12,8 +12,15 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [backendDown, setBackendDown] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then(r => r.ok ? setBackendDown(false) : setBackendDown(true))
+      .catch(() => setBackendDown(true));
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,11 +30,16 @@ export default function Home() {
     try {
       const result = await apiService.login(email, password);
       if (result.success) {
+        localStorage.removeItem('buffi_active_conv');
         login(result.token, result.user);
         navigate('/chat');
       }
     } catch (error) {
-      setError(error.message || 'Login failed. Please try again.');
+      if (error.message === 'Failed to fetch' || error.message?.includes('unavailable')) {
+        setError('Cannot reach the server. Please make sure the backend is running on port 5005.');
+      } else {
+        setError(error.message || 'Login failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +67,11 @@ export default function Home() {
           <img src={mainLogo} alt="Better Futures Institute"/>
         </a>
         <div className="signin-container">
+          {backendDown && (
+            <div style={{ background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: '#856404' }}>
+              ⚠️ Backend server is not reachable. Please start the backend before logging in.
+            </div>
+          )}
           <form className="signin-form" onSubmit={handleLogin}>
             <h2>Log in to your account</h2>
             <input

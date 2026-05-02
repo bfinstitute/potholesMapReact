@@ -66,6 +66,11 @@ except ImportError:
     from saaf_intents import detect_intent
     from citations_loader import get_citations_for_intent
 
+try:
+    from .hub_routes import router as hub_router
+except ImportError:
+    from hub_routes import router as hub_router
+
 
 def _geography_hint_from_message(text: str) -> Optional[str]:
     """Lightweight hint for synthesis (Phase 2 will replace with real geo resolution)."""
@@ -94,6 +99,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Alamo-Intelligence-Hub endpoints (login, upload, analyze, ...) under /api
+app.include_router(hub_router)
+
 
 @app.post("/chat")
 async def chat(request: Request):
@@ -107,6 +115,10 @@ async def chat(request: Request):
     if blocked:
         return {"response": blocked, "structured": None, "highlight_data": None}
 
+    # Detect intent once — used for citations on every code path
+    intent = detect_intent(user_message)
+    citations = get_citations_for_intent(intent)
+
     # Generate context signature for MongoDB caching
     context_sig = _get_context_signature()
 
@@ -114,6 +126,9 @@ async def chat(request: Request):
     disk_cached = disk_get(user_message)
     if disk_cached:
         print(f"[DiskCache] Hit for: {user_message[:60]}")
+        # Always attach fresh citations so cached responses stay up-to-date
+        if isinstance(disk_cached.get("structured"), dict):
+            disk_cached["structured"]["citations"] = citations
         return disk_cached
 
     # --- Cache layer 2: MongoDB (if configured) ---
@@ -138,10 +153,11 @@ async def chat(request: Request):
 
         result = {
             "response": cached["response"],
-            "structured": cached.get("structured"),
+            "structured": cached.get("structured") or {},
             "highlight_data": cached.get("highlight_data"),
             "chart_data": cached.get("chart_data"),
         }
+        result["structured"]["citations"] = citations
         # Also write to disk cache so next hit is local
         disk_set(user_message, result)
         return result
@@ -210,8 +226,6 @@ async def chat(request: Request):
         # Note: We could also cache the structured payload separately if needed
         # For now, we're just caching the answer text and highlight_data
 
-    # Attach citations based on which SAAF intent was matched
-    citations = get_citations_for_intent(detect_intent(user_message))
     payload["citations"] = citations
 
     final_response = {
@@ -279,22 +293,6 @@ async def cache_reset_endpoint():
         "mongodb": mongo_result,
         "message": "Cache cleared. Next requests will hit the LLM fresh.",
     }
-
-
-@app.post("/login")
-async def login(request: Request):
-    """Authenticate a user — hardcoded credentials for testing."""
-    data = await request.json()
-    email = (data.get("email") or "").strip().lower()
-    password = data.get("password") or ""
-
-    if email == "admin@bfinstitute.org" and password == "admin123":
-        import secrets
-        token = secrets.token_hex(32)
-        return {"success": True, "token": token, "user": {"email": email}}
-
-    from fastapi.responses import JSONResponse
-    return JSONResponse(status_code=401, content={"success": False, "error": "Invalid email or password."})
 
 
 @app.get("/health")

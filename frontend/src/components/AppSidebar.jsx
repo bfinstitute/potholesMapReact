@@ -44,7 +44,10 @@ export default function AppSidebar() {
         <button
           className={`icon-strip-btn${isChat ? ' icon-strip-btn--active' : ''}`}
           title="New Chat"
-          onClick={() => navigate('/chat')}
+          onClick={() => {
+            localStorage.removeItem('buffi_active_conv');
+            navigate('/chat', { state: { newConv: Date.now() } });
+          }}
         >
           <img src={iconChat} alt="" className="strip-icon" />
           {expanded && <span className="strip-label">New Chat</span>}

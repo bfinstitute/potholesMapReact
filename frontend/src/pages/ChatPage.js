@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import MapView from '../components/MapView';
 import ChartView from '../components/ChartView';
 import FeedbackBubble from '../components/FeedbackBubble';
 import AppSidebar from '../components/AppSidebar';
+import { useAuth } from '../context/AuthContext';
 import bfiIcon from '../assets/images/BFI_LogoIcon.svg';
 import downloadIcon from '../assets/images/iconoir_download.svg';
 import html2canvas from 'html2canvas';
@@ -59,8 +60,40 @@ const IconBookmarkTop = () => (
   </svg>
 );
 
+const IconBarMini = () => (
+  <svg className="viz-switcher-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true" style={{ color: '#FF5C17' }}>
+    <path d="M4 16V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M10 16V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M16 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const IconRadarMini = () => (
+  <svg className="viz-switcher-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true" style={{ color: '#8C94CE' }}>
+    <path d="M10 3l6 4v6l-6 4-6-4V7l6-4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M10 3v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+    <path d="M4 7l12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+    <path d="M16 7L4 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+  </svg>
+);
+
+const IconPieMini = () => (
+  <svg className="viz-switcher-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true" style={{ color: '#00B89C' }}>
+    <path d="M10 3v7h7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9.5 3.05A7 7 0 1016.95 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
 const _getStoredActive = () => {
-  try { return JSON.parse(localStorage.getItem('buffi_active_conv')) || {}; } catch { return {}; }
+  try {
+    const data = JSON.parse(localStorage.getItem('buffi_active_conv')) || {};
+    if (data.chatHistory) {
+      data.chatHistory = data.chatHistory.filter(
+        msg => !(msg.from === 'bot' && msg.text && (msg.text.startsWith('Sorry, there was an error') || msg.text.startsWith('Error:')))
+      );
+    }
+    return data;
+  } catch { return {}; }
 };
 const _getStoredSaved = () => {
   try { return JSON.parse(localStorage.getItem('buffi_saved_convs')) || []; } catch { return []; }
@@ -68,6 +101,8 @@ const _getStoredSaved = () => {
 
 function ChatPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { token } = useAuth();
   const [geoData, setGeoData] = useState(null);
   const [indicators, setIndicators] = useState([]);
   const [profiles, setProfiles] = useState({});
@@ -75,6 +110,7 @@ function ChatPage() {
   const [customData, setCustomData] = useState(null);
   const [highlightData, setHighlightData] = useState(() => _getStoredActive().highlightData || null);
   const [chartData, setChartData] = useState(() => _getStoredActive().chartData || null);
+  const lastChartDataRef = useRef(null);
   const [chartType, setChartType] = useState(() => _getStoredActive().chartType || 'bar');
   const [mapTitle, setMapTitle] = useState(() => _getStoredActive().mapTitle || 'New conversation');
   const [viewMode] = useState('circle');
@@ -94,12 +130,16 @@ function ChatPage() {
   const [chatDotsOpen, setChatDotsOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
+  // Important: keep visualization panel hidden until user explicitly opts in
+  const [vizPanelOpen, setVizPanelOpen] = useState(false);
+  const [vizPickerOpen, setVizPickerOpen] = useState(false);
   const panelRef = useRef(null);
   const dotsRef = useRef(null);
   const shareRef = useRef(null);
   const convSwitcherRef = useRef(null);
   const chatDotsRef = useRef(null);
   const undoTimerRef = useRef(null);
+  const prevTokenRef = useRef(token);
 
   // Read initial query from URL ?q= param
   const initialQuery = useMemo(() => {
@@ -108,6 +148,14 @@ function ChatPage() {
   }, []);
 
   // Close dots dropdown on outside click
+  useEffect(() => {
+    if (location.state?.newConv) {
+      handleNewConversation();
+      navigate('/chat', { replace: true, state: {} });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state?.newConv]);
+
   useEffect(() => {
     if (!dotsOpen) return;
     const handler = (e) => {
@@ -141,6 +189,35 @@ function ChatPage() {
     } catch {}
   }, [activeConvId, chatHistory, mapTitle, highlightData, chartData, chartType, lastQuery, lastBotResponse]);
 
+  // Clear any previously persisted conversation whenever auth changes.
+  // This prevents one user's chat from leaking to the next user after logout/login.
+  useEffect(() => {
+    if (prevTokenRef.current !== token) {
+      prevTokenRef.current = token;
+
+      try {
+        localStorage.removeItem('buffi_active_conv');
+        localStorage.removeItem('buffi_saved_convs');
+      } catch {}
+
+      setChatHistory([]);
+      setSavedConversations([]);
+      setMapTitle('New conversation');
+      setHighlightData(null);
+      setChartData(null);
+      setChartType('bar');
+      setLastQuery('');
+      setLastBotResponse('');
+      setTableOpen(false);
+      setVizPanelOpen(false);
+      setVizPickerOpen(false);
+      setConvSwitcherOpen(false);
+      setShareOpen(false);
+      setDotsOpen(false);
+      setUndoState(null);
+    }
+  }, [token]);
+
   // Close chat dots dropdown on outside click
   useEffect(() => {
     if (!chatDotsOpen) return;
@@ -164,8 +241,17 @@ function ChatPage() {
   // Reset chart type to bar whenever a new chart response arrives
   const handleSetChartData = (data) => {
     setChartData(data);
+    if (data) lastChartDataRef.current = data;
     if (data) setChartType('bar');
   };
+
+  const hasDataViz = Boolean(chartData) || (Array.isArray(highlightData) && highlightData.length > 0);
+
+  // Keep an always-available "last chart" snapshot, even when chartData is set
+  // from conversation restore or localStorage (not just from handleSetChartData).
+  useEffect(() => {
+    if (chartData) lastChartDataRef.current = chartData;
+  }, [chartData]);
 
   useEffect(() => {
     fetchGeoData().then(setGeoData);
@@ -216,6 +302,14 @@ function ChatPage() {
   };
 
   const handleCloseMap = () => {
+    // Hide panel only (do NOT clear the current visualization).
+    // Clearing is handled explicitly via "Clear View".
+    setVizPanelOpen(false);
+    setDotsOpen(false);
+    setShareOpen(false);
+  };
+
+  const handleClearView = () => {
     // Save current state for undo
     setUndoState({ mapTitle, highlightData, chartData });
     if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
@@ -225,6 +319,7 @@ function ChatPage() {
     setHighlightData(null);
     handleSetChartData(null);
     setTableOpen(false);
+    setVizPanelOpen(false);
   };
 
   const handleUndo = () => {
@@ -337,6 +432,7 @@ function ChatPage() {
     setLastQuery(conv.lastQuery || '');
     setLastBotResponse(conv.lastBotResponse || '');
     setMapTitle(conv.mapTitle || 'New conversation');
+    setVizPanelOpen(false);
     setConvSwitcherOpen(false);
   };
 
@@ -350,7 +446,44 @@ function ChatPage() {
   };
 
   const titleIconColor = chartData ? '#FF5C17' : '#00B89C';
-  const hasVisualization = mapTitle !== 'New conversation';
+  const hasVisualization = hasDataViz;
+
+  const VIZ_PICKER_OPTIONS = [
+    { key: 'map', label: 'Map View of San Antonio' },
+    { key: 'pie', label: 'Pie Chart' },
+    { key: 'radar', label: 'Radar Chart' },
+    { key: 'bar', label: 'Bar Chart' },
+  ];
+
+  // Ensure the picker shows exactly one selected option.
+  // - If we have chartData, selection is the current chartType.
+  // - Else if we have map points, selection is MAP.
+  // - Else default to the current chartType (fallback to MAP if somehow missing).
+  const selectedVizKey = chartData
+    ? (chartType || 'bar')
+    : (Array.isArray(highlightData) && highlightData.length > 0)
+      ? 'map'
+      : (chartType || 'map');
+
+  const restoreLastChartIfNeeded = () => {
+    if (chartData) return;
+    if (lastChartDataRef.current) {
+      // Use raw setter so we don't reset the chosen chart type
+      setChartData(lastChartDataRef.current);
+    }
+  };
+
+  const setVizMode = (mode) => {
+    setVizPanelOpen(true);
+    if (mode === 'map') {
+      // Prefer map when we have points; otherwise keep whatever is currently shown.
+      if (Array.isArray(highlightData) && highlightData.length > 0) setChartData(null);
+      return;
+    }
+    // Chart modes
+    restoreLastChartIfNeeded();
+    setChartType(mode);
+  };
 
   return (
     <div className="app-wrapper">
@@ -365,6 +498,11 @@ function ChatPage() {
           <img src={bfiIcon} alt="Buffi" className="chat-header-logo" />
           <span className="top-bar-brand">Buffi V.02</span>
           <div className="chat-dots-wrapper" ref={chatDotsRef}>
+            {!vizPanelOpen && (
+              <button className="viz-empty-btn" onClick={() => setVizPickerOpen(true)}>
+                Show Visualization
+              </button>
+            )}
             <button
               className="top-bar-icon-btn"
               title="More options"
@@ -411,6 +549,7 @@ function ChatPage() {
             setMapTitle={setMapTitle}
             chartType={chartType}
             setChartType={setChartType}
+            openVisualizationPanel={() => setVizPanelOpen(true)}
             setIsLoading={setIsLoading}
             setLastQuery={setLastQuery}
             setLastBotResponse={setLastBotResponse}
@@ -420,167 +559,222 @@ function ChatPage() {
       </div>
 
       {/* Column 3: Visualization */}
-      <div className="col-map">
-        <div className="col-header col-header--map">
-          <div className="top-bar-map-left">
-            <img src={suiteDBIcon} alt="DB" className="top-bar-db-icon" />
-            {hasVisualization && (
+      {vizPanelOpen && (
+        <div className="col-map">
+          <div className="col-header col-header--map">
+            <div className="top-bar-map-left">
+              <img src={suiteDBIcon} alt="DB" className="top-bar-db-icon" />
               <button className="map-title-close" onClick={handleCloseMap}>✕</button>
-            )}
-            {isRenaming ? (
-              <input
-                className="map-title-input"
-                value={renameValue}
-                autoFocus
-                onChange={e => setRenameValue(e.target.value)}
-                onBlur={handleConfirmRename}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleConfirmRename();
-                  if (e.key === 'Escape') setIsRenaming(false);
-                }}
-              />
-            ) : (
-              <span className="map-title-text">{mapTitle}</span>
-            )}
-            <div className="conv-switcher-wrapper" ref={convSwitcherRef}>
-              <button
-                className="map-title-chevron"
-                onClick={() => setConvSwitcherOpen(o => !o)}
-                title="Switch conversation"
-              >
-                <img
-                  src={chevronDownIcon}
-                  alt="Switch conversation"
-                  className={`map-title-chevron-icon${convSwitcherOpen ? ' map-title-chevron-icon--open' : ''}`}
+              {isRenaming ? (
+                <input
+                  className="map-title-input"
+                  value={renameValue}
+                  autoFocus
+                  onChange={e => setRenameValue(e.target.value)}
+                  onBlur={handleConfirmRename}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleConfirmRename();
+                    if (e.key === 'Escape') setIsRenaming(false);
+                  }}
                 />
-              </button>
-              {convSwitcherOpen && (
-                <div className="conv-switcher-dropdown">
-                  <button className="conv-switcher-new" onClick={handleNewConversation}>
-                    + New conversation
-                  </button>
-                  {savedConversations.length > 0 && (
-                    <>
-                      <div className="conv-switcher-divider" />
-                      {[...savedConversations].reverse().map(conv => (
-                        <button
-                          key={conv.id}
-                          className="conv-switcher-item"
-                          onClick={() => handleSwitchConversation(conv)}
-                        >
-                          {conv.mapTitle || 'New conversation'}
-                        </button>
-                      ))}
-                    </>
-                  )}
-                </div>
+              ) : (
+                <span className="map-title-text">{mapTitle}</span>
               )}
+              <div className="conv-switcher-wrapper" ref={convSwitcherRef}>
+                <button
+                  className="map-title-chevron"
+                  onClick={() => setConvSwitcherOpen(o => !o)}
+                  title="Switch conversation"
+                >
+                  <img
+                    src={chevronDownIcon}
+                    alt="Switch conversation"
+                    className={`map-title-chevron-icon${convSwitcherOpen ? ' map-title-chevron-icon--open' : ''}`}
+                  />
+                </button>
+                {convSwitcherOpen && (
+                  <div className="conv-switcher-dropdown">
+                    <button className="conv-switcher-new" onClick={handleNewConversation}>
+                      + New conversation
+                    </button>
+                    {savedConversations.length > 0 && (
+                      <>
+                        <div className="conv-switcher-divider" />
+                        {[...savedConversations].reverse().map(conv => (
+                          <button
+                            key={conv.id}
+                            className="conv-switcher-item"
+                            onClick={() => handleSwitchConversation(conv)}
+                          >
+                            {conv.mapTitle || 'New conversation'}
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="top-bar-map-right">
+              <button className="top-bar-icon-btn top-bar-icon-btn--disabled" title="Bookmark" disabled>
+                <IconBookmarkTop />
+              </button>
+              <button className="top-bar-icon-btn" title="Download" onClick={handleDownload} disabled={isLoading || !lastQuery}>
+                <img src={downloadIcon} alt="download" className="top-bar-icon" />
+              </button>
+              <div className="dots-btn-wrapper" ref={dotsRef}>
+                <button className="top-bar-icon-btn" title="More" onClick={() => lastQuery && setDotsOpen(o => !o)} disabled={!lastQuery}>
+                  <IconDots />
+                </button>
+                {dotsOpen && (
+                  <div className="dots-dropdown">
+                    <button
+                      className="dots-dropdown-item"
+                      disabled={!chartData && !highlightData}
+                      onClick={() => { setTableOpen(true); setDotsOpen(false); }}
+                    >
+                      View Data Table
+                    </button>
+                    <div className="dots-dropdown-divider" />
+                    <button
+                      className="dots-dropdown-item"
+                      disabled={!hasVisualization}
+                      onClick={() => { handleClearView(); setDotsOpen(false); }}
+                    >
+                      Clear View
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="share-btn-wrapper" ref={shareRef}>
+                <button
+                  className={`share-btn${shareCopied || shareCopiedText ? ' share-btn--copied' : ''}`}
+                  onClick={() => lastQuery && setShareOpen(o => !o)}
+                  disabled={!lastQuery}
+                  title={lastQuery ? 'Share options' : 'Ask a question first'}
+                >
+                  <span className="share-btn-label">
+                    {shareCopied ? '✓ Link copied!' : shareCopiedText ? '✓ Text copied!' : 'Share'}
+                  </span>
+                  <span className="share-btn-divider" />
+                  <span className="share-chevron-wrap">
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                      <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </button>
+                {shareOpen && (
+                  <div className="share-dropdown">
+                    <button className="share-dropdown-item" onClick={handleShareCopyLink}>
+                      Copy link
+                    </button>
+                    <button className="share-dropdown-item" onClick={handleCopyResponse} disabled={!lastBotResponse}>
+                      Copy response text
+                    </button>
+                    <button className="share-dropdown-item" onClick={handleEmailShare} disabled={!lastQuery}>
+                      Send via email
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          <div className="top-bar-map-right">
-            <button className="top-bar-icon-btn top-bar-icon-btn--disabled" title="Bookmark" disabled>
-              <IconBookmarkTop />
-            </button>
-            <button className="top-bar-icon-btn" title="Download" onClick={handleDownload} disabled={isLoading || !lastQuery}>
-              <img src={downloadIcon} alt="download" className="top-bar-icon" />
-            </button>
-            <div className="dots-btn-wrapper" ref={dotsRef}>
-              <button className="top-bar-icon-btn" title="More" onClick={() => lastQuery && setDotsOpen(o => !o)} disabled={!lastQuery}>
-                <IconDots />
-              </button>
-              {dotsOpen && (
-                <div className="dots-dropdown">
-                  <button
-                    className="dots-dropdown-item"
-                    disabled={!chartData && !highlightData}
-                    onClick={() => { setTableOpen(true); setDotsOpen(false); }}
-                  >
-                    View Data Table
-                  </button>
-                  <div className="dots-dropdown-divider" />
-                  <button
-                    className="dots-dropdown-item"
-                    disabled={!hasVisualization}
-                    onClick={() => { handleCloseMap(); setDotsOpen(false); }}
-                  >
-                    Clear View
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="share-btn-wrapper" ref={shareRef}>
-              <button
-                className={`share-btn${shareCopied || shareCopiedText ? ' share-btn--copied' : ''}`}
-                onClick={() => lastQuery && setShareOpen(o => !o)}
-                disabled={!lastQuery}
-                title={lastQuery ? 'Share options' : 'Ask a question first'}
-              >
-                <span className="share-btn-label">
-                  {shareCopied ? '✓ Link copied!' : shareCopiedText ? '✓ Text copied!' : 'Share'}
-                </span>
-                <span className="share-btn-divider" />
-                <span className="share-chevron-wrap">
-                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <div className={`map-panel${isLoading ? ' map-panel--loading' : ''}`} ref={panelRef}>
+            {isLoading ? (
+              <div className="loading-visual">
+                <div className="loading-visual-inner">
+                  <svg className="loading-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                   </svg>
-                </span>
-              </button>
-              {shareOpen && (
-                <div className="share-dropdown">
-                  <button className="share-dropdown-item" onClick={handleShareCopyLink}>
-                    Copy link
-                  </button>
-                  <button className="share-dropdown-item" onClick={handleCopyResponse} disabled={!lastBotResponse}>
-                    Copy response text
-                  </button>
-                  <button className="share-dropdown-item" onClick={handleEmailShare} disabled={!lastQuery}>
-                    Send via email
-                  </button>
+                  <span className="loading-visual-text">Loading Visual...</span>
                 </div>
-              )}
-            </div>
+                <div className="loading-progress-track">
+                  <div className="loading-progress-bar" />
+                </div>
+              </div>
+            ) : !hasDataViz ? (
+              <div className="viz-empty-state">
+                <div className="viz-empty-icons">
+                  <img src={suiteChartsIcon} alt="Charts" className="viz-empty-icon" />
+                  <img src={suiteDataIcon}   alt="Data"   className="viz-empty-icon" />
+                  <img src={suiteMapsIcon}   alt="Maps"   className="viz-empty-icon" />
+                </div>
+                <div className="viz-empty-title">No data to visualize yet</div>
+                <div className="viz-empty-subtitle">Ask a question that returns map points or chart data, and it’ll appear here.</div>
+                <button className="viz-empty-btn" onClick={() => setVizPickerOpen(true)}>
+                  Change Visualization
+                </button>
+              </div>
+            ) : (
+              <div className="viz-panel-inner">
+                {chartData ? (
+                  <ChartView
+                    chartData={chartData}
+                    chartType={chartType}
+                    beforeBody={(
+                      <div className="viz-switcher-wrapper">
+                        <div className="viz-switcher viz-switcher--inline" role="tablist" aria-label="Visualization type">
+                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'map' ? ' active' : ''}`} onClick={() => setVizMode('map')} aria-pressed={selectedVizKey === 'map'}>
+                            <img src={suiteMapsIcon} alt="" className="viz-switcher-icon" />
+                            <span>San Antonio Map</span>
+                          </button>
+                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'bar' ? ' active' : ''}`} onClick={() => setVizMode('bar')} aria-pressed={selectedVizKey === 'bar'}>
+                            <IconBarMini />
+                            <span>Bar</span>
+                          </button>
+                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'radar' ? ' active' : ''}`} onClick={() => setVizMode('radar')} aria-pressed={selectedVizKey === 'radar'}>
+                            <IconRadarMini />
+                            <span>Radar</span>
+                          </button>
+                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'pie' ? ' active' : ''}`} onClick={() => setVizMode('pie')} aria-pressed={selectedVizKey === 'pie'}>
+                            <IconPieMini />
+                            <span>Pie</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  />
+                ) : (
+                  <div className="chart-view">
+                    <div className="chart-header">
+                      <span className="chart-title">San Antonio Map</span>
+                    </div>
+                    <div className="viz-switcher-wrapper">
+                      <div className="viz-switcher viz-switcher--inline" role="tablist" aria-label="Visualization type">
+                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'map' ? ' active' : ''}`} onClick={() => setVizMode('map')} aria-pressed={selectedVizKey === 'map'}>
+                          <img src={suiteMapsIcon} alt="" className="viz-switcher-icon" />
+                          <span>San Antonio Map</span>
+                        </button>
+                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'bar' ? ' active' : ''}`} onClick={() => setVizMode('bar')} aria-pressed={selectedVizKey === 'bar'}>
+                          <IconBarMini />
+                          <span>Bar</span>
+                        </button>
+                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'radar' ? ' active' : ''}`} onClick={() => setVizMode('radar')} aria-pressed={selectedVizKey === 'radar'}>
+                          <IconRadarMini />
+                          <span>Radar</span>
+                        </button>
+                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'pie' ? ' active' : ''}`} onClick={() => setVizMode('pie')} aria-pressed={selectedVizKey === 'pie'}>
+                          <IconPieMini />
+                          <span>Pie</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="viz-map-body">
+                      <MapView
+                        geoData={geoData}
+                        params={customData || profiles.map}
+                        onAreaClick={handleAreaClick}
+                        highlightData={highlightData}
+                        viewMode={viewMode}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
-        <div className={`map-panel${isLoading ? ' map-panel--loading' : ''}`} ref={panelRef}>
-          {isLoading ? (
-            <div className="loading-visual">
-              <div className="loading-visual-inner">
-                <svg className="loading-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                </svg>
-                <span className="loading-visual-text">Loading Visual...</span>
-              </div>
-              <div className="loading-progress-track">
-                <div className="loading-progress-bar" />
-              </div>
-            </div>
-          ) : !hasVisualization ? (
-            <div className="viz-empty-state">
-              <div className="viz-empty-icons">
-                <img src={suiteChartsIcon} alt="Charts" className="viz-empty-icon" />
-                <img src={suiteDataIcon}   alt="Data"   className="viz-empty-icon" />
-                <img src={suiteMapsIcon}   alt="Maps"   className="viz-empty-icon" />
-              </div>
-              <div className="viz-empty-title">Visualization panel</div>
-              <div className="viz-empty-subtitle">Ask any question and the best visual for your question will appear here.</div>
-              <button className="viz-empty-btn">
-                <img src={suiteDBIcon} alt="DB" className="viz-empty-btn-icon" />
-                Review Sources
-              </button>
-            </div>
-          ) : chartData ? (
-            <ChartView chartData={chartData} chartType={chartType} />
-          ) : (
-            <MapView
-              geoData={geoData}
-              params={customData || profiles.map}
-              onAreaClick={handleAreaClick}
-              highlightData={highlightData}
-              viewMode={viewMode}
-            />
-          )}
-        </div>
-      </div>
+      )}
       {/* Undo Toast */}
       {undoState && (
         <div className="undo-toast">
@@ -630,7 +824,7 @@ function ChatPage() {
                     {highlightData.slice(0, 200).map((row, i) => (
                       <tr key={i}>
                         {Object.entries(row).filter(([k]) => !['color','marker_radius'].includes(k)).map(([k, v]) => (
-                          <td key={k}>{typeof v === 'number' ? v.toLocaleString() : String(v ?? '')}</td>
+                          <td key={k}>{typeof v === 'number' ? v.toLocaleString() : String((v ?? ''))}</td>
                         ))}
                       </tr>
                     ))}
@@ -639,6 +833,47 @@ function ChatPage() {
               ) : (
                 <p className="data-table-empty">No data available.</p>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Visualization picker modal (right panel is hidden until user opts in) */}
+      {vizPickerOpen && (
+        <div className="viz-modal-overlay" onClick={() => setVizPickerOpen(false)}>
+          <div className="viz-modal" onClick={e => e.stopPropagation()}>
+            <div className="viz-modal-header">
+              <span className="viz-modal-title">Which way would you like me to visualize the data?</span>
+              <button className="viz-modal-close" onClick={() => setVizPickerOpen(false)}>✕</button>
+            </div>
+            <div className="viz-modal-list">
+              {VIZ_PICKER_OPTIONS.map((opt, i) => (
+                <div key={opt.key}>
+                  <button
+                    className={`viz-modal-option${selectedVizKey === opt.key ? ' viz-modal-option--selected' : ''}`}
+                    onClick={() => {
+                      setVizPanelOpen(true);
+                      if (opt.key === 'map') {
+                        // Only switch to map if we actually have map points to show
+                        if (Array.isArray(highlightData) && highlightData.length > 0) setChartData(null);
+                      } else {
+                        restoreLastChartIfNeeded();
+                        setChartType(opt.key);
+                      }
+                      setVizPickerOpen(false);
+                    }}
+                  >
+                    <span
+                      className={`viz-modal-radio${selectedVizKey === opt.key ? ' viz-modal-radio--selected' : ''}`}
+                    />
+                    <span className="viz-modal-label">{opt.label}</span>
+                  </button>
+                  {i < VIZ_PICKER_OPTIONS.length - 1 && <div className="viz-modal-divider" />}
+                </div>
+              ))}
+            </div>
+            <div className="viz-modal-footer">
+              <button className="viz-modal-skip" onClick={() => setVizPickerOpen(false)}>Skip</button>
             </div>
           </div>
         </div>
