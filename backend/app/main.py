@@ -281,6 +281,22 @@ async def cache_reset_endpoint():
     }
 
 
+@app.post("/login")
+async def login(request: Request):
+    """Authenticate a user — hardcoded credentials for testing."""
+    data = await request.json()
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    if email == "admin@bfinstitute.org" and password == "admin123":
+        import secrets
+        token = secrets.token_hex(32)
+        return {"success": True, "token": token, "user": {"email": email}}
+
+    from fastapi.responses import JSONResponse
+    return JSONResponse(status_code=401, content={"success": False, "error": "Invalid email or password."})
+
+
 @app.get("/health")
 async def health_check():
     """Quick health check — returns status of all services."""

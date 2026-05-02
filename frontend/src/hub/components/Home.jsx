@@ -69,6 +69,7 @@ export default function Home() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(e); }}
               required
             />
             {error && <p style={{ color: 'red', fontSize: '14px', marginTop: '10px' }}>{error}</p>}
