@@ -50,6 +50,7 @@ export default function SubmissionsPage() {
   const [allResolved, setAllResolved]     = useState(false);
   const [submitDone, setSubmitDone]       = useState(false);
   const [showTos, setShowTos]             = useState(() => !localStorage.getItem('tos_agreed'));
+  const [showPageMenu, setShowPageMenu]   = useState(false);
 
   const handleTosAgree = () => {
     localStorage.setItem('tos_agreed', 'true');
@@ -148,12 +149,20 @@ export default function SubmissionsPage() {
         {/* ── Top Bar ── */}
         <div className="sources-topbar">
           <div className="sources-topbar-left">
-            <h1 className="sources-title">
-              Queue
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </h1>
+            <div className="sources-title-wrap">
+              <h1 className="sources-title" onClick={() => setShowPageMenu(v => !v)}>
+                Queue
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showPageMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </h1>
+              {showPageMenu && (
+                <div className="page-switcher-dropdown">
+                  <button className="page-switcher-item" onClick={() => navigate('/sources')}>My Sources</button>
+                  <button className="page-switcher-item page-switcher-item--active">Queue</button>
+                </div>
+              )}
+            </div>
             <div className="sources-view-icons">
               <button className={`view-icon-btn${viewMode === 'grid' ? ' active' : ''}`} title="Grid view" onClick={() => setViewMode('grid')}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
