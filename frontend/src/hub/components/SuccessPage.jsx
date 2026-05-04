@@ -13,7 +13,7 @@ export default function SuccessPage() {
           <p className="success-modal-body">
             BFI has received your files and will begin the intake process shortly. You'll be notified if we need any clarification. In the meantime, you can track the status of this submission from your dashboard.
           </p>
-          <button className="success-modal-btn" onClick={() => navigate('/submissions')}>
+          <button className="success-modal-btn" onClick={() => navigate('/queue')}>
             Back To Dashboard
           </button>
         </div>

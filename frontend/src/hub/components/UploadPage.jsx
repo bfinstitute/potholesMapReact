@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/UploadPage.css';
 import { useCsv } from '../../context/CsvContext';
 import AppLayout from './AppLayout';
+import TosModal from './TosModal';
 import apiService from '../../services/api';
 
 const MOCK_FOLDERS = ['Housing'];
@@ -10,7 +11,7 @@ const MOCK_FOLDERS = ['Housing'];
 export default function UploadPage() {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
-  const { setCsvData, setFileName, setCsvStats, setColumnDescriptions } = useCsv();
+  const { setCsvData, setFileName, setCsvStats, setColumnDescriptions, setBatches } = useCsv();
 
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -34,7 +35,32 @@ export default function UploadPage() {
         setCsvData(result.data);
         setCsvStats(result.stats);
         setColumnDescriptions(result.column_descriptions || {});
-        navigate('/submissions', { state: { showContext: true, fileName: result.filename, fileSize: file.size } });
+
+        const now = new Date();
+        const label = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+          + ' ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+          + ' Queue';
+
+        const newBatch = {
+          id: Date.now(),
+          label,
+          files: [{
+            id: Date.now() + 1,
+            name: result.filename,
+            folder: 'Uncategorized',
+            status: 'Ready',
+            tier: 'Tier 2: Internal Operational',
+            size: file.size < 1024 * 1024
+              ? `${(file.size / 1024).toFixed(1)} KB`
+              : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+            confidence: 'High',
+            issue: '',
+            csvData: result.data || [],
+          }],
+        };
+
+        setBatches(prev => [newBatch, ...prev]);
+        navigate('/queue');
       } else {
         setUploadError('Upload failed. Please try again.');
       }
@@ -67,23 +93,12 @@ export default function UploadPage() {
   return (
     <AppLayout>
 
-      {/* ── Terms of Service Modal (first login only) ── */}
+      {/* ── Terms of Service Modal (first visit only) ── */}
       {showTos && (
-        <div className="tos-overlay">
-          <div className="tos-modal">
-            <h2 className="tos-title">Terms of Service</h2>
-            <p className="tos-body">
-              By clicking &ldquo;agree&rdquo; you acknowledge that you have read and understood the legal requirements of each policy.
-            </p>
-            <div className="tos-section">
-              <h3 className="tos-section-title">Scope of Exchange</h3>
-              <p className="tos-section-body">
-                This platform facilitates the secure exchange and analysis of data between authorized parties in accordance with Better Futures Institute&rsquo;s data governance policies. Users are responsible for ensuring that all data submitted complies with applicable laws and internal guidelines.
-              </p>
-            </div>
-            <button className="tos-agree-btn" onClick={handleTosAgree}>Agree</button>
-          </div>
-        </div>
+        <TosModal
+          onAgree={handleTosAgree}
+          onCancel={() => navigate('/chat')}
+        />
       )}
 
       <div className="sources-page">
@@ -215,6 +230,8 @@ export default function UploadPage() {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current.click()}
+            style={{ cursor: 'pointer' }}
           >
             {isDragging ? (
               <div className="dropzone-drag-active">
@@ -224,9 +241,9 @@ export default function UploadPage() {
                   <line x1="12" y1="12" x2="12" y2="21"/>
                 </svg>
                 <h2 className="dropzone-drag-title">A place for all your files</h2>
-                <p className="dropzone-drag-sub">Drag your files and folders here or use the button to upload</p>
+                <p className="dropzone-drag-sub">Drop your CSV file to upload it to Sources</p>
                 <button className="dropzone-drag-btn" onClick={() => fileInputRef.current.click()}>
-                  Drag and drop files to upload them to Sources
+                  Or click to select a file
                 </button>
               </div>
             ) : (
@@ -237,7 +254,7 @@ export default function UploadPage() {
                   <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
                 </svg>
                 <h2 className="dropzone-empty-title">Build your sources</h2>
-                <p className="dropzone-empty-sub">Drag your files and folders here or use the "Upload" button to upload</p>
+                <p className="dropzone-empty-sub">Click here or drag and drop a CSV file to upload</p>
                 {isUploading && <p className="upload-status-text">Uploading...</p>}
                 {uploadError && <p className="upload-error-text">{uploadError}</p>}
               </div>

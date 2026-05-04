@@ -15,31 +15,85 @@ const makeMockRows = () =>
     hasError: i === 0 || i === 1,
   }));
 
-const INITIAL_MESSAGES = [
-  {
-    id: 1,
-    role: 'ai',
-    text: 'I found "RES-UNKNWN" which doesn\'t match the accepted classification format. I\'ve suggested R-4 based on the surrounding parcel classifications. The district boundary overlap with an adjacent commercial zone has low confidence — please verify before approving.',
-    suggestions: [
-      'Accept suggested value of R-4 for row 7',
-      'Apply suggested fix to all similar errors',
-      'Flag row 7 for manual review',
-    ],
-  },
-];
+function analyzeFile(file) {
+  const data = file?.csvData;
+  if (!data || data.length === 0) return null;
+
+  const columns = Object.keys(data[0]);
+  const totalRows = data.length;
+
+  // Detect columns with missing/empty values
+  const emptyByCol = {};
+  columns.forEach(col => {
+    const count = data.filter(r => r[col] === null || r[col] === undefined || String(r[col]).trim() === '').length;
+    if (count > 0) emptyByCol[col] = count;
+  });
+
+  const emptyColNames = Object.keys(emptyByCol);
+  const hasIssues = emptyColNames.length > 0;
+
+  let text = '';
+  let suggestions = [];
+
+  if (hasIssues) {
+    const details = emptyColNames
+      .slice(0, 3)
+      .map(col => `"${col}" (${emptyByCol[col]} missing)`)
+      .join(', ');
+    const more = emptyColNames.length > 3 ? ` and ${emptyColNames.length - 3} more` : '';
+    text = `I reviewed "${file.name}" — ${totalRows} rows across ${columns.length} columns. I found missing values in: ${details}${more}. Review and fill these before submitting.`;
+    suggestions = [
+      `Show rows with missing values in "${emptyColNames[0]}"`,
+      'Flag all incomplete rows for manual review',
+      'Remove rows with missing values',
+    ];
+  } else {
+    text = `I reviewed "${file.name}" — ${totalRows} rows across ${columns.length} columns (${columns.slice(0, 4).map(c => `"${c}"`).join(', ')}${columns.length > 4 ? '…' : ''}). No obvious issues detected. The file looks ready for submission.`;
+    suggestions = [
+      'Confirm all column types are correct',
+      'Submit this file for review',
+    ];
+  }
+
+  return { text, suggestions, emptyByCol };
+}
 
 export default function ResolveView({ file, onClose, onSubmit }) {
   const hasRealData = file?.csvData && file.csvData.length > 0;
   const columns = hasRealData ? Object.keys(file.csvData[0]) : MOCK_COLUMNS;
 
+  const analysis = hasRealData ? analyzeFile(file) : null;
+
   const [rows, setRows] = useState(() => {
     if (hasRealData) {
-      return file.csvData.map((row, i) => ({ ...row, rowIndex: i, hasError: false }));
+      const emptyByCol = analysis?.emptyByCol || {};
+      return file.csvData.map((row, i) => {
+        const hasError = Object.keys(emptyByCol).some(
+          col => row[col] === null || row[col] === undefined || String(row[col]).trim() === ''
+        );
+        return { ...row, rowIndex: i, hasError };
+      });
     }
     return makeMockRows();
   });
 
-  const [messages, setMessages]       = useState(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState(() => {
+    if (hasRealData && analysis) {
+      return [{ id: 1, role: 'ai', text: analysis.text, suggestions: analysis.suggestions }];
+    }
+    return [
+      {
+        id: 1,
+        role: 'ai',
+        text: 'I found "RES-UNKNWN" which doesn\'t match the accepted classification format. I\'ve suggested R-4 based on the surrounding parcel classifications. The district boundary overlap with an adjacent commercial zone has low confidence — please verify before approving.',
+        suggestions: [
+          'Accept suggested value of R-4 for row 7',
+          'Apply suggested fix to all similar errors',
+          'Flag row 7 for manual review',
+        ],
+      },
+    ];
+  });
   const [inputText, setInputText]     = useState('');
   const [highlight, setHighlight]     = useState(true);
   const [editingCell, setEditingCell] = useState(null); // { rowIndex, field }
@@ -67,14 +121,28 @@ export default function ResolveView({ file, onClose, onSubmit }) {
 
   const applySuggestion = (suggestion) => {
     setMessages(prev => [...prev, { id: Date.now(), role: 'user', text: suggestion }]);
-    if (suggestion.startsWith('Accept suggested value')) {
-      setRows(prev => prev.map((r, i) => i === 0 ? { ...r, geo_ref: 'R-4', hasError: false } : r));
-      setTimeout(() => addAiMessage('Done. Row 7 has been updated to R-4. The error is resolved.'), 500);
-    } else if (suggestion.startsWith('Apply suggested fix')) {
-      setRows(prev => prev.map(r => r.hasError ? { ...r, geo_ref: 'R-4', hasError: false } : r));
-      setTimeout(() => addAiMessage('Done. The fix has been applied to all similar errors in this file.'), 500);
+    if (!hasRealData) {
+      // Mock-data behaviour
+      if (suggestion.startsWith('Accept suggested value')) {
+        setRows(prev => prev.map((r, i) => i === 0 ? { ...r, geo_ref: 'R-4', hasError: false } : r));
+        setTimeout(() => addAiMessage('Done. Row 7 has been updated to R-4. The error is resolved.'), 500);
+      } else if (suggestion.startsWith('Apply suggested fix')) {
+        setRows(prev => prev.map(r => r.hasError ? { ...r, geo_ref: 'R-4', hasError: false } : r));
+        setTimeout(() => addAiMessage('Done. The fix has been applied to all similar errors in this file.'), 500);
+      } else if (suggestion.startsWith('Flag')) {
+        setTimeout(() => addAiMessage('Row 7 has been flagged for manual review. A data steward will be notified.'), 500);
+      }
+    } else if (suggestion.startsWith('Remove rows')) {
+      setRows(prev => prev.filter(r => !r.hasError));
+      setTimeout(() => addAiMessage('Done. All rows with missing values have been removed.'), 500);
     } else if (suggestion.startsWith('Flag')) {
-      setTimeout(() => addAiMessage('Row 7 has been flagged for manual review. A data steward will be notified.'), 500);
+      setTimeout(() => addAiMessage('All incomplete rows have been flagged for manual review. A data steward will be notified.'), 500);
+    } else if (suggestion.startsWith('Show rows')) {
+      setTimeout(() => addAiMessage('Rows with missing values are highlighted in red in the table on the right.'), 500);
+    } else if (suggestion.startsWith('Submit')) {
+      setTimeout(() => addAiMessage('Great — click the Submit button in the top right when you\'re ready to send this file for review.'), 500);
+    } else {
+      setTimeout(() => addAiMessage('Got it. I\'ve noted your request.'), 500);
     }
   };
 
@@ -193,7 +261,10 @@ export default function ResolveView({ file, onClose, onSubmit }) {
                   <tr key={i} className={highlight && row.hasError ? 'rv-row-error' : ''}>
                     {columns.map(col => {
                       const isEditing = editingCell?.rowIndex === i && editingCell?.field === col;
-                      const isError   = highlight && row.hasError && col === 'geo_ref';
+                      const cellEmpty = row[col] === null || row[col] === undefined || String(row[col]).trim() === '';
+                      const isError   = highlight && row.hasError && (
+                        hasRealData ? cellEmpty : col === 'geo_ref'
+                      );
                       return (
                         <td key={col} className={isError ? 'rv-cell-error' : 'rv-cell-editable'}>
                           {isEditing ? (

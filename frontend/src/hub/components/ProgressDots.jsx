@@ -5,7 +5,7 @@ import check from '../../assets/images/Icon=check.svg'
 
 export default function ProgressDots() {
   const location = useLocation();
-  const steps = ['/upload', '/edit', '/success'];
+  const steps = ['/sources', '/edit', '/success'];
   const labels = ['Upload', 'Preview', 'Finalize'];
 
   const currentIndex = steps.indexOf(location.pathname);

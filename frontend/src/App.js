@@ -20,7 +20,7 @@ function App() {
         }
       />
       <Route
-        path="/upload"
+        path="/sources"
         element={
           <ProtectedRoute>
             <UploadPage />
@@ -28,7 +28,7 @@ function App() {
         }
       />
       <Route
-        path="/submissions"
+        path="/queue"
         element={
           <ProtectedRoute>
             <SubmissionsPage />

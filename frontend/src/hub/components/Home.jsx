@@ -31,6 +31,7 @@ export default function Home() {
       const result = await apiService.login(email, password);
       if (result.success) {
         localStorage.removeItem('buffi_active_conv');
+        localStorage.removeItem('tos_agreed');
         login(result.token, result.user);
         navigate('/chat');
       }
@@ -67,11 +68,6 @@ export default function Home() {
           <img src={mainLogo} alt="Better Futures Institute"/>
         </a>
         <div className="signin-container">
-          {backendDown && (
-            <div style={{ background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: '#856404' }}>
-              ⚠️ Backend server is not reachable. Please start the backend before logging in.
-            </div>
-          )}
           <form className="signin-form" onSubmit={handleLogin}>
             <h2>Log in to your account</h2>
             <input
@@ -93,6 +89,11 @@ export default function Home() {
             <button type="submit" disabled={isLoading}>
               {isLoading ? 'Logging in...' : 'Continue'}
             </button>
+            {backendDown && (
+              <div style={{ background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '8px', padding: '10px 14px', marginTop: '12px', fontSize: '13px', color: '#856404' }}>
+                ⚠️ Backend server is not reachable. Please start the backend before logging in.
+              </div>
+            )}
           </form>
         </div>
       </div>

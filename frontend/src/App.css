@@ -75,7 +75,9 @@
   border-right: 1px solid var(--Grey-200);
   background: var(--Grey-50);
   transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
+  overflow: visible;
+  z-index: 100;
+  position: relative;
 }
 
 .col-sidebar--expanded {
@@ -790,11 +792,26 @@
   gap: 4px;
   padding: 8px 0;
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .left-icon-strip--expanded {
   align-items: flex-start;
+}
+
+.strip-avatar-wrap {
+  margin-top: auto;
+  margin-bottom: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.left-icon-strip--expanded .strip-avatar-wrap {
+  justify-content: flex-start;
+  padding-left: 14px;
 }
 
 .strip-avatar {
@@ -802,16 +819,50 @@
   height: 28px;
   border-radius: 50%;
   background: var(--Grey-300);
-  margin-top: auto;
-  margin-bottom: 8px;
-  margin-left: auto;
-  margin-right: auto;
+  border: none;
+  cursor: pointer;
   flex-shrink: 0;
+  transition: background 0.15s, box-shadow 0.15s;
 }
 
-.left-icon-strip--expanded .strip-avatar {
-  margin-left: 14px;
-  margin-right: 0;
+.strip-avatar:hover {
+  background: var(--Grey-400, #9ca3af);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+}
+
+.avatar-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: #fff;
+  border: 1px solid var(--Grey-200, #e5e7eb);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+  min-width: 130px;
+  z-index: 200;
+}
+
+.avatar-popover-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  border-radius: 7px;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--Grey-800, #1f2937);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+
+.avatar-popover-btn:hover {
+  background: var(--Grey-100, #f3f4f6);
 }
 
 .icon-strip-btn {

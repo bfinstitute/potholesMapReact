@@ -89,7 +89,7 @@ return (
               <img src={downloadLogo} alt="Download Logo"/>
               {isDownloading ? 'Downloading...' : ''}
             </button>
-            <button className='button-base back-btn' onClick={() => navigate('/upload')}>Back</button>
+            <button className='button-base back-btn' onClick={() => navigate('/sources')}>Back</button>
             <button className='button-base next-btn' onClick={() => navigate('/success')}>Finalize</button>
         </div>
     </div>

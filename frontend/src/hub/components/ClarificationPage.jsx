@@ -61,7 +61,7 @@ export default function ClarificationPage() {
         <div className="pending-topbar">
           <div className="pending-topbar-left">
             <h1 className="pending-breadcrumb">
-              <span className="pending-breadcrumb-link" onClick={() => navigate('/submissions')}>Submissions</span>
+              <span className="pending-breadcrumb-link" onClick={() => navigate('/queue')}>Submissions</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
@@ -105,7 +105,7 @@ export default function ClarificationPage() {
                 <line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
             </button>
-            <button className="upload-btn" onClick={() => navigate('/upload')}>Upload</button>
+            <button className="upload-btn" onClick={() => navigate('/sources')}>Upload</button>
           </div>
         </div>
 
@@ -324,7 +324,7 @@ export default function ClarificationPage() {
                 : 'The file changes have been saved and the issue has been resolved.'}
             </p>
             <div className="resolve-modal-actions">
-              <button className="resolve-confirm-btn" onClick={() => { setAllResolved(false); setSubmitDone(false); navigate('/submissions'); }}>
+              <button className="resolve-confirm-btn" onClick={() => { setAllResolved(false); setSubmitDone(false); navigate('/queue'); }}>
                 Back to Queue
               </button>
             </div>

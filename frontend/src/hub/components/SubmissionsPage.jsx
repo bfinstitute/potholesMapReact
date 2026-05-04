@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AppLayout from './AppLayout';
 import SubmissionContext from './SubmissionContext';
 import ResolveView from './ResolveView';
+import TosModal from './TosModal';
 import { useCsv } from '../../context/CsvContext';
 import '../styles/SubmissionsPage.css';
 
-const BUFFI_DESCRIPTION = 'Files in this dataset cover the distribution of residential, commercial, and industrial land use across San Antonio, along with data on where housing supply gaps are most severe.';
+const DEFAULT_BUFFI_DESCRIPTION = 'Upload CSV files from Sources to begin the intake process. Buffi AI will review each file and flag any issues that need your attention before submission.';
 const FOLDERS = ['Housing', 'Safety', 'Infrastructure'];
 const CARD_FOLDERS = ['SA Land Use And Housing'];
 
@@ -45,8 +46,15 @@ export default function SubmissionsPage() {
   const [contextOpen, setContextOpen]     = useState(!!routeState.showContext);
   const [contextFileName]                 = useState(routeState.fileName || '');
   const [resolveFile, setResolveFile]     = useState(null);
+  const [pendingSubmit, setPendingSubmit] = useState(null); // { file, updatedRows }
   const [allResolved, setAllResolved]     = useState(false);
   const [submitDone, setSubmitDone]       = useState(false);
+  const [showTos, setShowTos]             = useState(() => !localStorage.getItem('tos_agreed'));
+
+  const handleTosAgree = () => {
+    localStorage.setItem('tos_agreed', 'true');
+    setShowTos(false);
+  };
 
   const toggleDropdown = (name) => setOpenDropdown(prev => prev === name ? null : name);
 
@@ -129,6 +137,12 @@ export default function SubmissionsPage() {
 
   return (
     <AppLayout>
+      {showTos && (
+        <TosModal
+          onAgree={handleTosAgree}
+          onCancel={() => navigate('/chat')}
+        />
+      )}
       <div className="queue-page" onClick={() => openDropdown && setOpenDropdown(null)}>
 
         {/* ── Top Bar ── */}
@@ -175,7 +189,7 @@ export default function SubmissionsPage() {
                 <line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
             </button>
-            <button className="upload-btn" onClick={() => navigate('/upload')}>Upload</button>
+            <button className="upload-btn" onClick={() => navigate('/sources')}>Upload</button>
           </div>
         </div>
 
@@ -229,18 +243,24 @@ export default function SubmissionsPage() {
         <div className="buffi-banner">
           <div className="buffi-banner-body">
             <span className="buffi-banner-label">Buffi AI</span>
-            <p className="buffi-banner-desc">{BUFFI_DESCRIPTION}</p>
-            {errorCount > 0 ? (
-              <>
-                <p className="buffi-banner-warning"><strong>{errorCount} files need your attention</strong></p>
-                <p className="buffi-banner-sub">Issues found across {errorCount} files — resolve them before this dataset can be finalized.</p>
-              </>
-            ) : (
-              <p className="buffi-banner-warning"><strong>All files are ready for submission</strong></p>
+            <p className="buffi-banner-desc">
+              {allFiles.length > 0
+                ? `${allFiles.length} ${allFiles.length === 1 ? 'file' : 'files'} in queue across ${batches.length} ${batches.length === 1 ? 'batch' : 'batches'}.`
+                : DEFAULT_BUFFI_DESCRIPTION}
+            </p>
+            {allFiles.length > 0 && (
+              errorCount > 0 ? (
+                <>
+                  <p className="buffi-banner-warning"><strong>{errorCount} files need your attention</strong></p>
+                  <p className="buffi-banner-sub">Issues found across {errorCount} files — resolve them before this dataset can be finalized.</p>
+                </>
+              ) : (
+                <p className="buffi-banner-warning"><strong>All files are ready for submission</strong></p>
+              )
             )}
           </div>
           <div className="buffi-banner-actions">
-            {viewMode === 'grid' && (
+            {viewMode === 'grid' && allFiles.length > 0 && (
               <button className="buffi-btn-context" onClick={() => setContextOpen(true)}>Dataset Context</button>
             )}
             {errorCount > 0 && (
@@ -248,10 +268,11 @@ export default function SubmissionsPage() {
                 Resolve {errorCount} Issues
               </button>
             )}
-            {viewMode === 'grid'
-              ? <button className="buffi-btn-primary">{allFiles.length} sources in batch</button>
-              : <button className="buffi-btn-primary" onClick={() => setShowSubmitModal(true)}>Submit {readyCount} Ready Files</button>
-            }
+            {allFiles.length > 0 && (
+              viewMode === 'grid'
+                ? <button className="buffi-btn-primary">{allFiles.length} sources in batch</button>
+                : <button className="buffi-btn-primary" onClick={() => setContextOpen(true)}>Submit {readyCount} Ready Files</button>
+            )}
           </div>
         </div>
 
@@ -306,6 +327,18 @@ export default function SubmissionsPage() {
         ) : (
           /* ── List view: one group per batch, each with its own date ── */
           <>
+            {batches.length === 0 && (
+              <div className="queue-empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="9" y1="13" x2="15" y2="13"/>
+                  <line x1="9" y1="17" x2="15" y2="17"/>
+                </svg>
+                <p className="queue-empty-title">No files in queue yet</p>
+                <p className="queue-empty-sub">Upload a CSV file from <button className="queue-empty-link" onClick={() => navigate('/sources')}>Sources</button> to get started.</p>
+              </div>
+            )}
             {batches.map((batch) => {
               const batchFiles = batch.files.map(f => ({ ...f, hasError: f.status === 'Error' }));
               const filtered = getFilteredFiles(batchFiles, batch.id);
@@ -402,10 +435,9 @@ export default function SubmissionsPage() {
           file={resolveFile}
           onClose={() => setResolveFile(null)}
           onSubmit={(updatedRows) => {
-            const stillHasErrors = updatedRows.some(r => r.hasError);
-            if (!stillHasErrors) resolveOne(resolveFile.id);
+            setPendingSubmit({ file: resolveFile, updatedRows });
             setResolveFile(null);
-            if (!stillHasErrors) setSubmitDone(true);
+            setContextOpen(true);
           }}
         />
       )}
@@ -443,30 +475,34 @@ export default function SubmissionsPage() {
       {/* ── Submission Context Modal ── */}
       <SubmissionContext
         isOpen={contextOpen}
-        onClose={() => setContextOpen(false)}
-        onSubmit={(formData) => {
-          if (contextFileName) {
-            const folder = formData.dataDomain || formData.projectName || 'Uncategorized';
-            const newBatch = {
-              id: Date.now(),
-              label: formatBatchDate(),
-              files: [{
-                id: Date.now() + 1,
-                name: contextFileName,
-                folder,
-                status: 'Ready',
-                tier: 'Tier 2: Internal Operational',
-                size: routeState.fileSize ? formatBytes(routeState.fileSize) : 'N/A',
-                confidence: 'High',
-                issue: '',
-                csvData: csvData && csvData.length > 0 ? csvData : null,
-              }],
-            };
-            setBatches(prev => [newBatch, ...prev]);
-          }
+        onClose={() => {
           setContextOpen(false);
+          setPendingSubmit(null);
         }}
-        fileName={contextFileName}
+        onSubmit={() => {
+          if (pendingSubmit) {
+            // Coming from ResolveView Submit → remove file, show "File Resolved"
+            const { file } = pendingSubmit;
+            setBatches(prev =>
+              prev
+                .map(b => ({ ...b, files: b.files.filter(f => f.id !== file.id) }))
+                .filter(b => b.files.length > 0)
+            );
+            setPendingSubmit(null);
+            setContextOpen(false);
+            setSubmitDone(true);
+          } else {
+            // Coming from "Submit X Ready Files" banner → remove all ready files, show "Files Submitted"
+            setBatches(prev =>
+              prev
+                .map(b => ({ ...b, files: b.files.filter(f => f.status === 'Error') }))
+                .filter(b => b.files.length > 0)
+            );
+            setContextOpen(false);
+            setShowSubmitModal(true);
+          }
+        }}
+        fileName={pendingSubmit?.file?.name || contextFileName}
       />
 
     </AppLayout>

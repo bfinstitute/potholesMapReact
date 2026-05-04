@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import '../styles/SubmissionContext.css';
+import minusIcon from '../../assets/images/iconoir_minus.svg';
 
 const AGENCY_OPTIONS = [
   { value: 'accept',  label: 'Accept suggested classification' },
@@ -39,17 +40,15 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
         <div className="sc-steps">
           <div className={`sc-step ${step === 1 ? 'active' : 'done'}`}>
             <div className="sc-step-dot">
-              {step > 1 && (
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              )}
+              <img src={minusIcon} alt="" className="sc-step-icon" />
             </div>
             <span className="sc-step-label">Submission Context</span>
           </div>
           <div className="sc-step-line" />
           <div className={`sc-step ${step === 2 ? 'active' : step > 2 ? 'done' : 'inactive'}`}>
-            <div className="sc-step-dot" />
+            <div className="sc-step-dot">
+              <img src={minusIcon} alt="" className="sc-step-icon" />
+            </div>
             <span className="sc-step-label">
               {step === 1 ? 'AI/ML Training Intent' : 'Classification'}
             </span>

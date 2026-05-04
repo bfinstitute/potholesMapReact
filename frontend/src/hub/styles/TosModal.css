@@ -1,0 +1,131 @@
+.tos-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tos-modal {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 32px 28px;
+  max-width: 440px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+}
+
+.tos-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tos-title {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--Grey-1000, #0d0d0d);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.tos-close-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--Grey-600, #6b7280);
+  transition: background 0.15s, color 0.15s;
+  margin-top: -2px;
+}
+
+.tos-close-btn:hover {
+  background: var(--Grey-100, #f3f4f6);
+  color: var(--Grey-1000, #0d0d0d);
+}
+
+.tos-body-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tos-body {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  color: var(--Grey-700, #374151);
+  margin: 0;
+  line-height: 1.65;
+}
+
+.tos-link {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--Primary-600, #1e3a5f);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.tos-link:hover {
+  color: var(--Primary-950, #0a1a30);
+}
+
+.tos-footer {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.tos-cancel-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 22px;
+  border: none;
+  background: #F4F4F5;
+  color: var(--Grey-800, #1f2937);
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tos-cancel-btn:hover {
+  background: var(--Grey-200, #e5e7eb);
+}
+
+.tos-agree-btn {
+  flex: 1;
+  height: 44px;
+  padding: 0;
+  border-radius: 22px;
+  border: none;
+  background: var(--Primary-600, #1e3a5f);
+  color: #fff;
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 15px;
+  font-weight: 570;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tos-agree-btn:hover {
+  background: var(--Primary-950, #0a1a30);
+}

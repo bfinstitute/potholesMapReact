@@ -234,6 +234,11 @@ async def hub_health():
     return {"status": "healthy", "message": "CSV Analyzer Backend is running"}
 
 
+@router.get("/health")
+async def hub_health():
+    return {"status": "ok"}
+
+
 @router.post("/login")
 async def hub_login(payload: LoginIn):
     if payload.email == HUB_ADMIN_EMAIL and payload.password == HUB_ADMIN_PASSWORD:
