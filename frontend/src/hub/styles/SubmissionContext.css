@@ -50,10 +50,10 @@
 }
 
 .sc-step-dot {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  border: 2px solid var(--Grey-300);
+  border: 2px solid #D6DDFF;
   background: #fff;
   display: flex;
   align-items: center;
@@ -63,19 +63,18 @@
 }
 
 .sc-step.active .sc-step-dot {
-  background: var(--Primary-600);
-  border-color: var(--Primary-600);
+  background: #000A83;
+  border-color: #000A83;
 }
 
 .sc-step.done .sc-step-dot {
-  background: var(--Primary-600);
-  border-color: var(--Primary-600);
-  color: #fff;
+  background: #D6DDFF;
+  border-color: #000A83;
 }
 
 .sc-step.inactive .sc-step-dot {
   background: #fff;
-  border-color: var(--Grey-300);
+  border-color: #D6DDFF;
 }
 
 .sc-step-label {
@@ -86,13 +85,13 @@
   white-space: nowrap;
 }
 
-.sc-step.active .sc-step-label { color: var(--Primary-600); }
+.sc-step.active .sc-step-label { color: #000A83; }
 .sc-step.done  .sc-step-label  { color: var(--Grey-700); }
 
 .sc-step-line {
-  width: 60px;
+  width: 80px;
   height: 2px;
-  background: var(--Grey-200);
+  background: #D6DDFF;
   margin: 0 8px;
   margin-bottom: 22px; /* align with dot center */
   flex-shrink: 0;
@@ -333,12 +332,40 @@
 .sc-submit-btn:disabled             { opacity: 0.45; cursor: not-allowed; }
 
 .sc-step-icon {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   display: block;
   filter: brightness(0) invert(1);
 }
 
+.sc-step-icon--checkmark {
+  width: 16px;
+  height: 16px;
+  display: block;
+  filter: none; /* keep original dark stroke to match Figma */
+}
+
 .sc-step.inactive .sc-step-dot .sc-step-icon {
   filter: brightness(0) saturate(100%) invert(60%);
+}
+
+/* ── Required marker & errors ── */
+.sc-required {
+  color: #DC2626;
+  margin-left: 2px;
+}
+
+.sc-input--error {
+  border-color: #DC2626 !important;
+}
+
+.sc-error-msg {
+  font-family: "Saans TRIAL", sans-serif;
+  font-size: 11px;
+  color: #DC2626;
+  margin-top: 2px;
+}
+
+.sc-ack-row--error {
+  border-color: #DC2626 !important;
 }

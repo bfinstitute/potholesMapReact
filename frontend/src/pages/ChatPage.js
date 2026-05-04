@@ -130,9 +130,6 @@ function ChatPage() {
   const [chatDotsOpen, setChatDotsOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
-  // Important: keep visualization panel hidden until user explicitly opts in
-  const [vizPanelOpen, setVizPanelOpen] = useState(false);
-  const [vizPickerOpen, setVizPickerOpen] = useState(false);
   const panelRef = useRef(null);
   const dotsRef = useRef(null);
   const shareRef = useRef(null);
@@ -209,8 +206,6 @@ function ChatPage() {
       setLastQuery('');
       setLastBotResponse('');
       setTableOpen(false);
-      setVizPanelOpen(false);
-      setVizPickerOpen(false);
       setConvSwitcherOpen(false);
       setShareOpen(false);
       setDotsOpen(false);
@@ -301,14 +296,6 @@ function ChatPage() {
     link.click();
   };
 
-  const handleCloseMap = () => {
-    // Hide panel only (do NOT clear the current visualization).
-    // Clearing is handled explicitly via "Clear View".
-    setVizPanelOpen(false);
-    setDotsOpen(false);
-    setShareOpen(false);
-  };
-
   const handleClearView = () => {
     // Save current state for undo
     setUndoState({ mapTitle, highlightData, chartData });
@@ -319,7 +306,6 @@ function ChatPage() {
     setHighlightData(null);
     handleSetChartData(null);
     setTableOpen(false);
-    setVizPanelOpen(false);
   };
 
   const handleUndo = () => {
@@ -432,7 +418,6 @@ function ChatPage() {
     setLastQuery(conv.lastQuery || '');
     setLastBotResponse(conv.lastBotResponse || '');
     setMapTitle(conv.mapTitle || 'New conversation');
-    setVizPanelOpen(false);
     setConvSwitcherOpen(false);
   };
 
@@ -448,43 +433,6 @@ function ChatPage() {
   const titleIconColor = chartData ? '#FF5C17' : '#00B89C';
   const hasVisualization = hasDataViz;
 
-  const VIZ_PICKER_OPTIONS = [
-    { key: 'map', label: 'Map View of San Antonio' },
-    { key: 'pie', label: 'Pie Chart' },
-    { key: 'radar', label: 'Radar Chart' },
-    { key: 'bar', label: 'Bar Chart' },
-  ];
-
-  // Ensure the picker shows exactly one selected option.
-  // - If we have chartData, selection is the current chartType.
-  // - Else if we have map points, selection is MAP.
-  // - Else default to the current chartType (fallback to MAP if somehow missing).
-  const selectedVizKey = chartData
-    ? (chartType || 'bar')
-    : (Array.isArray(highlightData) && highlightData.length > 0)
-      ? 'map'
-      : (chartType || 'map');
-
-  const restoreLastChartIfNeeded = () => {
-    if (chartData) return;
-    if (lastChartDataRef.current) {
-      // Use raw setter so we don't reset the chosen chart type
-      setChartData(lastChartDataRef.current);
-    }
-  };
-
-  const setVizMode = (mode) => {
-    setVizPanelOpen(true);
-    if (mode === 'map') {
-      // Prefer map when we have points; otherwise keep whatever is currently shown.
-      if (Array.isArray(highlightData) && highlightData.length > 0) setChartData(null);
-      return;
-    }
-    // Chart modes
-    restoreLastChartIfNeeded();
-    setChartType(mode);
-  };
-
   return (
     <div className="app-wrapper">
       {/* 3 vertical columns — each owns its header + body so borders always align */}
@@ -498,11 +446,6 @@ function ChatPage() {
           <img src={bfiIcon} alt="Buffi" className="chat-header-logo" />
           <span className="top-bar-brand">Buffi V.02</span>
           <div className="chat-dots-wrapper" ref={chatDotsRef}>
-            {!vizPanelOpen && (
-              <button className="viz-empty-btn" onClick={() => setVizPickerOpen(true)}>
-                Show Visualization
-              </button>
-            )}
             <button
               className="top-bar-icon-btn"
               title="More options"
@@ -549,8 +492,7 @@ function ChatPage() {
             setMapTitle={setMapTitle}
             chartType={chartType}
             setChartType={setChartType}
-            openVisualizationPanel={() => setVizPanelOpen(true)}
-            setIsLoading={setIsLoading}
+setIsLoading={setIsLoading}
             setLastQuery={setLastQuery}
             setLastBotResponse={setLastBotResponse}
             initialQuery={chatHistory.length === 0 && savedConversations.length === 0 ? initialQuery : ''}
@@ -559,12 +501,11 @@ function ChatPage() {
       </div>
 
       {/* Column 3: Visualization */}
-      {vizPanelOpen && (
-        <div className="col-map">
+      <div className="col-map">
           <div className="col-header col-header--map">
             <div className="top-bar-map-left">
               <img src={suiteDBIcon} alt="DB" className="top-bar-db-icon" />
-              <button className="map-title-close" onClick={handleCloseMap}>✕</button>
+              <button className="map-title-close" onClick={handleClearConversation} title="Clear conversation">✕</button>
               {isRenaming ? (
                 <input
                   className="map-title-input"
@@ -701,80 +642,78 @@ function ChatPage() {
                 </div>
                 <div className="viz-empty-title">No data to visualize yet</div>
                 <div className="viz-empty-subtitle">Ask a question that returns map points or chart data, and it’ll appear here.</div>
-                <button className="viz-empty-btn" onClick={() => setVizPickerOpen(true)}>
-                  Change Visualization
-                </button>
               </div>
             ) : (
               <div className="viz-panel-inner">
-                {chartData ? (
-                  <ChartView
-                    chartData={chartData}
-                    chartType={chartType}
-                    beforeBody={(
-                      <div className="viz-switcher-wrapper">
-                        <div className="viz-switcher viz-switcher--inline" role="tablist" aria-label="Visualization type">
-                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'map' ? ' active' : ''}`} onClick={() => setVizMode('map')} aria-pressed={selectedVizKey === 'map'}>
-                            <img src={suiteMapsIcon} alt="" className="viz-switcher-icon" />
-                            <span>San Antonio Map</span>
-                          </button>
-                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'bar' ? ' active' : ''}`} onClick={() => setVizMode('bar')} aria-pressed={selectedVizKey === 'bar'}>
-                            <IconBarMini />
-                            <span>Bar</span>
-                          </button>
-                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'radar' ? ' active' : ''}`} onClick={() => setVizMode('radar')} aria-pressed={selectedVizKey === 'radar'}>
-                            <IconRadarMini />
-                            <span>Radar</span>
-                          </button>
-                          <button type="button" className={`viz-switcher-item${selectedVizKey === 'pie' ? ' active' : ''}`} onClick={() => setVizMode('pie')} aria-pressed={selectedVizKey === 'pie'}>
-                            <IconPieMini />
-                            <span>Pie</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  />
-                ) : (
-                  <div className="chart-view">
-                    <div className="chart-header">
-                      <span className="chart-title">San Antonio Map</span>
-                    </div>
+                {(() => {
+                  const switcher = (
                     <div className="viz-switcher-wrapper">
-                      <div className="viz-switcher viz-switcher--inline" role="tablist" aria-label="Visualization type">
-                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'map' ? ' active' : ''}`} onClick={() => setVizMode('map')} aria-pressed={selectedVizKey === 'map'}>
-                          <img src={suiteMapsIcon} alt="" className="viz-switcher-icon" />
-                          <span>San Antonio Map</span>
-                        </button>
-                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'bar' ? ' active' : ''}`} onClick={() => setVizMode('bar')} aria-pressed={selectedVizKey === 'bar'}>
-                          <IconBarMini />
-                          <span>Bar</span>
-                        </button>
-                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'radar' ? ' active' : ''}`} onClick={() => setVizMode('radar')} aria-pressed={selectedVizKey === 'radar'}>
-                          <IconRadarMini />
-                          <span>Radar</span>
-                        </button>
-                        <button type="button" className={`viz-switcher-item${selectedVizKey === 'pie' ? ' active' : ''}`} onClick={() => setVizMode('pie')} aria-pressed={selectedVizKey === 'pie'}>
-                          <IconPieMini />
-                          <span>Pie</span>
-                        </button>
+                      <div className="viz-switcher viz-switcher--inline">
+                        {Array.isArray(highlightData) && highlightData.length > 0 && (
+                          <button
+                            className={`viz-switcher-item${!chartData ? ' active' : ''}`}
+                            onClick={() => setChartData(null)}
+                          >
+                            <img src={suiteMapsIcon} alt="" style={{ width: 14, height: 14 }} />
+                            San Antonio Map
+                          </button>
+                        )}
+                        {lastChartDataRef.current && (
+                          <>
+                            <button
+                              className={`viz-switcher-item${chartData && chartType === 'bar' ? ' active' : ''}`}
+                              onClick={() => { setChartData(lastChartDataRef.current); setChartType('bar'); }}
+                            >
+                              <IconBarMini />
+                              Bar
+                            </button>
+                            <button
+                              className={`viz-switcher-item${chartData && chartType === 'radar' ? ' active' : ''}`}
+                              onClick={() => { setChartData(lastChartDataRef.current); setChartType('radar'); }}
+                            >
+                              <IconRadarMini />
+                              Radar
+                            </button>
+                            <button
+                              className={`viz-switcher-item${chartData && chartType === 'pie' ? ' active' : ''}`}
+                              onClick={() => { setChartData(lastChartDataRef.current); setChartType('pie'); }}
+                            >
+                              <IconPieMini />
+                              Pie
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
-                    <div className="viz-map-body">
-                      <MapView
-                        geoData={geoData}
-                        params={customData || profiles.map}
-                        onAreaClick={handleAreaClick}
-                        highlightData={highlightData}
-                        viewMode={viewMode}
-                      />
+                  );
+                  return chartData ? (
+                    <ChartView
+                      chartData={chartData}
+                      chartType={chartType}
+                      beforeBody={switcher}
+                    />
+                  ) : (
+                    <div className="chart-view">
+                      <div className="chart-header">
+                        <span className="chart-title">San Antonio Map</span>
+                      </div>
+                      {switcher}
+                      <div className="viz-map-body">
+                        <MapView
+                          geoData={geoData}
+                          params={customData || profiles.map}
+                          onAreaClick={handleAreaClick}
+                          highlightData={highlightData}
+                          viewMode={viewMode}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             )}
           </div>
         </div>
-      )}
       {/* Undo Toast */}
       {undoState && (
         <div className="undo-toast">
@@ -838,46 +777,6 @@ function ChatPage() {
         </div>
       )}
 
-      {/* Visualization picker modal (right panel is hidden until user opts in) */}
-      {vizPickerOpen && (
-        <div className="viz-modal-overlay" onClick={() => setVizPickerOpen(false)}>
-          <div className="viz-modal" onClick={e => e.stopPropagation()}>
-            <div className="viz-modal-header">
-              <span className="viz-modal-title">Which way would you like me to visualize the data?</span>
-              <button className="viz-modal-close" onClick={() => setVizPickerOpen(false)}>✕</button>
-            </div>
-            <div className="viz-modal-list">
-              {VIZ_PICKER_OPTIONS.map((opt, i) => (
-                <div key={opt.key}>
-                  <button
-                    className={`viz-modal-option${selectedVizKey === opt.key ? ' viz-modal-option--selected' : ''}`}
-                    onClick={() => {
-                      setVizPanelOpen(true);
-                      if (opt.key === 'map') {
-                        // Only switch to map if we actually have map points to show
-                        if (Array.isArray(highlightData) && highlightData.length > 0) setChartData(null);
-                      } else {
-                        restoreLastChartIfNeeded();
-                        setChartType(opt.key);
-                      }
-                      setVizPickerOpen(false);
-                    }}
-                  >
-                    <span
-                      className={`viz-modal-radio${selectedVizKey === opt.key ? ' viz-modal-radio--selected' : ''}`}
-                    />
-                    <span className="viz-modal-label">{opt.label}</span>
-                  </button>
-                  {i < VIZ_PICKER_OPTIONS.length - 1 && <div className="viz-modal-divider" />}
-                </div>
-              ))}
-            </div>
-            <div className="viz-modal-footer">
-              <button className="viz-modal-skip" onClick={() => setVizPickerOpen(false)}>Skip</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

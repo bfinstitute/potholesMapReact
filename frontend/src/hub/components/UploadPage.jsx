@@ -22,49 +22,55 @@ export default function UploadPage() {
 
   const hasFiles = uploadedFiles.length > 0;
 
-  const handleFile = async (file) => {
-    if (!file || file.type !== 'text/csv') {
-      setUploadError('Please upload a valid CSV file.');
+  const handleFiles = async (fileList) => {
+    const files = Array.from(fileList).filter(f => f.type === 'text/csv');
+    if (files.length === 0) {
+      setUploadError('Please upload valid CSV file(s).');
       return;
     }
     setIsUploading(true);
     setUploadError('');
     try {
-      const result = await apiService.uploadCSV(file);
-      if (result.success) {
-        setFileName(result.filename);
-        setCsvData(result.data);
-        setCsvStats(result.stats);
-        setColumnDescriptions(result.column_descriptions || {});
+      const results = await Promise.all(files.map(f => apiService.uploadCSV(f)));
+      const succeeded = results.map((result, i) => ({ result, file: files[i] })).filter(({ result }) => result.success);
 
-        const now = new Date();
-        const label = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-          + ' ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-          + ' Queue';
-
-        const newBatch = {
-          id: Date.now(),
-          label,
-          files: [{
-            id: Date.now() + 1,
-            name: result.filename,
-            folder: 'Uncategorized',
-            status: 'Ready',
-            tier: 'Tier 2: Internal Operational',
-            size: file.size < 1024 * 1024
-              ? `${(file.size / 1024).toFixed(1)} KB`
-              : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-            confidence: 'High',
-            issue: '',
-            csvData: result.data || [],
-          }],
-        };
-
-        setBatches(prev => [newBatch, ...prev]);
-        navigate('/queue');
-      } else {
+      if (succeeded.length === 0) {
         setUploadError('Upload failed. Please try again.');
+        return;
       }
+
+      // Use the last successful upload for the active CSV context
+      const last = succeeded[succeeded.length - 1];
+      setFileName(last.result.filename);
+      setCsvData(last.result.data);
+      setCsvStats(last.result.stats);
+      setColumnDescriptions(last.result.column_descriptions || {});
+
+      const now = new Date();
+      const label = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+        + ' ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        + ' from Sources';
+
+      const newBatch = {
+        id: Date.now(),
+        label,
+        files: succeeded.map(({ result, file }, i) => ({
+          id: Date.now() + i + 1,
+          name: result.filename,
+          folder: 'Uncategorized',
+          status: 'Ready',
+          tier: 'Tier 2: Internal Operational',
+          size: file.size < 1024 * 1024
+            ? `${(file.size / 1024).toFixed(1)} KB`
+            : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          confidence: 'High',
+          issue: '',
+          csvData: result.data || [],
+        })),
+      };
+
+      setBatches(prev => [newBatch, ...prev]);
+      navigate('/queue');
     } catch (error) {
       setUploadError(error.message || 'Upload failed. Please try again.');
     } finally {
@@ -75,7 +81,7 @@ export default function UploadPage() {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    handleFile(e.dataTransfer.files[0]);
+    handleFiles(e.dataTransfer.files);
   };
 
   const handleDragOver = (e) => {
@@ -84,7 +90,7 @@ export default function UploadPage() {
   };
 
   const handleDragLeave = () => setIsDragging(false);
-  const handleFileSelect = (e) => handleFile(e.target.files[0]);
+  const handleFileSelect = (e) => handleFiles(e.target.files);
 
   const handleTosAgree = () => {
     localStorage.setItem('tos_agreed', 'true');
@@ -174,6 +180,7 @@ export default function UploadPage() {
           ref={fileInputRef}
           type="file"
           accept=".csv"
+          multiple
           onChange={handleFileSelect}
           className="upload-input-hidden"
         />

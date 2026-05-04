@@ -59,12 +59,12 @@ function deriveConversationTitle(userText) {
 
 const VIZ_TYPES = [
   { key: 'map',   label: 'Map View of San Antonio' },
-  { key: 'pie',   label: 'Pie Chart' },
-  { key: 'radar', label: 'Radar Chart' },
   { key: 'bar',   label: 'Bar Chart' },
+  { key: 'radar', label: 'Radar Chart' },
+  { key: 'pie',   label: 'Pie Chart' },
 ];
 
-export default function FeedbackBubble({ setHighlightData, setChartData, restoreChartData, setMapTitle, chartType, setChartType, openVisualizationPanel, setIsLoading, setLastQuery, setLastBotResponse, initialQuery, chatHistory, setChatHistory }) {
+export default function FeedbackBubble({ setHighlightData, setChartData, restoreChartData, setMapTitle, chartType, setChartType, setIsLoading, setLastQuery, setLastBotResponse, initialQuery, chatHistory, setChatHistory }) {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState(1);
@@ -72,7 +72,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
   const [openMoreIdx, setOpenMoreIdx] = useState(null);
   const [vizModalOpen, setVizModalOpen] = useState(false);
   const [vizModalMsg, setVizModalMsg] = useState(null);
-  const moreDropdownRef = useRef(null);
+const moreDropdownRef = useRef(null);
   const [reactions, setReactions] = useState({});
   const [copiedIdx, setCopiedIdx] = useState(null);
   const historyRef = useRef(null);
@@ -162,6 +162,7 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
       if (setChartData) setChartData(data.chart_data || null);
       if (setLastBotResponse) setLastBotResponse(answerText);
       if (setMapTitle) setMapTitle(deriveConversationTitle(trimmed));
+
     } catch (err) {
       console.error('Chat error:', err);
       setChatHistory(prev => [
@@ -275,7 +276,6 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
     if (msg.savedHighlightData && setHighlightData) setHighlightData(msg.savedHighlightData);
     else if (setHighlightData) setHighlightData(null);
     if (msg.savedTitle && setMapTitle) setMapTitle(msg.savedTitle);
-    if (openVisualizationPanel) openVisualizationPanel();
   };
 
   return (
@@ -383,6 +383,14 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
                     <span className="structured-followup-q">{msg.structured.follow_up_question}</span>
                   </div>
                 )}
+                {(msg.chartTag || msg.mapTag) && (
+                  <button
+                    className="viz-change-btn"
+                    onClick={() => { setVizModalMsg(msg); setVizModalOpen(true); }}
+                  >
+                    Change Visualization
+                  </button>
+                )}
                 <div className="reaction-bar">
                   <div className="reaction-copy-wrapper">
                     <button
@@ -477,26 +485,25 @@ export default function FeedbackBubble({ setHighlightData, setChartData, restore
                 const selectedKey = vizModalMsg.mapTag && !vizModalMsg.chartTag ? 'map' : chartType;
                 const isSelected = selectedKey === opt.key;
                 return (
-                <div key={opt.key}>
-                  <button
-                    className={`viz-modal-option${isSelected ? ' viz-modal-option--selected' : ''}`}
-                    onClick={() => {
-                      if (openVisualizationPanel) openVisualizationPanel();
-                      if (opt.key === 'map') {
-                        restoreViz(vizModalMsg, 'map');
-                      } else {
-                        if (setChartType) setChartType(opt.key);
-                        restoreViz(vizModalMsg, 'chart');
-                      }
-                      setVizModalOpen(false);
-                    }}
-                  >
-                    <span className={`viz-modal-radio${isSelected ? ' viz-modal-radio--selected' : ''}`} />
-                    <span className="viz-modal-label">{opt.label}</span>
-                  </button>
-                  {i < VIZ_TYPES.length - 1 && <div className="viz-modal-divider" />}
-                </div>
-              );
+                  <div key={opt.key}>
+                    <button
+                      className={`viz-modal-option${isSelected ? ' viz-modal-option--selected' : ''}`}
+                      onClick={() => {
+                        if (opt.key === 'map') {
+                          restoreViz(vizModalMsg, 'map');
+                        } else {
+                          if (setChartType) setChartType(opt.key);
+                          restoreViz(vizModalMsg, 'chart');
+                        }
+                        setVizModalOpen(false);
+                      }}
+                    >
+                      <span className={`viz-modal-radio${isSelected ? ' viz-modal-radio--selected' : ''}`} />
+                      <span className="viz-modal-label">{opt.label}</span>
+                    </button>
+                    {i < VIZ_TYPES.length - 1 && <div className="viz-modal-divider" />}
+                  </div>
+                );
               })}
             </div>
             <div className="viz-modal-footer">

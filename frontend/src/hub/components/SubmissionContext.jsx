@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import '../styles/SubmissionContext.css';
 import minusIcon from '../../assets/images/iconoir_minus.svg';
+import checkmarkIcon from '../../assets/images/Icons=Checkmark.svg';
 
 const AGENCY_OPTIONS = [
   { value: 'accept',  label: 'Accept suggested classification' },
@@ -20,12 +21,34 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
     agencyResponse: 'accept',
     permissionAck:  false,
   });
+  const [errors, setErrors] = useState({});
 
   if (!isOpen) return null;
 
-  const set = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+  const set = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: false }));
+  };
 
-  const handleSubmit = () => onSubmit(form);
+  const validateStep1 = () => {
+    const e = {
+      projectName:   !form.projectName.trim(),
+      description:   !form.description.trim(),
+      dataDomain:    !form.dataDomain.trim(),
+      coverageStart: !form.coverageStart,
+    };
+    setErrors(e);
+    return !Object.values(e).some(Boolean);
+  };
+
+  const validateStep2 = () => {
+    const e = { permissionAck: !form.permissionAck };
+    setErrors(e);
+    return !Object.values(e).some(Boolean);
+  };
+
+  const handleNext = () => { if (validateStep1()) setStep(2); };
+  const handleSubmit = () => { if (validateStep2()) onSubmit(form); };
 
   return (
     <div className="sc-overlay" onClick={onClose}>
@@ -38,16 +61,22 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
 
         {/* Step indicator */}
         <div className="sc-steps">
+          {/* Step 1: active on step 1, done on step 2 */}
           <div className={`sc-step ${step === 1 ? 'active' : 'done'}`}>
             <div className="sc-step-dot">
-              <img src={minusIcon} alt="" className="sc-step-icon" />
+              <img
+                src={step === 1 ? minusIcon : checkmarkIcon}
+                alt=""
+                className={step === 1 ? 'sc-step-icon' : 'sc-step-icon--checkmark'}
+              />
             </div>
             <span className="sc-step-label">Submission Context</span>
           </div>
           <div className="sc-step-line" />
-          <div className={`sc-step ${step === 2 ? 'active' : step > 2 ? 'done' : 'inactive'}`}>
+          {/* Step 2: inactive on step 1, active on step 2 */}
+          <div className={`sc-step ${step === 2 ? 'active' : 'inactive'}`}>
             <div className="sc-step-dot">
-              <img src={minusIcon} alt="" className="sc-step-icon" />
+              {step === 2 && <img src={minusIcon} alt="" className="sc-step-icon" />}
             </div>
             <span className="sc-step-label">
               {step === 1 ? 'AI/ML Training Intent' : 'Classification'}
@@ -59,42 +88,45 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
         {step === 1 && (
           <div className="sc-body">
             <div className="sc-field">
-              <label className="sc-label">Project Name</label>
+              <label className="sc-label">Project Name <span className="sc-required">*</span></label>
               <input
-                className="sc-input"
+                className={`sc-input${errors.projectName ? ' sc-input--error' : ''}`}
                 placeholder="Housing"
                 value={form.projectName}
                 onChange={e => set('projectName', e.target.value)}
               />
+              {errors.projectName && <span className="sc-error-msg">This field is required</span>}
             </div>
 
             <div className="sc-field">
-              <label className="sc-label">Submission Description</label>
+              <label className="sc-label">Submission Description <span className="sc-required">*</span></label>
               <textarea
-                className="sc-textarea"
+                className={`sc-textarea${errors.description ? ' sc-input--error' : ''}`}
                 placeholder="This is housing"
                 rows={3}
                 value={form.description}
                 onChange={e => set('description', e.target.value)}
               />
+              {errors.description && <span className="sc-error-msg">This field is required</span>}
             </div>
 
             <div className="sc-field">
-              <label className="sc-label">Data Domain</label>
+              <label className="sc-label">Data Domain <span className="sc-required">*</span></label>
               <input
-                className="sc-input"
+                className={`sc-input${errors.dataDomain ? ' sc-input--error' : ''}`}
                 placeholder="BFI"
                 value={form.dataDomain}
                 onChange={e => set('dataDomain', e.target.value)}
               />
+              {errors.dataDomain && <span className="sc-error-msg">This field is required</span>}
             </div>
 
             <div className="sc-dates">
               <div className="sc-field">
-                <label className="sc-label">Temporal Coverage Start</label>
+                <label className="sc-label">Temporal Coverage Start <span className="sc-required">*</span></label>
                 <div className="sc-date-wrap">
                   <input
-                    className="sc-input"
+                    className={`sc-input${errors.coverageStart ? ' sc-input--error' : ''}`}
                     type="date"
                     value={form.coverageStart}
                     onChange={e => set('coverageStart', e.target.value)}
@@ -103,6 +135,7 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                   </svg>
                 </div>
+                {errors.coverageStart && <span className="sc-error-msg">This field is required</span>}
               </div>
               <div className="sc-field">
                 <label className="sc-label">End Date</label>
@@ -130,7 +163,7 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
               <span>Ongoing/ continuously updated</span>
             </label>
 
-            <button className="sc-next-btn" onClick={() => setStep(2)}>
+            <button className="sc-next-btn" onClick={handleNext}>
               Next
             </button>
           </div>
@@ -167,8 +200,8 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
             </div>
 
             <div className="sc-field">
-              <label className="sc-label">Permissions Acknowledgement</label>
-              <label className="sc-checkbox-label sc-ack-row">
+              <label className="sc-label">Permissions Acknowledgement <span className="sc-required">*</span></label>
+              <label className={`sc-checkbox-label sc-ack-row${errors.permissionAck ? ' sc-ack-row--error' : ''}`}>
                 <input
                   type="checkbox"
                   className="sc-checkbox"
@@ -177,6 +210,7 @@ export default function SubmissionContext({ isOpen, onClose, onSubmit, fileName 
                 />
                 <span>BFI may use this dataset for AI or machine learning model training.</span>
               </label>
+              {errors.permissionAck && <span className="sc-error-msg">You must acknowledge this to proceed</span>}
             </div>
 
             <div className="sc-step2-actions">
