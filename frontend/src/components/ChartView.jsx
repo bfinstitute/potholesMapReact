@@ -1,8 +1,30 @@
+import { Component } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { RadarChart } from '@mui/x-charts/RadarChart';
 import { chartsTooltipClasses } from '@mui/x-charts';
 import '../styles/ChartView.css';
+
+class ChartErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: false }; }
+  static getDerivedStateFromError() { return { error: true }; }
+  componentDidUpdate(prevProps) {
+    // Reset when chart type or data changes so user can retry
+    if (prevProps.chartType !== this.props.chartType || prevProps.chartData !== this.props.chartData) {
+      this.setState({ error: false });
+    }
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#71717A', fontSize: 13, padding: 24, textAlign: 'center' }}>
+          This chart type couldn't render with the current data. Try switching to Bar or Pie.
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Palette aligned with the app's blue/indigo design system
 const PALETTE = [
@@ -259,12 +281,22 @@ export default function ChartView({ chartData, chartType = 'bar', hideHeader = f
   };
 
   const renderPie = () => {
-    const pieData = displayData.map((d, i) => ({
-      id: `${d?.[nameKey] ?? i}`,
-      value: Number(d?.[valueKey] ?? 0),
-      label: String(d?.[nameKey] ?? ''),
-      color: PALETTE[i % PALETTE.length],
-    }));
+    const pieData = displayData
+      .map((d, i) => ({
+        id: `${d?.[nameKey] ?? i}`,
+        value: Number(d?.[valueKey] ?? 0),
+        label: String(d?.[nameKey] ?? ''),
+        color: PALETTE[i % PALETTE.length],
+      }))
+      .filter((d) => isFinite(d.value) && d.value > 0);
+
+    if (pieData.length === 0) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#71717A', fontSize: 13, padding: 24, textAlign: 'center' }}>
+          No valid data to display as a Pie chart. Try switching to Bar.
+        </div>
+      );
+    }
 
     return (
       <PieChart
@@ -287,14 +319,28 @@ export default function ChartView({ chartData, chartType = 'bar', hideHeader = f
   };
 
   const renderRadar = () => {
-    const values = displayData.map((d) => Number(d?.[valueKey] ?? 0));
-    const max = Math.max(1, ...values) * 1.12;
+    // RadarChart requires at least 3 metrics
+    if (displayData.length < 3) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#71717A', fontSize: 13, padding: 24, textAlign: 'center' }}>
+          Radar chart requires at least 3 data points. Try switching to Bar or Pie.
+        </div>
+      );
+    }
+
+    // Coerce all values to numbers (NaN → 0) rather than dropping entries
+    const values = displayData.map((d) => {
+      const v = Number(d?.[valueKey]);
+      return isFinite(v) ? v : 0;
+    });
+    const rawMax = Math.max(...values);
+    const max = (rawMax > 0 ? rawMax : 1) * 1.12;
 
     return (
       <RadarChart
         radar={{
-          metrics: displayData.map((d) => ({
-            name: String(d?.[nameKey] ?? ''),
+          metrics: displayData.map((d, i) => ({
+            name: String(d?.[nameKey] ?? `Item ${i + 1}`),
             max,
             min: 0,
           })),
@@ -324,11 +370,13 @@ export default function ChartView({ chartData, chartType = 'bar', hideHeader = f
         </div>
       )}
       {beforeBody}
-      <div className="chart-body">
-        {chartType === 'pie'   && renderPie()}
-        {chartType === 'radar' && renderRadar()}
-        {(chartType === 'bar' || chartType === undefined) && renderBar()}
-      </div>
+      <ChartErrorBoundary chartType={chartType} chartData={chartData}>
+        <div className="chart-body">
+          {chartType === 'pie'   && renderPie()}
+          {chartType === 'radar' && renderRadar()}
+          {(chartType === 'bar' || chartType === undefined) && renderBar()}
+        </div>
+      </ChartErrorBoundary>
     </div>
   );
 }

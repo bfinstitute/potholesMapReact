@@ -24,6 +24,7 @@ export default function Home() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     setError('');
     setIsLoading(true);
 
@@ -68,14 +69,14 @@ export default function Home() {
           <img src={mainLogo} alt="Better Futures Institute"/>
         </a>
         <div className="signin-container">
-          <form className="signin-form" onSubmit={handleLogin}>
+          <form className="signin-form" onSubmit={handleLogin} noValidate>
             <h2>Log in to your account</h2>
             <input
               type="email"
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
+              onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(e); }}
             />
             <input
               type="password"
@@ -83,7 +84,6 @@ export default function Home() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(e); }}
-              required
             />
             {error && <p style={{ color: 'red', fontSize: '14px', marginTop: '10px' }}>{error}</p>}
             <button type="submit" disabled={isLoading}>
